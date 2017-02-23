@@ -1,0 +1,10 @@
+- name: Test inventory
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: groups
+      debug:
+        msg: "groups - {{ group_names }}"
+    #- name: test echo
+      #shell: echo "hello"
+        

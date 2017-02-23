@@ -1,0 +1,9 @@
+docker_hosts:
+  vars:
+    ansible_connection: local
+
+docker_containers:
+  vars:
+    ansible_connection: docker
+  children:
+    unix://var/run/docker.sock:
