@@ -1,0 +1,98 @@
+---
+
+- name: install dependencies apt
+  apt: name={{ item }} state=latest update_cache=yes
+  with_items:
+      - git
+      - build-essential
+      - cmake
+      - python-dev
+      - python3-dev
+      - vim
+
+#- include: install_nodejs.yml
+
+- name: install typescript
+  npm: name=typescript state=latest global=yes
+
+- block:
+    - name: temp copy ssh private key
+      copy:
+          src: ~/.ssh/{{ ssh_key_name }}
+          dest: ~/.ssh/{{ ssh_key_name }}
+          mode: 0600
+
+    - name: temp copy ssh public key
+      copy:
+          src: ~/.ssh/{{ ssh_key_name }}.pub
+          dest: ~/.ssh/{{ ssh_key_name }}.pub
+          mode: 0644
+
+    - name: create code directory
+      file:
+          path: ~/code
+          state: directory
+          mode: 0740
+
+    - name: clone dev-environment
+      git:
+          repo: git@bitbucket.org:milo-minderbinder/dev-environment.git
+          dest: ~/code/dev-environment
+          accept_hostkey: yes
+          key_file: ~/.ssh/{{ ssh_key_name }}
+
+    - name: clone Vundle
+      git:
+          repo: https://github.com/VundleVim/Vundle.vim.git
+          dest: ~/.vim/bundle/Vundle.vim
+    
+    - name: link vimrc
+      file:
+          path: ~/.vimrc
+          state: link
+          src: ~/code/dev-environment/vim/vimrc_linux
+          mode: 0744
+
+    - name: install vim plugins
+      shell: vim +PluginInstall +qall
+
+    - name: check if YouCompleteMe installed
+      stat: path=~/.vim/bundle/YouCompleteMe
+      register: ycm
+
+    - name: compile YouCompleteMe
+      shell: python install.py --clang-completer --tern-completer
+      args:
+          chdir: ~/.vim/bundle/YouCompleteMe
+      when: ycm.stat.isdir is defined and ycm.stat.isdir
+
+    - name: check if nerdtree installed
+      stat: path=~/.vim/bundle/nerdtree
+      register: nerdtree
+
+    - name: link yank_mapping.vim
+      file:
+          path: ~/.vim/bundle/nerdtree/nerdtree_plugin/yank_mapping.vim
+          state: link
+          src: ~/code/dev-environment/vim/yank_mapping.vim
+          mode: 0744
+
+    - name: link ideavimrc
+      file:
+          path: ~/.ideavimrc
+          state: link
+          src: ~/code/dev-environment/vim/ideavimrc
+          mode: 0744
+
+  #always:
+      #- name: remove ssh private key
+        #file:
+            #path: ~/.ssh/{{ ssh_key_name }}
+            #state: absent
+
+      #- name: remove ssh public key
+        #file:
+            #path: ~/.ssh/{{ ssh_key_name }}.pub
+            #state: absent
+
+

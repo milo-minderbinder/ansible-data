@@ -1,0 +1,9 @@
+---
+- hosts: running
+  gather_facts: no
+  roles:
+      - no-python
+
+- hosts: test_container
+  roles:
+      - workstation

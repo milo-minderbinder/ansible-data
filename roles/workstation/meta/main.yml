@@ -1,0 +1,3 @@
+---
+dependencies:
+  - { role: nodejs, node_version: 7 }
