@@ -9,6 +9,7 @@
       - python-dev
       - python3-dev
       - vim
+  when: ansible_pkg_mgr == 'apt'
 
 #- include: install_nodejs.yml
 
@@ -16,13 +17,13 @@
   npm: name=typescript state=latest global=yes
 
 - block:
-    - name: temp copy ssh private key
+    - name: copy read-only ssh private key
       copy:
           src: ~/.ssh/{{ ssh_key_name }}
           dest: ~/.ssh/{{ ssh_key_name }}
           mode: 0600
 
-    - name: temp copy ssh public key
+    - name: copy read-only ssh public key
       copy:
           src: ~/.ssh/{{ ssh_key_name }}.pub
           dest: ~/.ssh/{{ ssh_key_name }}.pub

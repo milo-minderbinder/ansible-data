@@ -1,0 +1,36 @@
+---
+homebrew_apps:
+    - name: bash-completion
+    - name: brew-cask-completion
+    - name: cloc
+    - name: cmake
+    - name: ddate
+    - name: dependency-check
+    - name: geckodriver
+    - name: git
+    - name: gradle
+    - name: groovysdk
+    - name: jython
+    - name: macvim
+      install_options: with-override-system-vim,with-lua,with-luajit,with-python3
+    - name: maven
+    - name: nmap
+    - name: node
+    - name: phantomjs
+    - name: plantuml
+    - name: python
+    - name: python3
+    - name: sbt
+    - name: thrift
+      install_options: with-java,with-python
+
+cask_apps:
+    - name: docker
+    - name: firefox
+    - name: flux
+    - name: intellij-idea
+    - name: java
+    - name: java7
+    - name: keepassx
+    - name: pycharm
+    - name: spotify

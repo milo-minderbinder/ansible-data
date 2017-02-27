@@ -1,0 +1,31 @@
+# Homebrew Config
+export HOMEBREW_GITHUB_API_TOKEN={{ homebrew_github_api_token }}
+if [ -f $(brew --prefix)/etc/bash_completion ]; then
+	. $(brew --prefix)/etc/bash_completion
+fi
+
+# Show git branch & state in prompt
+GIT_PS1_SHOWDIRTYSTATE=true
+export PS1='[\h:\u \W$(__git_ps1)]\$ '
+
+# Python virtualenvwrapper setup
+export WORKON_HOME=$HOME/.virtualenvs
+export PROJECT_HOME=$HOME/code
+source /usr/local/bin/virtualenvwrapper.sh
+
+# Java config
+export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
+export JRE_HOME=$JAVA_HOME/jre
+export JAVA7=$(/usr/libexec/java_home -v 1.7)
+export JAVA8=$(/usr/libexec/java_home -v 1.8)
+
+# Maven config
+export M2_HOME=/usr/local/opt/maven/libexec
+export M2=$M2_HOME/bin
+export MAVEN_OPTS="-Xms256m -Xmx512m"
+
+# Gradle config
+export GRADLE_HOME=/usr/local/opt/gradle/libexec
+
+# Groovy config
+export GROOVY_HOME=/usr/local/opt/groovysdk/libexec

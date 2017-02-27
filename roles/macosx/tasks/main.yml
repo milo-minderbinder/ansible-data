@@ -1,7 +1,34 @@
 ---
-- name: install xcode command line tools
-  command: xcode-select --install
+#- name: install xcode command line tools
+  #command: xcode-select --install
 
-- name: install homebrew
-  shell: /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+#- name: install homebrew
+  #shell: /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+- name: update homebrew
+  homebrew: update_homebrew=yes
+
+- name: tap caskroom/cask and caskroom/versions
+  homebrew_tap:
+      name: '{{ item }}'
+  with_items:
+      - caskroom/cask
+      - caskroom/versions
+
+- name: install cask apps
+  homebrew_cask:
+      name: '{{ item.name }}'
+      state: present
+      install_options: '{{ item.install_options|default(omit) }}'
+  with_items:
+      - '{{ cask_apps }}'
+
+- name: install homebrew apps
+  homebrew:
+      name: '{{ item.name }}'
+      state: latest
+      install_options: '{{ item.install_options|default(omit) }}'
+  with_items:
+      - '{{ homebrew_apps }}'
+
 
