@@ -1,0 +1,9 @@
+---
+
+- name: copy bash_profile template
+  template:
+      src: bash_profile.j2
+      dest: ~/.bash_profile
+      mode: 0644
+      force: no
+      backup: yes

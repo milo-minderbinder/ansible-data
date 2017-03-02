@@ -1,2 +1,16 @@
 ---
-- include: workstations.yml
+
+- hosts: running
+  gather_facts: no
+  roles:
+      - no-python
+
+- hosts: all:!stopped
+  tasks:
+      - group_by: key=os_{{ ansible_distribution }}
+  tags:
+      - always
+
+- include: macosx-workstations.yml
+
+#- include: workstations.yml

@@ -1,4 +1,9 @@
 ---
+
+homebrew_taps:
+    - caskroom/cask
+    - caskroom/versions
+
 homebrew_apps:
     - name: bash-completion
     - name: brew-cask-completion
