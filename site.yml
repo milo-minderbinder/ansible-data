@@ -1,9 +1,6 @@
 ---
 
-- hosts: running
-  gather_facts: no
-  roles:
-      - no-python
+- include: containers.yml
 
 - hosts: all:!stopped
   tasks:
@@ -11,6 +8,6 @@
   tags:
       - always
 
-- include: macosx-workstations.yml
+#- include: macosx-workstations.yml
 
-#- include: workstations.yml
+- include: workstations.yml

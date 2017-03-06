@@ -39,3 +39,6 @@ cask_apps:
     - name: keepassx
     - name: pycharm
     - name: spotify
+
+git_user: Milo Minderbinder
+git_email: minderbinder.enterprises@gmail.com

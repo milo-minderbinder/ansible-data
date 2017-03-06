@@ -1,7 +1,5 @@
 ---
 
-- include: macosx-workstations.yml
-
-- hosts: test_container
+- hosts: running
   roles:
-      - workstation
+    - workstation

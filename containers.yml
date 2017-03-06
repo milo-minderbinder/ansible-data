@@ -1,0 +1,46 @@
+---
+
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  tags:
+    - recreate_containers
+  tasks:
+    - name: remove Ubuntu container
+      docker_container:
+        name: test_container
+        image: mminderbinder/baseimage
+        command: tail -f /dev/null
+        state: absent
+
+    - name: remove CentOS container
+      docker_container:
+        name: test_container2
+        image: centos:7
+        command: tail -f /dev/null
+        state: absent
+
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks:
+    - name: create Ubuntu container
+      docker_container:
+        name: test_container
+        image: mminderbinder/baseimage
+        command: tail -f /dev/null
+        state: started
+
+    - name: create CentOS container
+      docker_container:
+        name: test_container2
+        image: centos:7
+        command: tail -f /dev/null
+        state: started
+
+- hosts: test_container
+  gather_facts: no
+  tasks:
+    - name: install python
+      raw: apt-get update && apt-get install -y python
+
