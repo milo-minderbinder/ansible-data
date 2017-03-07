@@ -8,6 +8,8 @@
   tags:
       - always
 
+- include: jenkins-servers.yml
+
 #- include: macosx-workstations.yml
 
-- include: workstations.yml
+#- include: workstations.yml

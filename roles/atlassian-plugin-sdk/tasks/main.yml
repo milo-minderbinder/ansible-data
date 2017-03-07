@@ -1,0 +1,77 @@
+---
+
+- block:
+  - name: install OpenJDK 8 JDK
+    apt: name=openjdk-8-jdk state=present
+
+  - name: find openjdk-8-jdk path
+    find:
+      paths: /usr/lib/jvm/
+      patterns: java-8-openjdk-*
+      file_type: directory
+    register: result
+
+  - fail:
+      msg: 'Unexpected results in find: {{ result }}'
+    when: result.matched != 1
+
+  - name: set openjdk8_home
+    set_fact:
+      openjdk8_home: '{{ result.files[0].path }}'
+
+  - name: install apt-transport-https
+    apt: name=apt-transport-https state=present
+
+  - name: add atlassian apt key
+    apt_key:
+      keyserver: keyserver.ubuntu.com
+      id: B07804338C015B73
+      state: present
+
+  - name: add atlassian apt repo
+    apt_repository:
+      repo: deb https://sdkrepo.atlassian.com/debian/ stable contrib
+      state: present
+
+  - name: install atlassian-plugin-sdk
+    apt: name=atlassian-plugin-sdk state=latest update_cache=yes
+  when: ansible_pkg_mgr == 'apt'
+
+- block:
+  - name: install OpenJDK 8 JDK
+    yum: name=java-1.8.0-openjdk-devel state=present
+    
+  - name: find java-1.8.0-openjdk path
+    find:
+      paths: /usr/lib/jvm/
+      patterns: java-1.8.0-openjdk
+      file_type: link
+    register: result
+
+  - fail:
+      msg: 'Unexpected results in find: {{ result }}'
+    when: result.matched != 1
+
+  - name: set openjdk8_home
+    set_fact:
+      openjdk8_home: '{{ result.files[0].path }}'
+
+  - name: install atlassian-plugin-sdk
+    yum:
+      name: https://sdkrepo.atlassian.com/rpm-stable/atlassian-plugin-sdk-6.2.14.noarch.rpm
+      state: present
+      update_cache: yes
+  when: ansible_pkg_mgr == 'yum'
+
+- debug:
+    msg: 'openjdk8_home: {{ openjdk8_home }}'
+
+- name: run atlas-version
+  command: atlas-version
+  register: atlas_version
+  environment:
+    JAVA_HOME: '{{ openjdk8_home }}'
+
+- debug:
+    msg: "atlass-version: {{ atlas_version }}"
+

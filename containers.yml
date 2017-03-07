@@ -8,14 +8,14 @@
   tasks:
     - name: remove Ubuntu container
       docker_container:
-        name: test_container
+        name: baseimage
         image: mminderbinder/baseimage
         command: tail -f /dev/null
         state: absent
 
     - name: remove CentOS container
       docker_container:
-        name: test_container2
+        name: centos7
         image: centos:7
         command: tail -f /dev/null
         state: absent
@@ -26,19 +26,19 @@
   tasks:
     - name: create Ubuntu container
       docker_container:
-        name: test_container
+        name: baseimage
         image: mminderbinder/baseimage
         command: tail -f /dev/null
         state: started
 
     - name: create CentOS container
       docker_container:
-        name: test_container2
+        name: centos7
         image: centos:7
         command: tail -f /dev/null
         state: started
 
-- hosts: test_container
+- hosts: baseimage
   gather_facts: no
   tasks:
     - name: install python
