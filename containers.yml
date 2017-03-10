@@ -1,46 +1,29 @@
 ---
 
-- hosts: localhost
-  connection: local
-  gather_facts: no
-  tags:
-    - recreate_containers
+- hosts: docker_hosts
   tasks:
-    - name: remove Ubuntu container
+    - name: remove containers
       docker_container:
-        name: baseimage
-        image: mminderbinder/baseimage
-        command: tail -f /dev/null
+        name: '{{ item }}'
         state: absent
+      with_inventory_hostnames: docker_containers
+      when: hostvars[item].image is defined
+      tags:
+        - recreate_containers
 
-    - name: remove CentOS container
+    - name: start containers
       docker_container:
-        name: centos7
-        image: centos:7
-        command: tail -f /dev/null
-        state: absent
-
-- hosts: localhost
-  connection: local
-  gather_facts: no
-  tasks:
-    - name: create Ubuntu container
-      docker_container:
-        name: baseimage
-        image: mminderbinder/baseimage
+        name: "{{ item }}"
+        image: "{{ hostvars[item].image }}"
         command: tail -f /dev/null
         state: started
+      with_inventory_hostnames: docker_containers
+      when: hostvars[item].image is defined
 
-    - name: create CentOS container
-      docker_container:
-        name: centos7
-        image: centos:7
-        command: tail -f /dev/null
-        state: started
-
-- hosts: baseimage
+- hosts: docker_containers
   gather_facts: no
   tasks:
-    - name: install python
-      raw: apt-get update && apt-get install -y python
+    - name: raw install python
+      raw: '{{ raw_install_python }}'
+      when: raw_install_python is defined
 

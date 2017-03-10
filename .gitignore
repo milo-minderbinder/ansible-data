@@ -4,3 +4,6 @@
 *.bak
 *.retry
 .idea/
+tmp/
+test.yml
+hosts/docker.py
