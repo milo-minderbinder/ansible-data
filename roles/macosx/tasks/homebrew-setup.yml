@@ -6,26 +6,25 @@
 - name: update homebrew
   homebrew: update_homebrew=yes
 
-- name: tap caskroom/cask and caskroom/versions
+- name: install taps
   homebrew_tap:
-      name: '{{ item }}'
-  with_items:
-      - '{{ homebrew_taps }}'
+    name: '{{ item }}'
+  with_items: '{{ homebrew_taps }}'
 
 - name: install cask apps
   homebrew_cask:
-      name: '{{ item.name }}'
-      state: present
-      install_options: '{{ item.install_options|default(omit) }}'
-  with_items:
-      - '{{ cask_apps }}'
+    name: '{{ item }}'
+    state: present
+    install_options: '{{ cask_apps[item].install_options|default(omit) }}'
+  with_items: '{{ cask_apps }}'
 
+# Note that we must use `with_dict` below to prevent `squash_actions` 
+# from flattening `item` into a single list and passing to `name:`
+# see: https://github.com/ansible/ansible-modules-extras/issues/3624
 - name: install homebrew apps
   homebrew:
-      name: '{{ item.name }}'
-      state: latest
-      install_options: '{{ item.install_options|default(omit) }}'
-  with_items:
-      - '{{ homebrew_apps }}'
-
+    name: '{{ item.key }}'
+    state: latest
+    install_options: '{{ item.value.install_options|default(omit) }}'
+  with_dict: '{{ homebrew_apps }}'
 

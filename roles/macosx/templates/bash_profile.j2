@@ -19,13 +19,26 @@ export JRE_HOME=$JAVA_HOME/jre
 export JAVA7=$(/usr/libexec/java_home -v 1.7)
 export JAVA8=$(/usr/libexec/java_home -v 1.8)
 
+{% if homebrew_apps.maven is defined %}
 # Maven config
 export M2_HOME=/usr/local/opt/maven/libexec
 export M2=$M2_HOME/bin
 export MAVEN_OPTS="-Xms256m -Xmx512m"
+{% endif %}
 
+{% if homebrew_apps.gradle is defined %}
 # Gradle config
 export GRADLE_HOME=/usr/local/opt/gradle/libexec
+{% endif %}
 
+{% if homebrew_apps.groovysdk is defined %}
 # Groovy config
 export GROOVY_HOME=/usr/local/opt/groovysdk/libexec
+{% endif %}
+
+{% if homebrew_apps.nvm is defined %}
+# nvm config
+export NVM_DIR="$HOME/.nvm"
+. "/usr/local/opt/nvm/nvm.sh"
+{% endif %}
+

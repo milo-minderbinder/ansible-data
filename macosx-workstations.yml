@@ -1,4 +1,9 @@
 ---
-- hosts: os_MacOSX
-  roles:
-      - macosx
+
+- hosts: macosx_workstations
+  pre_tasks:
+    - name: all vars/facts for host
+      debug:
+        var: hostvars[inventory_hostname]
+  #roles:
+      #- macosx

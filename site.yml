@@ -1,15 +1,15 @@
 ---
 
-- include: containers.yml
+#- include: containers.yml
 
-- hosts: all:!stopped
+- hosts: workstations
   tasks:
-      - group_by: key=os_{{ ansible_distribution }}
+    - group_by: key={{ ansible_distribution|lower() }}_workstations
   tags:
-      - always
+    - always
 
-- include: jenkins-servers.yml
+#- include: jenkins-servers.yml
 
-#- include: macosx-workstations.yml
+- include: macosx-workstations.yml
 
 #- include: workstations.yml

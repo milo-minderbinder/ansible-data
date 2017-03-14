@@ -1,5 +1,5 @@
 ---
 
-- hosts: running
+- hosts: workstations
   roles:
     - workstation

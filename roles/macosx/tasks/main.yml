@@ -5,8 +5,9 @@
 
 - include: homebrew-setup.yml
   tags:
-      - homebrew-setup
+    - homebrew-setup
 
 - include: dotfiles.yml
   tags:
-      - dotfiles
+    - dotfiles
+

@@ -1,0 +1,46 @@
+---
+
+homebrew_taps:
+  - caskroom/cask
+  - caskroom/versions
+
+cask_apps:
+  docker: {}
+  firefox: {}
+  flux: {}
+  intellij-idea: {}
+  java: {}
+  java7: {}
+  keepassx: {}
+  pycharm: {}
+  spotify: {}
+
+homebrew_apps:
+  bash-completion: {}
+  brew-cask-completion: {}
+  cloc: {}
+  cmake: {}
+  ddate: {}
+  dependency-check: {}
+  geckodriver: {}
+  git: {}
+  gradle: {}
+  groovysdk: {}
+  jython: {}
+  macvim:
+    install_options: 'with-override-system-vim,with-lua,with-luajit,with-python3'
+  maven: {}
+  nmap: {}
+  node: {}
+  nvm: {}
+  phantomjs: {}
+  plantuml: {}
+  python: {}
+  python3: {}
+  sbt: {}
+  thrift:
+    install_options: "with-java,with-python"
+
+git_user: Milo Minderbinder
+git_email: minderbinder.enterprises@gmail.com
+
