@@ -1,0 +1,7 @@
+let mapleader=','
+
+nnorem <leader>n :noh<CR>
+" vnorem // y:call setreg('9', escape(@", '\\/.*$^~[]'))<cr>/<c-r>9<cr>
+vnorem // y/<c-r>"<cr>
+
+set hlsearch

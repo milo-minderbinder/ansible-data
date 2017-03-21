@@ -1,0 +1,81 @@
+---
+
+- name: create working dir
+  file:
+    path: '{{ working_dir }}'
+    state: directory
+    mode: 0750
+
+- name: generate CA private key
+  command: >
+    openssl genrsa -aes256
+    -passout pass:{{ ca_password }}
+    -out {{ domain }}-ca-key.pem 4096
+  args:
+    chdir: '{{ working_dir }}'
+    creates: '{{ working_dir }}/{{ domain }}-ca-key.pem'
+
+- name: set CA private key mode
+  file:
+    path: '{{ working_dir }}/{{ domain }}-ca-key.pem'
+    mode: 0400
+
+- name: generate CA public key
+  command: >
+    openssl req -new -x509 -days 365
+    -key {{ domain }}-ca-key.pem -sha256
+    -out {{ domain }}-ca.pem
+    -passin pass:{{ ca_password }}
+    -subj "/C={{ country }}/ST={{ state }}/L={{ locality }}/O={{ organization }}/OU={{ organizational_unit }}/CN={{ commonname }}/emailAddress={{ email }}"
+  args:
+    chdir: '{{ working_dir }}'
+    creates: '{{ working_dir }}/{{ domain }}-ca.pem'
+
+- name: set CA public key mode
+  file:
+    path: '{{ working_dir }}/{{ domain }}-ca.pem'
+    mode: 0444
+
+- name: generate server private key
+  #command: openssl genpkey -out {{ domain }}-key.pem -algorithm RSA -pkeyopt rsa_keygen_bits:4096
+  command: openssl genrsa -out {{ domain }}-key.pem 4096
+  args:
+    chdir: '{{ working_dir }}'
+    creates: '{{ working_dir }}/{{ domain }}-key.pem'
+
+- name: set server private key mode
+  file:
+    path: '{{ working_dir }}/{{ domain }}-key.pem'
+    mode: 0400
+
+- name: create CSR
+  command: >
+    openssl req
+    -subj "/CN={{ commonname }}" -sha256 -new
+    -key {{ domain }}-key.pem
+    -out {{ domain }}.csr
+  args:
+    chdir: '{{ working_dir }}'
+    creates: '{{ working_dir }}/{{ domain }}.csr'
+
+- name: create extfile
+  shell: echo subjectAltName = DNS:{{ domain }},IP:{{ ansible_default_ipv4.address }},IP:127.0.0.1 > {{ working_dir }}/extfile.cnf
+
+- name: create signed server public key
+  command: >
+    openssl x509 -req -days 365 -sha256
+    -in {{ domain }}.csr
+    -CA {{ domain }}-ca.pem
+    -CAkey {{ domain }}-ca-key.pem -CAcreateserial
+    -out {{ domain }}-cert.pem
+    -extfile extfile.cnf
+    -passin pass:{{ ca_password }}
+  args:
+    chdir: '{{ working_dir }}'
+    creates: '{{ working_dir }}/{{ domain }}-cert.pem'
+
+- name: set server public key mode
+  file:
+    path: '{{ working_dir }}/{{ domain }}-cert.pem'
+    mode: 0444
+

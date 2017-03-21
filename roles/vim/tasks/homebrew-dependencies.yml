@@ -1,0 +1,16 @@
+---
+
+- name: install dependencies homebrew
+  homebrew:
+    name: '{{ item.key }}'
+    state: latest
+    install_options: '{{ item.value.install_options|default(omit) }}'
+    update_homebrew: yes
+  with_dict:
+    cmake: {}
+    git: {}
+    macvim:
+      install_options: 'with-override-system-vim,with-lua,with-luajit,with-python3'
+    python: {}
+    python3: {}
+

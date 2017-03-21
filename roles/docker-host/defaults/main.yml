@@ -1,0 +1,13 @@
+---
+
+working_dir: ~/certificates
+domain: docker.local
+country: US
+state: Washington
+locality: D.C.
+organization: Minderbinder Enterprises
+organizational_unit: Ops
+commonname: docker.local
+email: minderbinder.enterprises@gmail.com
+ca_password: null
+

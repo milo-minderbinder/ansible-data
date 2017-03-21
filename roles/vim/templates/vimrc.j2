@@ -1,0 +1,170 @@
+set nocompatible
+filetype off
+
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+" alternatively, pass a path where Vundle should install plugins
+" call vundle#begin('~/some/path/here')
+
+" let Vundle manage Vundle, required
+Plugin 'VundleVim/Vundle.vim'
+
+" autocompletion
+Plugin 'Valloric/YouCompleteMe'
+let g:ycm_autoclose_preview_window_after_completion=1
+
+" Python virtualenv support within Vim (and Vim plugins - works with
+" YouCompleteMe)
+Plugin 'jmcantrell/vim-virtualenv'
+
+" Git wrapper
+Plugin 'tpope/vim-fugitive'
+
+" Filesystem tree explorer
+Plugin 'scrooloose/nerdtree'
+let NERDTreeIgnore=['__pycache__$[[dir]]', '\.pyc$[[file]]'{{ ", '\~$', '\.DS_Store$[[file]]'" if ansible_os_family == 'Darwin' else "" }}]
+let NERDTreeCascadeSingleChildDir=1
+let NERDTreeMinimalUI=1
+
+" Full path fuzzy file, buffer, mru, tag, ... finder
+Plugin 'ctrlpvim/ctrlp.vim'
+
+" Code commenting utilities/bindings
+Plugin 'scrooloose/nerdcommenter'
+
+" B-e-a-utiful colorscheme for Vim
+Plugin 'altercation/vim-colors-solarized'
+
+" Status bar/tabline for Vim (integrates with many plugins including
+" virtualenv, fugitive, ctrlp, and nerdtree)
+Plugin 'vim-airline/vim-airline'
+
+" Themes/colorschemes for vim-airline
+Plugin 'vim-airline/vim-airline-themes'
+
+" Syntax, matchit, movements, & other feature support for working with
+" mustache and handlebars templates
+Plugin 'mustache/vim-mustache-handlebars'
+
+" Syntax for Ansible 2.0, supporting YAML playbooks, Jinja2 templates,
+" and Ansible's hosts files
+Plugin 'pearofducks/ansible-vim'
+
+
+" All of your Plugins must be added before the following line
+call vundle#end()            " required
+filetype plugin indent on    " required
+" To ignore plugin indent changes, instead use:
+"filetype plugin on
+"
+" Brief help
+" :PluginList          - list configured plugins
+" :PluginInstall(!)    - install (update) plugins
+" :PluginSearch(!) foo - search (or refresh cache first) for foo
+" :PluginClean(!)      - confirm (or auto-approve) removal of unused plugins
+"
+" see :h vundle for more details or wiki for FAQ
+" Put your non-Plugin stuff after this line
+
+" Standard configuration options follow
+set encoding=utf-8
+
+" Configure indent folding with manual folds
+augroup vimrc
+	au BufReadPre * setlocal foldmethod=indent
+	au BufWinEnter * if &fdm == 'indent' |
+				\ :normal zR<CR> |
+				\ setlocal foldmethod=manual |
+				\ endif
+augroup END
+
+" Custom filetype associations
+au BufNewFile,BufRead *.ftl set syntax=jsp
+au BufNewFile,BufRead *.gradle set syntax=groovy
+au BufNewFile,BufRead *.py set tabstop=4 |
+	\ set softtabstop=4 |
+	\ set shiftwidth=4 |
+	\ set expandtab |
+	\ set autoindent
+au BufNewFile,BufRead *.yaml set tabstop=2 |
+	\ set softtabstop=2 |
+	\ set shiftwidth=2 |
+	\ set autoindent
+
+" Custom commands
+command MarkLocation :let @f=expand('%:p') . '(' . line('.') . ')'
+command MakeFinding :let @f=expand('%:p') . '(' . line('.') . '):' . "\n" . getline('.')
+command -nargs=1 Venv :VirtualEnvActivate <args> | YcmRestartServer
+command -range=% JSONFormat :<line1>,<line2>!python -m json.tool
+
+{% if ansible_os_family == 'Darwin' %}
+function! Pygmentize(line1, line2, ...)
+	if a:0 < 1
+		let lexer = &ft
+	else
+		let lexer = a:1
+	end
+	" make sure to generate in the correct format
+	exec a:line1.','.a:line2.'!pygmentize -f html -o ~/tmp.html -O full,linenos=table,linenostart='.a:line1.' -l '.lexer
+endfunction
+command! -nargs=? -range=% Pygmentize :call Pygmentize(<line1>,<line2>,<args>)
+{% endif %}
+
+" Custom keymappings
+let mapleader=','
+
+nnorem <leader>d :YcmCompleter GoToDeclaration<CR>
+nnorem <leader>i :YcmCompleter GoToDefinition<CR>
+nnorem <leader>k :YcmCompleter GetDoc<CR>
+
+nnorem <C-N> :NERDTreeToggle<CR>
+
+nmap <leader>c<Space> <plug>NERDCommenterComment
+xmap <leader>c<Space> <plug>NERDCommenterComment
+nmap <leader>cc <plug>NERDCommenterToggle
+xmap <leader>cc <plug>NERDCommenterToggle
+
+nnorem <leader>l :MarkLocation<CR>
+nnorem <leader>f :MakeFinding<CR>
+nnorem <leader>F "fp
+nnorem <leader>n :noh<CR>
+vnorem // y:call setreg('9', escape(@", '\\/.*$^~[]'))<cr>/<c-r>9<cr>
+ 
+{% if ansible_os_family == 'Darwin' %}
+" Map <Alt-i> to <C-w>F -> Opens file under cursor to line:
+nnorem <D-i> F
+" Map <Alt-I> to <C-w>gF -> Opens file under cursor to line in a new tab:
+nnorem <D-I> gF
+{% else %}
+" Map <Alt-o> to <C-w>F -> Opens file under cursor to line:
+nnorem ï F
+" Map <Alt-O> to <C-w>gF -> Opens file under cursor to line in a new tab:
+nnorem Ï gF
+{% endif %}
+
+" UI Options
+syntax on
+
+set nu
+set cursorline
+set hlsearch
+set autochdir
+set diffopt=filler,vertical
+
+" Editor options
+set ai
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
+
+if has("gui_running")
+	let g:airline_powerline_fonts=1
+{% if ansible_os_family == 'Darwin' %}
+	set guifont=Sauce\ Code\ Powerline:h15
+{% else %}
+	set guifont=Source\ Code\ Pro\ for\ Powerline\ 13
+{% endif %}
+	set background=dark
+	colorscheme solarized
+endif

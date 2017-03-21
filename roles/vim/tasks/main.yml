@@ -1,0 +1,61 @@
+---
+
+- name: include dependencies
+  include: '{{ ansible_pkg_mgr }}-dependencies.yml'
+
+- name: install nodejs
+  include_role:
+    name: nodejs
+  vars:
+    node_version: 7
+
+- name: install typescript
+  npm: name=typescript state=latest global=yes
+
+- name: clone Vundle
+  git:
+    repo: https://github.com/VundleVim/Vundle.vim.git
+    dest: ~/.vim/bundle/Vundle.vim
+
+- name: vimrc template
+  template:
+    src: vimrc.j2
+    dest: ~/.vimrc
+    mode: 0644
+    force: no
+    backup: yes
+
+- name: install vim plugins
+  shell: vim +PluginInstall +qall
+
+- name: check if YouCompleteMe installed
+  stat: path=~/.vim/bundle/YouCompleteMe
+  register: ycm
+
+- name: compile YouCompleteMe
+  shell: python3 install.py --clang-completer --tern-completer
+  args:
+    chdir: ~/.vim/bundle/YouCompleteMe
+  when: ycm.stat.isdir is defined and ycm.stat.isdir
+
+- name: check if nerdtree installed
+  stat: path=~/.vim/bundle/nerdtree
+  register: nerdtree
+
+- name: copy yank_mapping.vim
+  copy:
+    src: yank_mapping.vim
+    dest: ~/.vim/bundle/nerdtree/nerdtree_plugin/yank_mapping.vim
+    mode: 0755
+    force: no
+    backup: yes
+  when: nerdtree.stat.isdir is defined and nerdtree.stat.isdir
+
+- name: copy ideavimrc
+  copy:
+    src: ideavimrc
+    dest: ~/.ideavimrc
+    mode: 0755
+    force: no
+    backup: yes
+
