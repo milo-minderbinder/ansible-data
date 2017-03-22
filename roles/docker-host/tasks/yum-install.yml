@@ -1,0 +1,38 @@
+---
+
+- name: uninstall old versions
+  yum:
+    name: '{{ item }}'
+    state: absent
+  with_items:
+    - container-selinux
+    - docker
+    - docker-common
+    - docker-engine
+    - docker-selinux
+
+- name: install yum-utils
+  yum:
+    name: yum-utils
+    state: latest
+    update_cache: yes
+
+- name: add Docker CE stable repo
+  command: >
+    yum-config-manager --add-repo
+      https://download.docker.com/linux/centos/docker-ce.repo
+  args:
+    creates: /etc/yum.repos.d/docker-ce.repo
+
+- name: install docker-ce
+  yum:
+    name: docker-ce
+    state: latest
+    update_cache: yes
+  notify: restart docker daemon
+
+- name: enable docker service
+  service:
+    name: docker
+    enabled: yes
+
