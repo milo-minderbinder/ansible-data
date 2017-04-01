@@ -11,11 +11,14 @@
     - docker-engine
     - docker-selinux
 
-- name: install yum-utils
+- name: yum install dependencies
   yum:
-    name: yum-utils
+    name: "{{ item }}"
     state: latest
     update_cache: yes
+  with_items:
+    - python
+    - yum-utils
 
 - name: add Docker CE stable repo
   command: >
@@ -30,9 +33,4 @@
     state: latest
     update_cache: yes
   notify: restart docker daemon
-
-- name: enable docker service
-  service:
-    name: docker
-    enabled: yes
 

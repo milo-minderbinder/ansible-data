@@ -2,21 +2,14 @@
 
 - hosts: docker_hosts
   tasks:
-    - name: remove containers
-      docker_container:
-        name: '{{ item }}'
-        state: absent
-      with_inventory_hostnames: docker_containers
-      when: hostvars[item].image is defined
-      tags:
-        - recreate_containers
-
     - name: start containers
       docker_container:
         name: "{{ item }}"
+        hostname: "{{ item }}"
         image: "{{ hostvars[item].image }}"
         command: tail -f /dev/null
         state: started
+        recreate: "{{ hostvars[item].docker_containers_recreate | default('no') }}"
       with_inventory_hostnames: docker_containers
       when: hostvars[item].image is defined
 

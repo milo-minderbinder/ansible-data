@@ -3,6 +3,22 @@
 - name: install docker
   include: '{{ ansible_pkg_mgr }}-install.yml'
 
-- name: generate certificates
-  include: certificates.yml
+- name: enable docker service
+  service:
+    name: docker
+    enabled: yes
+
+- name: download get-pip.py
+  get_url:
+    url: https://bootstrap.pypa.io/get-pip.py
+    dest: /tmp/get-pip.py
+    mode: 0550
+
+- name: install pip
+  command: python2 /tmp/get-pip.py
+
+- name: pip install docker
+  pip:
+    name: docker
+    state: latest
 

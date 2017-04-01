@@ -1,6 +1,6 @@
 ---
 
-#- include: containers.yml
+- include: containers.yml
 
 - hosts: workstations
   tasks:
