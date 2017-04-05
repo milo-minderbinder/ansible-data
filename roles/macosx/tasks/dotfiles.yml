@@ -16,7 +16,6 @@
     force: no
     backup: yes
 
-
 - name: gitconfig template
   template:
     src: gitconfig.j2

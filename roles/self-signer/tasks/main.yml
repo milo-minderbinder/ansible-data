@@ -1,0 +1,106 @@
+---
+
+- name: create intermediate directories
+  file:
+    path: '{{ item | dirname }}'
+    state: directory
+  with_items:
+    - "{{ host_key }}"
+    - "{{ host_cert }}"
+    - "{{ ca_key }}"
+    - "{{ ca_cert }}"
+
+- name: generate CA private key
+  command: >
+    openssl genrsa -aes256
+    -passout pass:{{ ca_password }}
+    -out {{ ca_key }} 4096
+  args:
+    creates: '{{ ca_key }}'
+  register: ca_result
+
+- name: set CA private key mode
+  file:
+    path: '{{ ca_key }}'
+    mode: 0400
+
+- name: remove old CA public key
+  file:
+    path: '{{ ca_cert }}'
+    state: absent
+  when: ca_result.changed
+
+- name: generate CA public key
+  command: >
+    openssl req -new -x509 -days 365
+    -key {{ ca_key }} -sha256
+    -out {{ ca_cert }}
+    -passin pass:{{ ca_password }}
+    -subj "{{ ca_subj }}"
+  args:
+    creates: '{{ ca_cert }}'
+  register: ca_result
+
+- name: set CA public key mode
+  file:
+    path: '{{ ca_cert }}'
+    mode: 0444
+
+- name: generate host private key
+  command: >
+    openssl genrsa
+    -out {{ host_key }}
+    4096
+  args:
+    creates: '{{ host_key }}'
+  register: host_result
+
+- name: set host private key mode
+  file:
+    path: '{{ host_key }}'
+    mode: 0400
+
+- name: create server CSR
+  command: >
+    openssl req
+    -subj "/CN={{ host_fqdn }}" -sha256 -new
+    -key {{ host_key }}
+    -out {{ host_cert }}.csr
+  when: host_result.changed or ca_result.changed
+
+- name: create server extfile
+  shell: echo subjectAltName = DNS:{{ host_fqdn }},IP:{{ host_ip }},IP:127.0.0.1 > {{ host_cert }}.extfile.cnf
+  when: host_result.changed or ca_result.changed
+
+- name: remove old server public key
+  file:
+    path: '{{ host_cert }}'
+    state: absent
+  when: host_result.changed or ca_result.changed
+
+- name: create signed server public key
+  command: >
+    openssl x509 -req -days 365 -sha256
+    -in {{ host_cert }}.csr
+    -CA {{ ca_cert }}
+    -CAkey {{ ca_key }} -CAcreateserial
+    -out {{ host_cert }}
+    -extfile {{ host_cert }}.extfile.cnf
+    -passin pass:{{ ca_password }}
+  args:
+    creates: '{{ host_cert }}'
+
+- name: set server public key mode
+  file:
+    path: '{{ host_cert }}'
+    mode: 0444
+
+- name: delete CSR, srl, and cnf files
+  file:
+    path: '{{ item }}'
+    state: absent
+  with_items:
+    - '{{ ca_cert | splitext | first }}.srl'
+    - '{{ host_cert }}.csr'
+    - '{{ host_cert }}.extfile.cnf'
+

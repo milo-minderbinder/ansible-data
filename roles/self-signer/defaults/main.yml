@@ -1,0 +1,8 @@
+---
+
+ca_fqdn: "{{ ansible_domain | default(ansible_hostname + '.local', true) }}"
+ca_password: ""
+ca_subj: "/C=US/ST=DC/L=Washington/O=Minderbinder Enterprises/OU=Security/CN={{ ca_fqdn }}/emailAddress=minderbinder.enterprises@gmail.com"
+host_fqdn: "{{ ansible_fqdn }}"
+host_ip: "{{ ansible_default_ipv4.address }}"
+
