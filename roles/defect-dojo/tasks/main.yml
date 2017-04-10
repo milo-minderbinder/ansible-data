@@ -1,0 +1,78 @@
+---
+
+- name: install os dependencies
+  include: '{{ ansible_pkg_mgr }}-dependencies.yml'
+
+- name: add nodejs role
+  include_role:
+    name: nodejs
+
+- name: install bower
+  npm:
+    name: bower
+    global: yes
+    state: latest
+
+- name: setup mysql
+  include: mysql-setup.yml
+
+- name: clone django-DefectDojo
+  git:
+    repo: https://github.com/OWASP/django-DefectDojo.git
+    dest: "{{ dojo_path }}"
+    accept_hostkey: yes
+
+- name: copy setttings.dist.py to settings.py
+  copy:
+    remote_src: yes
+    src: "{{ dojo_path }}/dojo/settings.dist.py"
+    dest: "{{ dojo_path }}/dojo/settings.py"
+    mode: 0550
+
+- name: save MySQL details in settings file
+  replace:
+    path: "{{ dojo_path }}/dojo/settings.py"
+    regexp: "{{ item.key }}"
+    replace: "{{ item.value }}"
+  with_dict:
+    MYSQLHOST: localhost
+    MYSQLPORT: 3306
+    MYSQLUSER: root
+    MYSQLPWD: "{{ mysql.root_password }}"
+    MYSQLDB: "{{ mysql.dojo_db_name }}"
+    DOJODIR: "{{ dojo_path }}/dojo"
+    DOJOSECRET: "{{ dojo_secret }}"
+    BOWERDIR: "{{ dojo_path }}/components"
+    DOJO_MEDIA_ROOT: "{{ dojo_path }}/media"
+    DOJO_STATIC_ROOT: "{{ dojo_path }}/static"
+
+- name: pip install dojo
+  pip:
+    name: "file://{{ dojo_path }}"
+    state: present
+
+- name: setup dojo db
+  shell: "python manage.py {{ item }}"
+  args:
+    chdir: "{{ dojo_path }}"
+  with_items:
+    - makemigrations dojo
+    - makemigrations
+    - migrate
+    - syncdb
+    - loaddata product_type
+    - loaddata test_type
+    - loaddata development_environment
+    - installwatson
+    - buildwatson
+
+- name: install components
+  bower:
+    path: "{{ dojo_path }}/components"
+    state: latest
+
+- name: collect static
+  shell: python manage.py collectstatic --noinput
+  args:
+    chdir: "{{ dojo_path }}"
+

@@ -1,0 +1,73 @@
+---
+
+# assumes 'python-mysqldb' apt package is installed
+
+- name: template mysql config
+  template:
+    src: my.cnf.j2
+    dest: ~/.my.cnf
+    mode: 0550
+
+- name: start mysql
+  command: service mysql start
+  #service:
+    #name: mysql
+    #state: started
+
+- name: create root user
+  mysql_user:
+    name: root
+    password: "{{ mysql.root_password }}"
+    check_implicit_admin: yes
+    priv: '*.*:ALL'
+    update_password: always
+
+- name: remove all anonymous accounts
+  mysql_user:
+    name: ''
+    host_all: yes
+    state: absent
+
+- name: remove test db
+  mysql_db:
+    name: test
+    state: absent
+
+- name: create dojo db
+  mysql_db:
+    name: "{{ mysql.dojo_db_name }}"
+    state: present
+  register: dojodb
+
+- block:
+  - name: dump existing dojo db
+    mysql_db:
+      name: "{{ mysql.dojo_db_name }}"
+      state: dump
+      target: "~/{{ mysql.dojo_db_name }}.sql"
+  
+  - name: remove existing dojo db
+    mysql_db:
+      name: "{{ mysql.dojo_db_name }}"
+      state: absent
+      
+  - name: recreate dojo db
+    mysql_db:
+      name: "{{ mysql.dojo_db_name }}"
+      state: present
+      
+  when: not dojodb.changed
+
+#- name: mysql setup
+  #expect:
+    #command: mysql_secure_installation
+    #responses:
+      #(?i)current password for root: ''
+      #(?i)Set root password\?: 'Y'
+      #(?i)New password: 'password'
+      #(?i)Re-?enter new password: 'password'
+      #(?i)Remove anonymous users: 'Y'
+      #(?i)Disallow root login remotely: 'Y'
+      #(?i)Remove test: 'Y'
+      #(?i)Reload.*tables: 'Y'
+

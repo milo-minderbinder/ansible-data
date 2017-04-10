@@ -1,52 +1,7 @@
 ---
 
-# Setup node for Debian, Ubuntu, and other OSs using apt
-- block:
-  - name: get node setup script
-    get_url:
-      url: https://deb.nodesource.com/setup_{{ node_version }}.x
-      dest: ~/node_setup_{{ node_version }}.x.bash
-
-  - name: execute node setup script
-    shell: bash ~/node_setup_{{ node_version }}.x.bash
-
-  - name: install nodejs apt
-    apt: name=nodejs state=latest update_cache=yes
-
-  always:
-    - name: remove node setup script
-      file: path=~/node_setup_{{ node_version }}.x.bash state=absent
-
-  when: ansible_pkg_mgr == 'apt'
-
-# Setup node for Enterprise Linux, Fedora, and other OSs using yum
-- block:
-  - name: epel repo
-    yum:
-      name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm
-      state: installed
-
-  - name: get node setup script
-    get_url:
-      url: https://rpm.nodesource.com/setup_{{ node_version }}.x
-      dest: ~/node_setup_{{ node_version }}.x.bash
-
-  - name: execute node setup script
-    shell: bash ~/node_setup_{{ node_version }}.x.bash
-
-  - name: install nodejs yum
-    yum: name=nodejs state=latest update_cache=yes
-
-  always:
-    - name: remove node setup script
-      file: path=~/node_setup_{{ node_version }}.x.bash state=absent
-
-  when: ansible_pkg_mgr == 'yum'
-
-# Setup node for MacOSX and other OSs using homebrew
-- name: install nodejs homebrew
-  homebrew: name=node state=latest update_homebrew=yes
-  when: ansible_pkg_mgr == 'homebrew'
+- name: install nodejs
+  include: "{{ ansible_pkg_mgr }}-install.yml"
 
 - name: update npm
   npm: name=npm state=latest global=yes

@@ -1,0 +1,30 @@
+---
+
+- name: add epel repo
+  yum:
+    name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm
+    state: installed
+    update_cache: yes
+
+- name: update cache and upgrade all installed packages
+  yum: name='*' update_cache=yes state=latest
+
+- name: install common packages
+  yum: name={{ item }} state=latest
+  with_items:
+    - python
+    - python-pip
+
+# fix for get_url module SNI issue with python < 2.7.9
+# see: https://stackoverflow.com/questions/18578439/using-requests-with-tls-doesnt-give-sni-support/18579484#18579484
+- block:
+  # see: https://cryptography.io/en/latest/installation/#building-cryptography-on-linux
+  - name: install cryptography package dependencies
+    yum: name={{ item }} state=latest
+    with_items:
+      - gcc
+      - libffi-devel
+      - openssl-devel
+      - python-devel
+  when: ansible_python_version|version_compare('2.7.9', '<')
+

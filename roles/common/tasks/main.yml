@@ -1,0 +1,15 @@
+---
+
+- name: install python
+  include: "{{ ansible_pkg_mgr}}-packages.yml"
+
+- name: install urllib3 with secure extra to fix SNI
+  pip: name=urllib3[secure] state=latest
+  when: ansible_python_version|version_compare('2.7.9', '<')
+
+- name: install pip dependency for expect module
+  pip:
+    name: pexpect
+    state: latest
+  when: common.install_pexpect | bool
+

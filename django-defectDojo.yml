@@ -1,0 +1,29 @@
+---
+
+- hosts: localhost
+  tasks:
+    - name: start dojo container
+      docker_container:
+        name: dojo
+        hostname: dojo
+        image: ubuntu:trusty
+        command: tail -f /dev/null
+        state: started
+        published_ports: all
+        recreate: "{{ recreate | default('no') }}"
+
+- hosts: dojo
+  gather_facts: no
+  pre_tasks:
+    - block:
+      - name: gather facts
+        setup: {}
+      rescue:
+      - name: raw install python
+        raw: "apt-get update && apt-get install -y python"
+      - name: re-gather facts
+        setup: {}
+  roles:
+    - common
+    - defect-dojo
+

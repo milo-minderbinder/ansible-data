@@ -1,0 +1,19 @@
+---
+
+- name: install dojo dependencies
+  apt: name={{ item }} state=latest update_cache=yes
+  with_items:
+    - gcc
+    - git
+    - libjpeg-dev
+    - libmysqlclient-dev
+    - libssl-dev
+    - mysql-server
+    #- nodejs-legacy
+    #- npm
+    - python-dev
+    - python-mysqldb
+    - python-pip
+    - vim
+    - wkhtmltopdf
+

@@ -1,0 +1,63 @@
+---
+
+- name: update cache and upgrade all installed packages
+  apt: update_cache=yes upgrade=dist
+
+- name: install common packages
+  apt: name={{ item }} state=latest
+  with_items:
+    - python
+    #- python-pip
+
+# At least for Ubuntu 14.04 LTS, the python-pip package will fail to install some
+# packages, like cryptography, due to issues with  setuptools, which pip tries to
+# build from source dist, which is no longer supported.
+# May be possible to fix by manually installing the packaging, appdirs, and six python
+# packages, but it seems the easier fix is to just install pip using get-pip.py.
+# see: https://github.com/pypa/setuptools/issues/937#issuecomment-274629937
+- name: purge python-pip package
+  apt: name=python-pip purge=yes state=absent
+
+# This download may be fragile, since the steps below are to fix an issue with the
+# get_url module which causes it fail when HTTPS certificates use SNI, so if pypa starts
+# using SNI we'll have to change this step to a localaction and then upload to the ansible
+# node
+- name: download get-pip.py
+  get_url:
+    url: https://bootstrap.pypa.io/get-pip.py
+    dest: /tmp/get-pip.py
+    mode: 0550
+  when: ansible_python_version|version_compare('2.7.9', '>=')
+
+# fix for get_url module SNI issue with python < 2.7.9
+# see: https://stackoverflow.com/questions/18578439/using-requests-with-tls-doesnt-give-sni-support/18579484#18579484
+- block:
+  - name: locally download get-pip.py
+    get_url:
+      url: https://bootstrap.pypa.io/get-pip.py
+      dest: /tmp/get-pip.py
+      mode: 0550
+    delegate_to: localhost
+    changed_when: False
+
+  - name: copy get-pip.py
+    copy:
+      src: /tmp/get-pip.py
+      dest: /tmp/get-pip.py
+      mode: 0550
+
+  # see: https://cryptography.io/en/latest/installation/#building-cryptography-on-linux
+  - name: install cryptography package dependencies
+    apt: name={{ item }} state=latest
+    with_items:
+      - build-essential
+      - libssl-dev
+      - libffi-dev
+      - python-dev
+  when: ansible_python_version|version_compare('2.7.9', '<')
+
+- name: install pip
+  command: python /tmp/get-pip.py
+  register: result
+  changed_when: not result.stdout|search('already up-to-date')
+

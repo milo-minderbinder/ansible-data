@@ -1,0 +1,5 @@
+---
+
+- name: install nodejs homebrew
+  homebrew: name=node state=latest update_homebrew=yes
+
