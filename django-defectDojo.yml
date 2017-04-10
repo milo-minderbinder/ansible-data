@@ -9,11 +9,17 @@
         image: ubuntu:trusty
         command: tail -f /dev/null
         state: started
-        published_ports: all
+        exposed_ports:
+          - "8000"
+        published_ports:
+          - "127.0.0.1:8000:8000"
         recreate: "{{ recreate | default('no') }}"
 
 - hosts: dojo
   gather_facts: no
+  vars:
+    common:
+      install_pexpect: yes
   pre_tasks:
     - block:
       - name: gather facts

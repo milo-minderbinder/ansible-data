@@ -59,7 +59,21 @@
     - makemigrations dojo
     - makemigrations
     - migrate
-    - syncdb
+
+- name: django syncdb
+  expect:
+    command: python {{ dojo_path }}/manage.py syncdb
+    responses:
+      (?i)create one now: 'yes'
+      (?i)Username: ''
+      (?i)password: '{{ dojo_root_password }}'
+      (?i)Email address: 'minderbinder.enterprises@gmail.com'
+
+- name: load dojo db data
+  shell: "python manage.py {{ item }}"
+  args:
+    chdir: "{{ dojo_path }}"
+  with_items:
     - loaddata product_type
     - loaddata test_type
     - loaddata development_environment
