@@ -16,11 +16,11 @@
 - name: setup mysql
   include: mysql-setup.yml
 
-- name: clone django-DefectDojo
-  git:
-    repo: https://github.com/OWASP/django-DefectDojo.git
-    dest: "{{ dojo_path }}"
-    accept_hostkey: yes
+#- name: clone django-DefectDojo
+  #git:
+    #repo: https://github.com/OWASP/django-DefectDojo.git
+    #dest: "{{ dojo_path }}"
+    #accept_hostkey: yes
 
 - name: copy setttings.dist.py to settings.py
   copy:

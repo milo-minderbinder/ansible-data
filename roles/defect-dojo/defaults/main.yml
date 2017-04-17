@@ -4,7 +4,7 @@ mysql:
   root_password: 'password'
   dojo_db_name: 'dojo'
 
-dojo_path: /root/code/django-DefectDojo
+dojo_path: /opt/django-DefectDojo
 dojo_secret: 'password'
 dojo_root_password: 'password'
 

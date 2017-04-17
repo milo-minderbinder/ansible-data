@@ -5,11 +5,29 @@
 
 - name: install urllib3 with secure extra to fix SNI
   pip: name=urllib3[secure] state=latest
-  when: ansible_python_version|version_compare('2.7.9', '<')
+  #when: ansible_python_version|version_compare('2.7.9', '<')
 
 - name: install pip dependency for expect module
   pip:
     name: pexpect
     state: latest
   when: common.install_pexpect | bool
+
+- block:
+  - name: template sshd_config
+    template:
+      src: sshd_config.j2
+      dest: /etc/ssh/sshd_config
+      mode: 0644
+      backup: yes
+    notify: restart ssh
+
+  - name: set authorized_keys
+    authorized_key:
+      user: "{{ ansible_user_id }}"
+      exclusive: yes
+      key: "{{ common.configure_ssh_key }}"
+      state: present
+    notify: restart ssh
+  when: common.configure_ssh | bool
 

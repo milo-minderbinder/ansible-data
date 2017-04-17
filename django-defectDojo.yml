@@ -6,13 +6,17 @@
       docker_container:
         name: dojo
         hostname: dojo
-        image: ubuntu:trusty
+        image: ubuntu:latest
         command: tail -f /dev/null
         state: started
         exposed_ports:
+          - "22"
           - "8000"
         published_ports:
+          - "127.0.0.1:2222:22"
           - "127.0.0.1:8000:8000"
+        volumes:
+          - "{{ ansible_user_dir }}/code/contrib/django-DefectDojo:/opt/django-DefectDojo"
         recreate: "{{ recreate | default('no') }}"
 
 - hosts: dojo
@@ -20,6 +24,7 @@
   vars:
     common:
       install_pexpect: yes
+      configure_ssh: yes
   pre_tasks:
     - block:
       - name: gather facts

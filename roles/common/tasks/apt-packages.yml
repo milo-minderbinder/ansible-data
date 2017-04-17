@@ -7,7 +7,12 @@
   apt: name={{ item }} state=latest
   with_items:
     - python
+    - iputils-ping
     #- python-pip
+    
+- name: install openssh-server
+  apt: name=openssh-server state=latest update_cache=yes
+  when: common.configure_ssh | bool
 
 # At least for Ubuntu 14.04 LTS, the python-pip package will fail to install some
 # packages, like cryptography, due to issues with  setuptools, which pip tries to
@@ -22,16 +27,16 @@
 # get_url module which causes it fail when HTTPS certificates use SNI, so if pypa starts
 # using SNI we'll have to change this step to a localaction and then upload to the ansible
 # node
-- name: download get-pip.py
-  get_url:
-    url: https://bootstrap.pypa.io/get-pip.py
-    dest: /tmp/get-pip.py
-    mode: 0550
-  when: ansible_python_version|version_compare('2.7.9', '>=')
-
 # fix for get_url module SNI issue with python < 2.7.9
 # see: https://stackoverflow.com/questions/18578439/using-requests-with-tls-doesnt-give-sni-support/18579484#18579484
 - block:
+  - name: download get-pip.py
+    get_url:
+      url: https://bootstrap.pypa.io/get-pip.py
+      dest: /tmp/get-pip.py
+      mode: 0550
+
+  rescue:
   - name: locally download get-pip.py
     get_url:
       url: https://bootstrap.pypa.io/get-pip.py
@@ -54,7 +59,7 @@
       - libssl-dev
       - libffi-dev
       - python-dev
-  when: ansible_python_version|version_compare('2.7.9', '<')
+  #when: ansible_python_version|version_compare('2.7.9', '<')
 
 - name: install pip
   command: python /tmp/get-pip.py
