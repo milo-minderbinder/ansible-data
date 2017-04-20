@@ -5,5 +5,5 @@
     - name: all vars/facts for host
       debug:
         var: hostvars[inventory_hostname]
-  #roles:
-      #- macosx
+  roles:
+    - macosx
