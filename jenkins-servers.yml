@@ -32,7 +32,7 @@
         name: jenkins
         hostname: jenkins
         image: jenkins
-        recreate: yes
+        recreate: "{{ hostvars['jenkins'].docker_containers_recreate | default('no') }}"
         state: started
         exposed_ports:
           - "8083"

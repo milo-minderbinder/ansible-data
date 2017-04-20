@@ -41,6 +41,8 @@ homebrew_apps:
   sbt: {}
   thrift:
     install_options: "with-java,with-python"
+  weechat:
+    install_options: "with-python"
 
 git_user: Milo Minderbinder
 git_email: minderbinder.enterprises@gmail.com
