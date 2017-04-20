@@ -11,7 +11,7 @@
     #- python-pip
     
 - name: install openssh-server
-  apt: name=openssh-server state=latest update_cache=yes
+  apt: name=openssh-server state=latest
   when: common.configure_ssh | bool
 
 # At least for Ubuntu 14.04 LTS, the python-pip package will fail to install some
