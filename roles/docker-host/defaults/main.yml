@@ -1,0 +1,10 @@
+---
+
+docker_interfaces: []
+docker_cert_path: "{{ ansible_user_dir }}/.docker"
+docker_host_cacert: Null
+docker_host_cert: Null
+docker_host_key: Null
+docker_tls: no
+docker_tlsverify: no
+

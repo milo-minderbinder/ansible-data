@@ -37,6 +37,10 @@
       mode: 0550
 
   rescue:
+  - name: set common.sni_fix fact
+    set_fact:
+      common: "{{ common | combine({'sni_fix': 'yes'}) }}"
+
   - name: locally download get-pip.py
     get_url:
       url: https://bootstrap.pypa.io/get-pip.py

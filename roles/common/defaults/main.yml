@@ -4,4 +4,5 @@ common:
   configure_ssh: no
   configure_ssh_key: https://github.com/milo-minderbinder.keys
   install_pexpect: no
+  sni_fix: no
 
