@@ -1,39 +1,16 @@
 ---
 
 - hosts: docker_hosts
-  vars:
-    jenkins_host_key: '{{ ansible_user_dir }}/jenkins-host-key.pem'
-    jenkins_host_cert: '{{ ansible_user_dir }}/jenkins-host-cert.pem'
-
+  become: true
   tasks:
-    - name: create self-signed certificate
-      include_role:
-        name: self-signer
-      vars:
-        ca_key: '{{ ansible_user_dir }}/{{ ca_fqdn }}-ca-key.pem'
-        ca_cert: '{{ ansible_user_dir }}/{{ ca_fqdn }}-ca-cert.pem'
-        ca_fqdn: "{{ ansible_domain | default(ansible_hostname + '.local', true) }}"
-        ca_subj: "/C={{ country }}/ST={{ state }}/L={{ locality }}/O={{ organization }}/OU={{ organizational_unit }}/CN={{ ca_fqdn }}/emailAddress={{ email }}"
-        host_key: '{{ jenkins_host_key }}'
-        host_cert: '{{ jenkins_host_cert }}'
-        host_fqdn: "jenkins.{{ ansible_domain | default(ansible_hostname + '.local', true) }}"
-
-    - name: set jenkins cert and key ownership
-      file:
-        path: "{{ item }}"
-        owner: 1000
-        group: 1000
-      with_items:
-        - "{{ jenkins_host_key }}"
-        - "{{ jenkins_host_cert }}"
-
-    - name: start/create jenkins containers
+    - name: create jenkins container
       docker_container:
-        name: jenkins
-        hostname: jenkins
-        image: jenkins
-        recreate: "{{ hostvars['jenkins'].docker_containers_recreate | default('no') }}"
-        state: started
+        name: "{{ item }}"
+        hostname: "{{ item }}"
+        image: jenkins:latest
+        pull: yes
+        recreate: "{{ hostvars[item].docker_containers_recreate | default('no') }}"
+        state: stopped
         exposed_ports:
           - "8083"
         published_ports:
@@ -41,25 +18,46 @@
           - "0.0.0.0:50000:50000"
         volumes:
           - "jenkins_home:/var/jenkins_home"
-          - "{{ jenkins_host_cert }}:/var/lib/jenkins/cert:ro"
-          - "{{ jenkins_host_key }}:/var/lib/jenkins/pk:ro"
+          - "/var/lib/jenkins"
         env:
-          JENKINS_OPTS: "--httpPort=-1 --httpsPort=8083 --httpsCertificate=/var/lib/jenkins/cert --httpsPrivateKey=/var/lib/jenkins/pk"
+          JENKINS_OPTS: "--httpPort=-1 --httpsPort=8083 --httpsCertificate=/var/lib/jenkins/cert.pem --httpsPrivateKey=/var/lib/jenkins/key.pem"
+      with_inventory_hostnames: jenkins_servers
 
-- hosts: jenkins_servers
-  tasks:
-    - name: install jenkins plugins
-      jenkins_plugin:
-        jenkins_home: "{{ jenkins_servers.jenkins_home | default('/var/jenkins_home') }}"
-        url: "https://localhost:8083"
-        url_username: "{{ jenkins_servers.url_username }}"
-        url_password: "{{ jenkins_servers.url_password }}"
-        validate_certs: false
-        state: latest
-        name: artifactory
+    - name: create temporary data_jenkins container
+      docker_container:
+        name: data_jenkins
+        hostname: data_jenkins
+        image: ubuntu:latest
+        cleanup: yes
+        detach: no
+        command: >
+          bash -c "
+          cp /cert.pem /key.pem /var/lib/jenkins/;
+          chown 1000:1000 /var/lib/jenkins/cert.pem /var/lib/jenkins/key.pem;
+          chmod 400 /var/lib/jenkins/key.pem;
+          chmod 444 /var/lib/jenkins/cert.pem"
+        state: started
+        user: root:root
+        volumes:
+          - "{{ docker_cert_path }}/cert.pem:/cert.pem:ro"
+          - "{{ docker_cert_path }}/key.pem:/key.pem:ro"
+        volumes_from:
+          - jenkins
+
+    - name: start jenkins container
+      docker_container:
+        name: jenkins
+        state: started
 
 #- hosts: jenkins_servers
-  #remote_user: root
-  #roles:
-    #- atlassian-plugin-sdk
+  #tasks:
+    #- name: install jenkins plugins
+      #jenkins_plugin:
+        #jenkins_home: "{{ jenkins_servers.jenkins_home | default('/var/jenkins_home') }}"
+        #url: "{{ jenkins_servers.url | default('https://localhost:8083') }}"
+        #url_username: "{{ jenkins_servers.url_username }}"
+        #url_password: "{{ jenkins_servers.url_password }}"
+        ##validate_certs: false
+        #state: latest
+        #name: artifactory
 

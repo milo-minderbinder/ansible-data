@@ -17,7 +17,7 @@
 
 - name: install openssh-server
   yum: name=openssh-server state=latest
-  when: common.configure_ssh | bool
+  when: common.configure_ssh | default('no') | bool
 
 - name: remove python-pip package
   yum: name=python-pip state=absent
@@ -50,15 +50,16 @@
       dest: /tmp/get-pip.py
       mode: 0550
 
-  # see: https://cryptography.io/en/latest/installation/#building-cryptography-on-linux
-  - name: install cryptography package dependencies
-    yum: name={{ item }} state=latest
-    with_items:
-      - gcc
-      - libffi-devel
-      - openssl-devel
-      - python-devel
-  #when: ansible_python_version|version_compare('2.7.9', '<')
+# see: https://cryptography.io/en/latest/installation/#building-cryptography-on-linux
+- name: install cryptography package dependencies
+  yum: name={{ item }} state=latest
+  with_items:
+    - gcc
+    - libffi-devel
+    - openssl-devel
+    - python-devel
+  when: common.sni_fix | default('no') | bool
+#when: ansible_python_version|version_compare('2.7.9', '<')
 
 - name: install pip
   command: python /tmp/get-pip.py

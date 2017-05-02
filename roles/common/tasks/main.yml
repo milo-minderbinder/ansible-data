@@ -9,14 +9,14 @@
 
 - name: install urllib3 with secure extra to fix SNI
   pip: name=urllib3[secure] state=latest
-  when: common.sni_fix | bool
+  when: common.sni_fix | default('no') | bool
   #when: ansible_python_version|version_compare('2.7.9', '<')
 
 - name: install pip dependency for expect module
   pip:
     name: pexpect
     state: latest
-  when: common.install_pexpect | bool
+  when: common.install_pexpect | default('no') | bool
 
 - block:
   - name: template sshd_config
@@ -31,8 +31,8 @@
     authorized_key:
       user: "{{ ansible_user_id }}"
       exclusive: yes
-      key: "{{ common.configure_ssh_key }}"
+      key: "{{ common.configure_ssh_key | default('https://github.com/milo-minderbinder.keys') }}"
       state: present
     notify: restart ssh
-  when: common.configure_ssh | bool
+  when: common.configure_ssh | default('no') | bool
 

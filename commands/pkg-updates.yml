@@ -1,0 +1,15 @@
+---
+
+- hosts: all
+  become: true
+  tasks:
+    - name: update cache and upgrade all installed packages
+      yum: name='*' update_cache=yes state=latest
+      become: true
+      when: ansible_pkg_mgr == 'yum'
+
+    - name: update cache and upgrade all installed packages
+      apt: update_cache=yes upgrade=dist
+      become: true
+      when: ansible_pkg_mgr == 'apt'
+

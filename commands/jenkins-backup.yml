@@ -1,0 +1,19 @@
+---
+
+- hosts: docker_hosts
+  become: true
+  tasks:
+    - name: run backup container
+      docker_container:
+        name: backup_jenkins
+        image: ubuntu:latest
+        state: started
+        cleanup: yes
+        detach: no
+        volumes:
+          - "{{ ansible_user_dir }}/backups:/backups"
+        volumes_from:
+          - jenkins
+        user: root:root
+        command: tar czf /backups/jenkins-{{ '%m-%d-%y' | strftime }}.tar.gz /var/jenkins_home/
+

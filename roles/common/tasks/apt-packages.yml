@@ -9,10 +9,10 @@
     - python
     - iputils-ping
     #- python-pip
-    
+
 - name: install openssh-server
   apt: name=openssh-server state=latest
-  when: common.configure_ssh | bool
+  when: common.configure_ssh | default('no') | bool
 
 # At least for Ubuntu 14.04 LTS, the python-pip package will fail to install some
 # packages, like cryptography, due to issues with  setuptools, which pip tries to
@@ -55,15 +55,15 @@
       dest: /tmp/get-pip.py
       mode: 0550
 
-  # see: https://cryptography.io/en/latest/installation/#building-cryptography-on-linux
-  - name: install cryptography package dependencies
-    apt: name={{ item }} state=latest
-    with_items:
-      - build-essential
-      - libssl-dev
-      - libffi-dev
-      - python-dev
-  #when: ansible_python_version|version_compare('2.7.9', '<')
+# see: https://cryptography.io/en/latest/installation/#building-cryptography-on-linux
+- name: install cryptography package dependencies
+  apt: name={{ item }} state=latest
+  with_items:
+    - build-essential
+    - libssl-dev
+    - libffi-dev
+    - python-dev
+  when: common.sni_fix | default('no') | bool
 
 - name: install pip
   command: python /tmp/get-pip.py
