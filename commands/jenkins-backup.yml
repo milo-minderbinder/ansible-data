@@ -2,7 +2,16 @@
 
 - hosts: docker_hosts
   become: true
+  vars:
+    backup_dir: "{{ ansible_user_dir }}/backups"
+    backup_file: "jenkins-{{ ansible_date_time.iso8601_basic_short }}.tar.gz"
   tasks:
+    - name: create backup dir
+      file:
+        path: "{{ backup_dir }}"
+        state: directory
+        mode: 0750
+
     - name: run backup container
       docker_container:
         name: backup_jenkins
@@ -11,9 +20,15 @@
         cleanup: yes
         detach: no
         volumes:
-          - "{{ ansible_user_dir }}/backups:/backups"
+          - "{{ backup_dir }}:/backups"
         volumes_from:
           - jenkins
         user: root:root
-        command: tar czf /backups/jenkins-{{ '%m-%d-%y' | strftime }}.tar.gz /var/jenkins_home/
+        command: tar czf /backups/{{ backup_file }} /var/jenkins_home/
+
+    - name: set backup file mode
+      file:
+        path: "{{ backup_dir }}/{{ backup_file }}"
+        state: file
+        mode: 0440
 

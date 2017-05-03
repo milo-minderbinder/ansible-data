@@ -1,0 +1,5 @@
+---
+
+- name: install dnf packages
+  dnf: name=git state=present
+

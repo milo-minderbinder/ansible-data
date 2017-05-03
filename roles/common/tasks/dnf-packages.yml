@@ -1,0 +1,72 @@
+---
+
+#- name: add epel repo
+  #dnf:
+    #name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm
+    #state: present
+
+- name: upgrade all installed packages
+  dnf: name='*' state=latest
+
+- name: install common packages
+  dnf: name={{ item }} state=latest
+  with_items:
+    - python
+    - iputils
+
+- name: install openssh-server
+  dnf: name=openssh-server state=latest
+  when: common.configure_ssh | default('no') | bool
+
+- name: upgrade pip
+  pip: name=pip state=latest
+
+#- name: remove python-pip package
+  #dnf: name=python-pip state=absent
+
+# fix for get_url module SNI issue with python < 2.7.9
+# see: https://stackoverflow.com/questions/18578439/using-requests-with-tls-doesnt-give-sni-support/18579484#18579484
+#- block:
+  #- name: download get-pip.py
+    #get_url:
+      #url: https://bootstrap.pypa.io/get-pip.py
+      #dest: /tmp/get-pip.py
+      #mode: 0550
+
+  #rescue:
+  #- name: set common.sni_fix fact
+    #set_fact:
+      #common: "{{ common | combine({'sni_fix': 'yes'}) }}"
+
+  #- name: locally download get-pip.py
+    #get_url:
+      #url: https://bootstrap.pypa.io/get-pip.py
+      #dest: /tmp/get-pip.py
+      #mode: 0550
+    #become: False
+    #delegate_to: localhost
+    #changed_when: False
+
+  #- name: copy get-pip.py
+    #copy:
+      #src: /tmp/get-pip.py
+      #dest: /tmp/get-pip.py
+      #mode: 0550
+
+# see: https://cryptography.io/en/latest/installation/#building-cryptography-on-linux
+- name: install cryptography package dependencies
+  dnf: name={{ item }} state=latest
+  with_items:
+    - gcc
+    - libffi-devel
+    - openssl-devel
+    - python-devel
+    - redhat-rpm-config
+  when: common.sni_fix | default('no') | bool
+#when: ansible_python_version|version_compare('2.7.9', '<')
+
+#- name: install pip
+  #command: python /tmp/get-pip.py
+  #register: result
+  #changed_when: not result.stdout|search('already up-to-date')
+

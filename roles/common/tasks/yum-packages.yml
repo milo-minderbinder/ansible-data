@@ -3,7 +3,7 @@
 - name: add epel repo
   yum:
     name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm
-    state: installed
+    state: present
     update_cache: yes
 
 - name: update cache and upgrade all installed packages
@@ -41,6 +41,7 @@
       url: https://bootstrap.pypa.io/get-pip.py
       dest: /tmp/get-pip.py
       mode: 0550
+    become: False
     delegate_to: localhost
     changed_when: False
 

@@ -2,21 +2,25 @@
 
 - hosts: docker_hosts
   tasks:
-    - name: start containers
+    - name: start volatile containers
       docker_container:
         name: "{{ item }}"
         hostname: "{{ item }}"
-        image: "{{ hostvars[item].image }}"
-        command: tail -f /dev/null
+        image: "{{ hostvars[item].docker_containers_image }}"
+        pull: yes
+        command: "{{ hostvars[item].docker_containers_command | default('tail -f /dev/null') }}"
         state: started
         recreate: "{{ hostvars[item].docker_containers_recreate | default('no') }}"
       with_inventory_hostnames: docker_containers
-      when: hostvars[item].image is defined
+      when: hostvars[item].docker_containers_volatile | default('no') | bool
 
 - hosts: docker_containers
   gather_facts: no
-  tasks:
-    - name: raw install python
-      raw: '{{ raw_install_python }}'
-      when: raw_install_python is defined
+  pre_tasks:
+    - name: raw config
+      raw: "{{ docker_containers_raw }}"
+      when: docker_containers_raw is defined
+
+    - name: gather facts
+      setup: {}
 

@@ -1,6 +1,7 @@
 ---
 
 - hosts: docker_hosts
+  tags: deploy
   become: true
   tasks:
     - name: create jenkins container
@@ -42,14 +43,25 @@
           - "{{ docker_cert_path }}/cert.pem:/cert.pem:ro"
           - "{{ docker_cert_path }}/key.pem:/key.pem:ro"
         volumes_from:
-          - jenkins
+          - "{{ item }}"
+      with_inventory_hostnames: jenkins_servers
 
     - name: start jenkins container
       docker_container:
-        name: jenkins
+        name: "{{ item }}"
         state: started
+      with_inventory_hostnames: jenkins_servers
 
-#- hosts: jenkins_servers
+- hosts: jenkins_servers
+  gather_facts: no
+  pre_tasks:
+    - name: raw config
+      raw: apt-get update && apt-get install -y python
+
+    - name: gather facts
+      setup: {}
+  roles:
+    - ansible
   #tasks:
     #- name: install jenkins plugins
       #jenkins_plugin:
