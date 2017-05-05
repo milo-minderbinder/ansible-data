@@ -1,18 +1,33 @@
 ---
 
+- hosts: docker_containers
+  gather_facts: no
+  tasks:
+    - name: group playbook docker_containers
+      group_by: key=playbook_docker_containers
+  tags:
+    - always
+
 - hosts: docker_hosts
   tasks:
-    - name: start volatile containers
+    - name: start temporary containers
       docker_container:
-        name: "{{ item }}"
-        hostname: "{{ item }}"
+        cleanup: "{{ hostvars[item].docker_containers_cleanup | default(omit) }}"
+        command: "{{ hostvars[item].docker_containers_command | default(omit) }}"
+        detach: "{{ hostvars[item].docker_containers_detach | default(omit) }}"
+        env: "{{ hostvars[item].docker_containers_env | default(omit) }}"
+        exposed_ports: "{{ hostvars[item].docker_containers_exposed_ports | default(omit) }}"
+        hostname: "{{ hostvars[item].docker_containers_hostname | default(item) }}"
         image: "{{ hostvars[item].docker_containers_image }}"
+        name: "{{ item }}"
+        published_ports: "{{ hostvars[item].docker_containers_published_ports | default(omit) }}"
         pull: yes
-        command: "{{ hostvars[item].docker_containers_command | default('tail -f /dev/null') }}"
-        state: started
         recreate: "{{ hostvars[item].docker_containers_recreate | default('no') }}"
-      with_inventory_hostnames: docker_containers
-      when: hostvars[item].docker_containers_volatile | default('no') | bool
+        state: started
+        volumes: "{{ hostvars[item].docker_containers_volumes | default(omit) }}"
+        volumes_from: "{{ hostvars[item].docker_containers_volumes_from | default(omit) }}"
+      with_inventory_hostnames: playbook_docker_containers
+      when: hostvars[item].docker_containers_temporary | default('no') | bool
 
 - hosts: docker_containers
   gather_facts: no

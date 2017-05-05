@@ -1,0 +1,14 @@
+---
+
+- include: containers.yml
+
+- hosts: jenkins_slaves
+  roles:
+    - ansible
+
+- hosts: docker_hosts
+  tasks:
+    - name: commit configured jenkins docker slaves
+      command: docker commit {{ item }} jenkins-slave:{{ item }}
+      with_inventory_hostnames: jenkins_slaves:&docker_containers
+

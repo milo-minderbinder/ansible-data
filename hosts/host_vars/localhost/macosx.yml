@@ -3,6 +3,7 @@
 homebrew_taps:
   - caskroom/cask
   - caskroom/versions
+  - homebrew/dupes
 
 cask_apps:
   docker: {}
@@ -26,6 +27,7 @@ homebrew_apps:
   geckodriver: {}
   git: {}
   gradle: {}
+  grep: {}
   groovysdk: {}
   jython: {}
   macvim:

@@ -8,6 +8,11 @@
     name: "git+git://github.com/ansible/ansible.git@devel#egg=ansible"
     state: latest
 
+- name: install optional ansible pip dependencies
+  pip: name={{ item }} state=latest
+  with_items:
+    - docker
+
 #- name: create ansible src dir
   #file:
     #path: "{{ ansible_src_dir }}"
