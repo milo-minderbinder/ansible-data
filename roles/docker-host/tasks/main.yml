@@ -19,7 +19,7 @@
 
 - name: create docker dot dir
   file:
-    path: "{{ docker_cert_path }}"
+    path: "{{ docker_host_cert_path }}"
     state: directory
     mode: 0700
 
@@ -27,28 +27,28 @@
   copy:
     backup: yes
     content: "{{ docker_host_cacert }}"
-    dest: "{{ docker_cert_path }}/ca.pem"
+    dest: "{{ docker_host_cert_path }}/ca.pem"
     #group: docker
     mode: 0444
-  when: docker_tlsverify|bool
+  when: docker_host_tlsverify|bool
 
 - name: copy docker cert
   copy:
     backup: yes
     content: "{{ docker_host_cert }}"
-    dest: "{{ docker_cert_path }}/cert.pem"
+    dest: "{{ docker_host_cert_path }}/cert.pem"
     #group: docker
     mode: 0444
-  when: docker_tlsverify|bool or docker_tls|bool
+  when: docker_host_tlsverify|bool or docker_host_tls|bool
 
 - name: copy docker key
   copy:
     backup: yes
     content: "{{ docker_host_key }}"
-    dest: "{{ docker_cert_path }}/key.pem"
+    dest: "{{ docker_host_cert_path }}/key.pem"
     #group: docker
     mode: 0400
-  when: docker_tlsverify|bool or docker_tls|bool
+  when: docker_host_tlsverify|bool or docker_host_tls|bool
 
 - name: template daemon.json
   template:
@@ -76,7 +76,7 @@
     port: 2376/tcp
     permanent: yes
     state: enabled
-  when: docker_tlsverify|bool or docker_tls|bool
+  when: docker_host_tlsverify|bool or docker_host_tls|bool
   notify:
     - restart firewalld
     - restart docker daemon

@@ -3,4 +3,4 @@
 - hosts: workstations
   roles:
     - vim
-    - workstation
+    #- workstation

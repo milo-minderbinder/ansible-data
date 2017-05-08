@@ -1,14 +1,14 @@
 {
-{% if docker_tlsverify|bool %}
+{% if docker_host_tlsverify|bool %}
 	"tlsverify": true,
-	"tlscacert": "{{ docker_cert_path }}/ca.pem",
-{% elif docker_tls|bool %}
+	"tlscacert": "{{ docker_host_cert_path }}/ca.pem",
+{% elif docker_host_tls|bool %}
 	"tls": true,
 {% endif %}
-{% if docker_tlsverify|bool or docker_tls|bool %}
-	"tlscert": "{{ docker_cert_path }}/cert.pem",
-	"tlskey": "{{ docker_cert_path }}/key.pem",
+{% if docker_host_tlsverify|bool or docker_host_tls|bool %}
+	"tlscert": "{{ docker_host_cert_path }}/cert.pem",
+	"tlskey": "{{ docker_host_cert_path }}/key.pem",
 {% endif %}
-	"hosts": {{ docker_interfaces|tojson }}
+	"hosts": {{ docker_host_interfaces|tojson }}
 }
 
