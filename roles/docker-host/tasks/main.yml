@@ -50,6 +50,14 @@
     mode: 0400
   when: docker_host_tlsverify|bool or docker_host_tls|bool
 
+- name: create /etc/docker
+  file:
+    path: /etc/docker
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+
 - name: template daemon.json
   template:
     backup: yes
@@ -58,10 +66,11 @@
     owner: root
     mode: 0644
     src: daemon.json.j2
-  notify: reload docker daemon
+  notify: restart docker daemon
 
 - name: firewalld add docker0 interface to trusted zone
   firewalld:
+    immediate: yes
     interface: docker0
     permanent: yes
     state: enabled
@@ -73,6 +82,7 @@
 # NOTE: no support yet for opening non-tls port
 - name: firewalld add daemon tls port 2376 to default zone
   firewalld:
+    immediate: yes
     port: 2376/tcp
     permanent: yes
     state: enabled

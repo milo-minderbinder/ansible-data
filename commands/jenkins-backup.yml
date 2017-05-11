@@ -12,19 +12,22 @@
         state: directory
         mode: 0750
 
-    - name: run backup container
-      docker_container:
-        name: backup_jenkins
-        image: ubuntu:latest
-        state: started
-        cleanup: yes
-        detach: no
-        volumes:
-          - "{{ backup_dir }}:/backups"
-        volumes_from:
-          - jenkins
-        user: root:root
-        command: tar czf /backups/{{ backup_file }} /var/jenkins_home/
+    #- name: run backup container
+      #docker_container:
+        #name: backup_jenkins
+        #image: ubuntu:latest
+        #state: started
+        #cleanup: yes
+        #detach: no
+        #volumes:
+          #- "{{ backup_dir }}:/backups"
+        #volumes_from:
+          #- jenkins
+        #user: root:root
+        #command: tar czf /backups/{{ backup_file }} /var/jenkins_home/
+
+    - name: create backup
+      command: tar czf {{ backup_dir }}/{{ backup_file }} /var/lib/jenkins/
 
     - name: set backup file mode
       file:

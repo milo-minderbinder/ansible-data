@@ -1,0 +1,104 @@
+---
+
+- hosts: jenkins_hosts
+  become: True
+  vars:
+    jenkins_args:
+      - "{{ (jenkins_url_prefix|default('', True) != '' ) | ternary('--prefix='+jenkins_url_prefix|default|string, '') }}"
+      - "{{ (jenkins_http_port|default('', True) != '' ) | ternary('--httpPort='+jenkins_http_port|default|string, '') }}"
+      - "{{ (jenkins_https_port|default('', True) != '' ) | ternary('--httpsPort='+jenkins_https_port|default|string, '') }}"
+      - "{{ (jenkins_https_keystore|default('', True) != '' ) | ternary('--httpsKeyStore=/etc/jenkins/jenkins.jks', '') }}"
+      - "{{ (jenkins_https_keystore_password|default('', True) != '' ) | ternary('--httpsKeyStorePassword='+jenkins_https_keystore_password|default|string, '') }}"
+      - "{{ (jenkins_https_certificate|default('', True) != '' ) | ternary('--httpsCertificate=/etc/jenkins/cert.pem', '') }}"
+      - "{{ (jenkins_https_private_key|default('', True) != '' ) | ternary('--httpsPrivateKey=/etc/jenkins/key.pem', '') }}"
+    jenkins_init_changes_dynamic: "{{ hostvars[inventory_hostname].jenkins_init_changes|default([])|union([{'option': 'JENKINS_ARGS', 'value': jenkins_args|reject('equalto', '')|join(' ')}]) }}"
+  pre_tasks:
+    - name: include geerlingguy.java role
+      include_role:
+        name: geerlingguy.java
+
+    - name: debug jenkins_args
+      debug:
+        msg: "{{ jenkins_args }}"
+
+    - name: debug jenkins_init_changes_dynamic
+      debug:
+        msg: "{{ jenkins_init_changes_dynamic }}"
+
+    - name: set jenkins_init_changes fact
+      set_fact:
+        jenkins_init_changes: "{{ jenkins_init_changes_dynamic }}"
+
+    - name: debug jenkins_init_changes
+      debug:
+        msg: "{{ jenkins_init_changes }}"
+
+    - name: create jenkins group
+      group:
+        name: jenkins
+        state: present
+        system: yes
+
+    - name: create /etc/jenkins
+      file:
+        path: /etc/jenkins
+        state: directory
+        mode: 0755
+        #owner: jenkins
+        group: jenkins
+      when: >
+        jenkins_https_keystore is defined or
+        (jenkins_https_certificate is defined and
+        jenkins_https_private_key is defined)
+
+    - name: copy jenkins keystore
+      copy:
+        src: "{{ jenkins_https_keystore }}"
+        dest: "/etc/jenkins/jenkins.jks"
+        group: jenkins
+        mode: 0440
+      when: jenkins_https_keystore is defined
+
+    - name: copy jenkins certificate
+      copy:
+        content: "{{ jenkins_https_certificate }}"
+        dest: "/etc/jenkins/cert.pem"
+        group: jenkins
+        mode: 0444
+      when: jenkins_https_certificate is defined
+
+    - name: copy jenkins private key
+      copy:
+        content: "{{ jenkins_https_private_key }}"
+        dest: "/etc/jenkins/key.pem"
+        group: jenkins
+        mode: 0440
+      when: jenkins_https_private_key is defined
+
+    #- name: firewalld add jenkins to default zone
+      #firewalld:
+        #service: jenkins
+        #permanent: yes
+        #state: enabled
+
+    - name: firewalld add jenkins ports to default zone
+      firewalld:
+        immediate: yes
+        port: "{{ item }}/tcp"
+        permanent: yes
+        state: enabled
+      with_items:
+        #- "{{ jenkins_http_port }}"
+        - "{{ jenkins_https_port }}"
+        - "50000"
+      when: (item is defined) and (item|trim != '') and (item|int > 0)
+
+    - name: restart firewalld
+      service:
+        name: firewalld
+        state: restarted
+  roles:
+    - { role: common, common: { sni_fix: 'yes' } }
+    - ansible
+    - geerlingguy.jenkins
+
