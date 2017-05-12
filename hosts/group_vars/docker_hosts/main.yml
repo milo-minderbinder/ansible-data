@@ -1,10 +1,10 @@
 ---
 
-docker_host_cacert: null
-docker_host_cert: null
 docker_host_interfaces:
   - unix:///var/run/docker.sock
-docker_host_key: null
 docker_host_tls: no
 docker_host_tlsverify: no
+docker_host_cacert: null
+docker_host_cert: null
+docker_host_key: null
 

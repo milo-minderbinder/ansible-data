@@ -1,19 +1,5 @@
 ---
 
 - name: install apt packages
-  apt: name={{ item }} update_cache=yes state=present
-  with_items:
-    #- asciidoc
-    #- build-essential
-    #- cdbs
-    #- debootstrap
-    #- devscripts
-    - git
-    #- libssl-dev
-    #- libffi-dev
-    #- make
-    #- pbuilder
-    #- python-dev
-    #- python-setuptools
-    #- software-properties-common
+  apt: name=git update_cache=yes state=present
 

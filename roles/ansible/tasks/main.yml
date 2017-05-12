@@ -8,25 +8,3 @@
     name: "git+git://github.com/ansible/ansible.git@devel#egg=ansible"
     state: latest
 
-- name: install optional ansible pip dependencies
-  pip: name={{ item }} state=latest
-  with_items:
-    - docker
-
-#- name: create ansible src dir
-  #file:
-    #path: "{{ ansible_src_dir }}"
-    #state: directory
-    #mode: 0755
-
-#- name: clone ansible
-  #git:
-    #repo: git://github.com/ansible/ansible.git
-    #dest: "{{ ansible_src_dir }}"
-    #accept_hostkey: yes
-
-#- name: install pip requirements and docsite_requirements
-  #pip:
-    #requirements: "{{ ansible_src_dir }}/requirements.txt"
-    #state: present
-

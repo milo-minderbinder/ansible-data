@@ -44,8 +44,8 @@
         path: /etc/jenkins
         state: directory
         mode: 0755
-        #owner: jenkins
-        group: jenkins
+        owner: root
+        group: root
       when: >
         jenkins_https_keystore is defined or
         (jenkins_https_certificate is defined and
@@ -98,7 +98,6 @@
         name: firewalld
         state: restarted
   roles:
-    - { role: common, common: { sni_fix: 'yes' } }
     - ansible
     - geerlingguy.jenkins
 

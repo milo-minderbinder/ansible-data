@@ -1,9 +1,5 @@
 ---
 
-- name: include common role
-  include_role:
-    name: common
-
 - name: install docker
   include: "{{ ansible_pkg_mgr }}-install.yml"
 
@@ -17,17 +13,19 @@
     name: docker
     state: latest
 
-- name: create docker dot dir
+- name: create /etc/docker
   file:
-    path: "{{ docker_host_cert_path }}"
+    path: /etc/docker
     state: directory
-    mode: 0700
+    mode: 0755
+    owner: root
+    group: root
 
 - name: copy docker cacert
   copy:
     backup: yes
     content: "{{ docker_host_cacert }}"
-    dest: "{{ docker_host_cert_path }}/ca.pem"
+    dest: /etc/docker/ca.pem
     #group: docker
     mode: 0444
   when: docker_host_tlsverify|bool
@@ -36,7 +34,7 @@
   copy:
     backup: yes
     content: "{{ docker_host_cert }}"
-    dest: "{{ docker_host_cert_path }}/cert.pem"
+    dest: /etc/docker/cert.pem
     #group: docker
     mode: 0444
   when: docker_host_tlsverify|bool or docker_host_tls|bool
@@ -45,18 +43,10 @@
   copy:
     backup: yes
     content: "{{ docker_host_key }}"
-    dest: "{{ docker_host_cert_path }}/key.pem"
+    dest: /etc/docker/key.pem
     #group: docker
     mode: 0400
   when: docker_host_tlsverify|bool or docker_host_tls|bool
-
-- name: create /etc/docker
-  file:
-    path: /etc/docker
-    state: directory
-    mode: 0755
-    owner: root
-    group: root
 
 - name: template daemon.json
   template:

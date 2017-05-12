@@ -1,13 +1,13 @@
 {
 {% if docker_host_tlsverify|bool %}
 	"tlsverify": true,
-	"tlscacert": "{{ docker_host_cert_path }}/ca.pem",
+	"tlscacert": "/etc/docker/ca.pem",
 {% elif docker_host_tls|bool %}
 	"tls": true,
 {% endif %}
 {% if docker_host_tlsverify|bool or docker_host_tls|bool %}
-	"tlscert": "{{ docker_host_cert_path }}/cert.pem",
-	"tlskey": "{{ docker_host_cert_path }}/key.pem",
+	"tlscert": "/etc/docker/cert.pem",
+	"tlskey": "/etc/docker/key.pem",
 {% endif %}
 	"hosts": {{ docker_host_interfaces|tojson }}
 }

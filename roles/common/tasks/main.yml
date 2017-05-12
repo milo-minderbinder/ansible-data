@@ -25,7 +25,7 @@
       dest: /etc/ssh/sshd_config
       mode: 0644
       backup: yes
-    notify: restart ssh
+    notify: reload sshd
 
   - name: set authorized_keys
     authorized_key:
@@ -33,6 +33,5 @@
       exclusive: yes
       key: "{{ common.configure_ssh_key | default('https://github.com/milo-minderbinder.keys') }}"
       state: present
-    notify: restart ssh
   when: common.configure_ssh | default('no') | bool
 

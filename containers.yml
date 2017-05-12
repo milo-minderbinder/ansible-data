@@ -29,7 +29,7 @@
       with_inventory_hostnames: playbook_docker_containers
       when: hostvars[item].docker_containers_temporary | default('no') | bool
 
-- hosts: docker_containers
+- hosts: playbook_docker_containers
   gather_facts: no
   pre_tasks:
     - name: raw config
