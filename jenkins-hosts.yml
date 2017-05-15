@@ -4,11 +4,11 @@
   become: True
   vars:
     jenkins_args:
-      - "{{ (jenkins_url_prefix|default('', True) != '' ) | ternary('--prefix='+jenkins_url_prefix|default|string, '') }}"
-      - "{{ (jenkins_http_port|default('', True) != '' ) | ternary('--httpPort='+jenkins_http_port|default|string, '') }}"
-      - "{{ (jenkins_https_port|default('', True) != '' ) | ternary('--httpsPort='+jenkins_https_port|default|string, '') }}"
+      - "{{ (jenkins_url_prefix|default('', True) != '' ) | ternary(['--prefix=', jenkins_url_prefix|default]|join|trim, '') }}"
+      - "{{ (jenkins_http_port|default('', True) != '' ) | ternary(['--httpPort=', jenkins_http_port|default]|join|trim, '') }}"
+      - "{{ (jenkins_https_port|default('', True) != '' ) | ternary(['--httpsPort=', jenkins_https_port|default]|join|trim, '') }}"
       - "{{ (jenkins_https_keystore|default('', True) != '' ) | ternary('--httpsKeyStore=/etc/jenkins/jenkins.jks', '') }}"
-      - "{{ (jenkins_https_keystore_password|default('', True) != '' ) | ternary('--httpsKeyStorePassword='+jenkins_https_keystore_password|default|string, '') }}"
+      - "{{ (jenkins_https_keystore_password|default('', True) != '' ) | ternary(['--httpsKeyStorePassword=', jenkins_https_keystore_password|default]|join|trim, '') }}"
       - "{{ (jenkins_https_certificate|default('', True) != '' ) | ternary('--httpsCertificate=/etc/jenkins/cert.pem', '') }}"
       - "{{ (jenkins_https_private_key|default('', True) != '' ) | ternary('--httpsPrivateKey=/etc/jenkins/key.pem', '') }}"
     jenkins_init_changes_dynamic: "{{ hostvars[inventory_hostname].jenkins_init_changes|default([])|union([{'option': 'JENKINS_ARGS', 'value': jenkins_args|reject('equalto', '')|join(' ')}]) }}"
@@ -48,8 +48,7 @@
         group: root
       when: >
         jenkins_https_keystore is defined or
-        (jenkins_https_certificate is defined and
-        jenkins_https_private_key is defined)
+        (jenkins_https_certificate is defined and jenkins_https_private_key is defined)
 
     - name: copy jenkins keystore
       copy:

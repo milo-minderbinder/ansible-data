@@ -15,6 +15,10 @@
     - python
     - iputils
 
+#- name: install ntp
+  #yum: name=ntp state=present
+  #register: ntp_install
+
 - name: install openssh-server
   yum: name=openssh-server state=latest
   when: common.configure_ssh | default('no') | bool

@@ -29,6 +29,7 @@
     #group: docker
     mode: 0444
   when: docker_host_tlsverify|bool
+  notify: restart docker daemon
 
 - name: copy docker cert
   copy:
@@ -38,6 +39,7 @@
     #group: docker
     mode: 0444
   when: docker_host_tlsverify|bool or docker_host_tls|bool
+  notify: restart docker daemon
 
 - name: copy docker key
   copy:
@@ -47,6 +49,7 @@
     #group: docker
     mode: 0400
   when: docker_host_tlsverify|bool or docker_host_tls|bool
+  notify: restart docker daemon
 
 - name: template daemon.json
   template:
@@ -80,4 +83,9 @@
   notify:
     - restart firewalld
     - restart docker daemon
+
+- name: start docker service
+  service:
+    name: docker
+    state: started
 

@@ -13,8 +13,8 @@
 - name: generate CA private key
   command: >
     openssl genrsa -aes256
-    -passout pass:{{ ca_password }}
-    -out {{ ca_key }} 4096
+    -passout {{ ('pass:'+ca_password)|quote }}
+    -out {{ ca_key|quote }} 4096
   args:
     creates: '{{ ca_key }}'
   register: ca_result
@@ -33,10 +33,10 @@
 - name: generate CA public key
   command: >
     openssl req -new -x509 -days 365
-    -key {{ ca_key }} -sha256
-    -out {{ ca_cert }}
-    -passin pass:{{ ca_password }}
-    -subj "{{ ca_subj }}"
+    -key {{ ca_key|quote }} -sha256
+    -out {{ ca_cert|quote }}
+    -passin {{ ('pass:'+ca_password)|quote }}
+    -subj {{ ca_subj|quote }}
   args:
     creates: '{{ ca_cert }}'
   register: ca_result
@@ -49,7 +49,7 @@
 - name: generate host private key
   command: >
     openssl genrsa
-    -out {{ host_key }}
+    -out {{ host_key|quote }}
     4096
   args:
     creates: '{{ host_key }}'
@@ -63,14 +63,22 @@
 - name: create server CSR
   command: >
     openssl req
-    -subj "/CN={{ host_fqdn }}" -sha256 -new
-    -key {{ host_key }}
-    -out {{ host_cert }}.csr
+    -subj {{ ('/CN='+host_fqdn)|quote }} -sha256 -new
+    -key {{ host_key|quote }}
+    -out {{ (host_cert+'.csr')|quote }}
   when: host_result.changed or ca_result.changed
 
-- name: create server extfile
-  shell: echo subjectAltName = DNS:{{ host_fqdn }},IP:{{ host_ip }},IP:127.0.0.1 > {{ host_cert }}.extfile.cnf
+#- name: create server extfile
+  #shell: echo subjectAltName = DNS:{{ host_fqdn }},IP:{{ host_ip }},IP:127.0.0.1 > {{ host_cert }}.extfile.cnf
+  #when: host_result.changed or ca_result.changed
+
+- name: template server extfile
+  template:
+    dest: "{{ host_cert }}.extfile.cnf"
+    src: extfile.cnf.j2
+    mode: 0444
   when: host_result.changed or ca_result.changed
+
 
 - name: remove old server public key
   file:
@@ -81,12 +89,12 @@
 - name: create signed server public key
   command: >
     openssl x509 -req -days 365 -sha256
-    -in {{ host_cert }}.csr
-    -CA {{ ca_cert }}
-    -CAkey {{ ca_key }} -CAcreateserial
-    -out {{ host_cert }}
-    -extfile {{ host_cert }}.extfile.cnf
-    -passin pass:{{ ca_password }}
+    -in {{ (host_cert+'.csr')|quote }}
+    -CA {{ ca_cert|quote }}
+    -CAkey {{ ca_key|quote }} -CAcreateserial
+    -out {{ host_cert|quote }}
+    -extfile {{ (host_cert+'.extfile.cnf')|quote }}
+    -passin {{ ('pass:'+ca_password)|quote }}
   args:
     creates: '{{ host_cert }}'
 
@@ -100,7 +108,7 @@
     path: '{{ item }}'
     state: absent
   with_items:
-    - '{{ ca_cert | splitext | first }}.srl'
+    #- '{{ ca_cert | splitext | first }}.srl'
     - '{{ host_cert }}.csr'
     - '{{ host_cert }}.extfile.cnf'
 

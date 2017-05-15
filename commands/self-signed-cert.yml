@@ -1,0 +1,16 @@
+---
+
+- hosts: localhost
+  vars_prompt:
+    - name: "ca_fqdn"
+      prompt: "ca_fqdn"
+    - name: "ca_password"
+      prompt: "ca_password"
+      default: "password"
+    - name: "host_fqdn"
+      prompt: "host_fqdn"
+    - name: "host_ip"
+      prompt: "host_ip"
+  roles:
+    - self-signer
+

@@ -9,15 +9,16 @@
   - name: get node setup script
     get_url:
       url: https://rpm.nodesource.com/setup_{{ node_version }}.x
-      dest: ~/node_setup_{{ node_version }}.x.bash
+      dest: /tmp/node_setup_{{ node_version }}.x.bash
+      mode: 0400
 
   - name: execute node setup script
-    shell: bash ~/node_setup_{{ node_version }}.x.bash
+    shell: bash /tmp/node_setup_{{ node_version }}.x.bash
 
   - name: install nodejs yum
     yum: name=nodejs state=latest update_cache=yes
 
   always:
     - name: remove node setup script
-      file: path=~/node_setup_{{ node_version }}.x.bash state=absent
+      file: path=/tmp/node_setup_{{ node_version }}.x.bash state=absent
 

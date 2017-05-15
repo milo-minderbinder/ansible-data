@@ -1,6 +1,7 @@
 ---
 
 - hosts: workstations
+  become: true
   roles:
     - vim
     #- workstation

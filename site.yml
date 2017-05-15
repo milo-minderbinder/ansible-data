@@ -8,9 +8,11 @@
   tags:
     - always
 
-- include: jenkins-servers.yml
-
 - include: macosx-workstations.yml
 
 - include: workstations.yml
+
+- include: docker-hosts.yml
+
+- include: jenkins-hosts.yml
 
