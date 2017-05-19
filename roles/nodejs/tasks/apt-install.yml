@@ -1,19 +1,25 @@
 ---
 
+- name: create tempfile for node setup script
+  tempfile:
+    state: file
+    suffix: -node_setup_{{ node_version }}.x.bash
+  register: tmp_node_setup
+
 - block:
   - name: get node setup script
     get_url:
       url: https://deb.nodesource.com/setup_{{ node_version }}.x
-      dest: /tmp/node_setup_{{ node_version }}.x.bash
-      mode: 0400
+      dest: "{{ tmp_node_setup.path }}"
+      force: yes
 
   - name: execute node setup script
-    shell: bash /tmp/node_setup_{{ node_version }}.x.bash
+    shell: bash {{ tmp_node_setup.path }}
 
   - name: install nodejs apt
     apt: name=nodejs state=latest update_cache=yes
 
   always:
     - name: remove node setup script
-      file: path=/tmp/node_setup_{{ node_version }}.x.bash state=absent
+      file: path={{ tmp_node_setup.path }} state=absent
 

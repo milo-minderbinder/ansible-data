@@ -1,23 +1,19 @@
 ---
 
+- name: update cache and upgrade all installed packages
+  yum: name='*' update_cache=yes state=latest
+
 - name: add epel repo
   yum:
     name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm
     state: present
     update_cache: yes
 
-- name: update cache and upgrade all installed packages
-  yum: name='*' update_cache=yes state=latest
-
 - name: install common packages
   yum: name={{ item }} state=latest
   with_items:
     - python
     - iputils
-
-#- name: install ntp
-  #yum: name=ntp state=present
-  #register: ntp_install
 
 - name: install openssh-server
   yum: name=openssh-server state=latest
@@ -26,34 +22,8 @@
 - name: remove python-pip package
   yum: name=python-pip state=absent
 
-# fix for get_url module SNI issue with python < 2.7.9
-# see: https://stackoverflow.com/questions/18578439/using-requests-with-tls-doesnt-give-sni-support/18579484#18579484
-- block:
-  - name: download get-pip.py
-    get_url:
-      url: https://bootstrap.pypa.io/get-pip.py
-      dest: /tmp/get-pip.py
-      mode: 0550
-
-  rescue:
-  - name: set common.sni_fix fact
-    set_fact:
-      common: "{{ common | combine({'sni_fix': 'yes'}) }}"
-
-  - name: locally download get-pip.py
-    get_url:
-      url: https://bootstrap.pypa.io/get-pip.py
-      dest: /tmp/get-pip.py
-      mode: 0550
-    become: False
-    delegate_to: localhost
-    changed_when: False
-
-  - name: copy get-pip.py
-    copy:
-      src: /tmp/get-pip.py
-      dest: /tmp/get-pip.py
-      mode: 0550
+- name: install pip with get-pip.py
+  include: get-pip-install.yml
 
 # see: https://cryptography.io/en/latest/installation/#building-cryptography-on-linux
 - name: install cryptography package dependencies
@@ -64,10 +34,5 @@
     - openssl-devel
     - python-devel
   when: common.sni_fix | default('no') | bool
-#when: ansible_python_version|version_compare('2.7.9', '<')
-
-- name: install pip
-  command: python /tmp/get-pip.py
-  register: result
-  changed_when: not result.stdout|search('already up-to-date')
+  #when: ansible_python_version|version_compare('2.7.9', '<')
 
