@@ -8,3 +8,4 @@ tmp/
 test.yml
 hosts/docker.py
 private-hosts/
+galaxy-roles/
