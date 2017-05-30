@@ -1,0 +1,37 @@
+---
+
+- hosts: all
+  become: true
+  vars_prompt:
+    - name: user_name
+      prompt: username
+    - name: user_pub_key
+      prompt: user's ssh public key
+    - name: user_groups
+      prompt: comma-separated list of groups
+      default: []
+  tasks:
+    - name: print vars
+      debug:
+        msg: |
+          host: {{ inventory_hostname }}
+          user_name: {{ user_name }}
+          user_pub_key: {{ user_pub_key }}
+          user_groups: {{ user_groups }}
+
+    - name: create user
+      user:
+        append: yes
+        createhome: yes
+        groups: "{{ user_groups }}"
+        name: "{{ user_name }}"
+        state: present
+
+    - name: add authorized keys
+      authorized_key:
+        exclusive: no
+        key: "{{ user_pub_key }}"
+        manage_dir: yes
+        state: present
+        user: "{{ user_name }}"
+
