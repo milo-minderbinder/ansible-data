@@ -1,5 +1,5 @@
 ---
 
-dependencies:
-  - { role: common, common: { sni_fix: 'yes' } }
+#dependencies:
+  #- { role: common, common: { sni_fix: 'yes' } }
 

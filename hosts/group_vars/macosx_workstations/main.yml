@@ -4,6 +4,7 @@ homebrew_taps:
   - caskroom/cask
   - caskroom/versions
   - homebrew/dupes
+  - homebrew/php
 
 cask_apps:
   docker: {}
@@ -14,7 +15,9 @@ cask_apps:
   java7: {}
   keepassx: {}
   pycharm: {}
+  slack: {}
   spotify: {}
+  vlc: {}
 
 homebrew_apps:
   bash-completion: {}
@@ -29,6 +32,7 @@ homebrew_apps:
   gradle: {}
   grep: {}
   groovysdk: {}
+  homebrew/php/composer: {}
   jython: {}
   macvim:
     install_options: 'with-override-system-vim,with-lua,with-luajit,with-python3'

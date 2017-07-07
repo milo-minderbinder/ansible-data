@@ -84,7 +84,17 @@ augroup END
 
 " Custom filetype associations
 au BufNewFile,BufRead *.ftl set syntax=jsp
-au BufNewFile,BufRead *.gradle,Jenkinsfile set syntax=groovy
+au BufNewFile,BufRead *.java set tabstop=4 |
+	\ set softtabstop=4 |
+	\ set shiftwidth=4 |
+	\ set expandtab |
+	\ set autoindent
+au BufNewFile,BufRead *.gradle,Jenkinsfile,Jenkinsfile* set syntax=groovy |
+	\ set tabstop=4 |
+	\ set softtabstop=4 |
+	\ set shiftwidth=4 |
+	\ set expandtab |
+	\ set autoindent
 au BufNewFile,BufRead *.py set tabstop=4 |
 	\ set softtabstop=4 |
 	\ set shiftwidth=4 |
@@ -135,6 +145,7 @@ function! AnsibleVault(action)
 	let lines = s:get_visual_selection()
 	if a:action == "e"
 		let action = "encrypt_string"
+		let lines = join(split(lines, "\n")[:-1], "\n")
 		let lines = shellescape(lines)
 		let modlines = system('echo '.lines.' | sed -E -e s/\\\\$// | ansible-vault '.action)
 	elseif a:action == "d"
@@ -193,6 +204,7 @@ set diffopt=filler,vertical
 
 " Editor options
 set ai
+set noexpandtab
 set tabstop=4
 set softtabstop=4
 set shiftwidth=4
