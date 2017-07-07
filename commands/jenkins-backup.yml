@@ -12,20 +12,6 @@
         state: directory
         mode: 0750
 
-    #- name: run backup container
-      #docker_container:
-        #name: backup_jenkins
-        #image: ubuntu:latest
-        #state: started
-        #cleanup: yes
-        #detach: no
-        #volumes:
-          #- "{{ backup_dir }}:/backups"
-        #volumes_from:
-          #- jenkins
-        #user: root:root
-        #command: tar czf /backups/{{ backup_file }} /var/jenkins_home/
-
     - name: create backup
       command: tar czf {{ backup_dir }}/{{ backup_file }} jenkins/
       args:
@@ -36,4 +22,33 @@
         path: "{{ backup_dir }}/{{ backup_file }}"
         state: file
         mode: 0440
+
+    - name: temporarily move backup
+      command: mv '{{ backup_dir }}/{{ backup_file }}' '/tmp/{{ backup_file }}'
+
+    - name: set temp backup file mode and owner
+      file:
+        path: /tmp/{{ backup_file }}
+        state: file
+        mode: 0440
+        owner: '{{ ansible_user }}'
+        group: '{{ ansible_user }}'
+
+    - name: fetch backup file
+      fetch:
+        dest: "/Users/{{ ansible_user }}/Documents/"
+        flat: yes
+        src: /tmp/{{ backup_file }}
+      become: false
+
+    - name: move backup to backup dir
+      command: mv '/tmp/{{ backup_file }}' '{{ backup_dir }}/{{ backup_file }}'
+
+    - name: reset backup file mode and owner
+      file:
+        path: "{{ backup_dir }}/{{ backup_file }}"
+        state: file
+        mode: 0440
+        owner: root
+        group: root
 

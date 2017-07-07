@@ -97,6 +97,9 @@
         name: firewalld
         state: restarted
   roles:
-    - ansible
     - geerlingguy.jenkins
+    - ansible
+  tasks:
+    - name: include php.yml playbook
+      include: php.yml
 

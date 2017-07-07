@@ -1,0 +1,65 @@
+---
+
+- hosts: all
+  tasks:
+    - group_by: key={{ ansible_distribution|lower() }}_hosts
+  tags:
+    - always
+
+- hosts: centos_hosts
+  become: true
+  pre_tasks:
+    - name: add IUS repo
+      yum:
+        name: https://centos{{ ansible_distribution_major_version }}.iuscommunity.org/ius-release.rpm
+        state: present
+        update_cache: yes
+  roles:
+    - role: geerlingguy.php
+      php_install_recommends: no
+      php_enable_webserver: false
+      php_enablerepo: 'ius'
+      php_packages:
+        - php56u
+        - php56u-cli
+        - php56u-common
+        - php56u-devel
+        #- php56u-fpm
+        #- php56u-gd
+        #- php56u-imap
+        - php56u-intl
+        #- php56u-ldap
+        - php56u-mbstring
+        - php56u-opcache
+        - php56u-pdo
+        - php56u-pear
+        #- php56u-pecl-apcu
+        #- php56u-xml
+        #- php56u-xmlrpc
+      php_enable_apc: false
+      php_enable_php_fpm: false
+      php_packages_state: 'latest'
+
+    - role: geerlingguy.composer
+      composer_path: /usr/bin/composer
+      composer_keep_updated: true
+  tasks:
+    - name: pecl install mongodb
+      #pear:
+        #name: mongodb
+        #state: latest
+      command: pecl install mongodb
+      register: result
+      failed_when: result.rc != 0 and 'installed' not in result.stdout
+      changed_when: result.rc == 0
+
+    - name: add mongodb extension to php.ini
+      copy:
+        content: |
+          ; Enable mongodb extension module
+          extension=mongodb.so
+        dest: /etc/php.d/50-mongodb.ini
+        group: root
+        mode: 0664
+        owner: root
+
