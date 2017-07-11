@@ -23,7 +23,6 @@ export JAVA8=$(/usr/libexec/java_home -v 1.8)
 # Maven config
 export M2_HOME=/usr/local/opt/maven/libexec
 export M2=$M2_HOME/bin
-export MAVEN_OPTS="-Xms256m -Xmx512m"
 {% endif %}
 
 {% if homebrew_apps.gradle is defined %}

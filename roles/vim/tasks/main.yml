@@ -15,37 +15,37 @@
 - name: clone Vundle
   git:
     repo: https://github.com/VundleVim/Vundle.vim.git
-    dest: ~/.vim/bundle/Vundle.vim
+    dest: '{{ ansible_user_dir }}/.vim/bundle/Vundle.vim'
 
 - name: vimrc template
   template:
     src: vimrc.j2
-    dest: ~/.vimrc
+    dest: '{{ ansible_user_dir }}/.vimrc'
     mode: 0644
     force: no
     backup: yes
 
 - name: install vim plugins
-  shell: vim +PluginInstall +qall
+  command: vim +PluginInstall +qall
 
 - name: check if YouCompleteMe installed
-  stat: path=~/.vim/bundle/YouCompleteMe
+  stat: path='{{ ansible_user_dir }}/.vim/bundle/YouCompleteMe'
   register: ycm
 
 - name: compile YouCompleteMe
-  shell: python3 install.py --clang-completer --tern-completer
+  command: python3 install.py --clang-completer --tern-completer
   args:
-    chdir: ~/.vim/bundle/YouCompleteMe
+    chdir: '{{ ansible_user_dir }}/.vim/bundle/YouCompleteMe'
   when: ycm.stat.isdir is defined and ycm.stat.isdir
 
 - name: check if nerdtree installed
-  stat: path=~/.vim/bundle/nerdtree
+  stat: path='{{ ansible_user_dir }}/.vim/bundle/nerdtree'
   register: nerdtree
 
 - name: copy yank_mapping.vim
   copy:
     src: yank_mapping.vim
-    dest: ~/.vim/bundle/nerdtree/nerdtree_plugin/yank_mapping.vim
+    dest: '{{ ansible_user_dir }}/.vim/bundle/nerdtree/nerdtree_plugin/yank_mapping.vim'
     mode: 0755
     force: no
     backup: yes
@@ -54,7 +54,7 @@
 - name: copy ideavimrc
   copy:
     src: ideavimrc
-    dest: ~/.ideavimrc
+    dest: '{{ ansible_user_dir }}/.ideavimrc'
     mode: 0755
     force: no
     backup: yes

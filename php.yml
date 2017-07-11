@@ -25,7 +25,7 @@
         - php56u-common
         - php56u-devel
         #- php56u-fpm
-        #- php56u-gd
+        - php56u-gd
         #- php56u-imap
         - php56u-intl
         #- php56u-ldap
