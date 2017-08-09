@@ -13,7 +13,7 @@ cask_apps:
   intellij-idea: {}
   java: {}
   java7: {}
-  keepassx: {}
+  keepassxc: {}
   pycharm: {}
   slack: {}
   spotify: {}
