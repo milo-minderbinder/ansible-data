@@ -89,7 +89,7 @@ au BufNewFile,BufRead *.java set tabstop=4 |
 	\ set shiftwidth=4 |
 	\ set expandtab |
 	\ set autoindent
-au BufNewFile,BufRead *.gradle,Jenkinsfile,Jenkinsfile* set syntax=groovy |
+au BufNewFile,BufRead *.groovy,*.gradle,Jenkinsfile,Jenkinsfile* set syntax=groovy |
 	\ set tabstop=4 |
 	\ set softtabstop=4 |
 	\ set shiftwidth=4 |
@@ -179,13 +179,14 @@ nnorem <leader>l :MarkLocation<CR>
 nnorem <leader>f :MakeFinding<CR>
 nnorem <leader>F "fp
 nnorem <leader>n :noh<CR>
+nnorem <leader>D :diffoff<CR>
 vnorem // y:call setreg('9', escape(@", '\\/.*$^~[]'))<cr>/<c-r>9<cr>
 
 {% if ansible_os_family == 'Darwin' %}
-" Map <Alt-i> to <C-w>F -> Opens file under cursor to line:
-nnorem <D-i> F
-" Map <Alt-I> to <C-w>gF -> Opens file under cursor to line in a new tab:
-nnorem <D-I> gF
+" Map <leader>o to <C-w>F -> Opens file under cursor to line:
+nnorem <leader>o F
+" Map <leader>O to <C-w>gF -> Opens file under cursor to line in a new tab:
+nnorem <leader>O gF
 {% else %}
 " Map <Alt-o> to <C-w>F -> Opens file under cursor to line:
 nnorem ï F
