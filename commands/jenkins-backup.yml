@@ -13,7 +13,7 @@
         mode: 0750
 
     - name: create backup
-      command: tar czf {{ backup_dir }}/{{ backup_file }} jenkins/
+      command: tar --exclude 'jenkins/workspace/**' --exclude '**/.*' -cz -f {{ backup_dir }}/{{ backup_file }} jenkins/
       args:
         chdir: /var/lib
 

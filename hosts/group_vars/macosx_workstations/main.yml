@@ -37,6 +37,7 @@ homebrew_apps:
   macvim:
     install_options: 'with-override-system-vim,with-lua,with-luajit,with-python3'
   maven: {}
+  moreutils: {}
   nmap: {}
   node: {}
   nvm: {}
