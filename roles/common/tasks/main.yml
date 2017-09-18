@@ -7,6 +7,12 @@
   debug:
     var: common
 
+- name: pip install wheel
+  pip:
+    name: wheel
+    state: "{{ (ansible_python_version|version_compare('2.7', '<'))|ternary('present', 'latest') }}"
+    version: "{{ (ansible_python_version|version_compare('2.7', '<'))|ternary('0.29.0', omit) }}"
+
 - name: install urllib3 with secure extra to fix SNI
   pip: name=urllib3[secure] state=latest
   when: common.sni_fix | default('no') | bool

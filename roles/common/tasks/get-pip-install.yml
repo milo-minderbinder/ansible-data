@@ -15,9 +15,10 @@
 - block:
   - name: download get-pip.py
     get_url:
-      url: https://bootstrap.pypa.io/get-pip.py
+      url: https://bootstrap.pypa.io{{ (ansible_python_version|version_compare('3.2', '='))|ternary('/3.2', '') }}/get-pip.py
       dest: "{{ tmp_get_pip.path }}"
       force: yes
+    register: get_url_pip
 
   rescue:
   - name: set common.sni_fix fact
@@ -34,7 +35,7 @@
 
   - name: locally download get-pip.py
     get_url:
-      url: https://bootstrap.pypa.io/get-pip.py
+      url: "{{ get_url_pip.url }}"
       dest: "{{ tmp_local_get_pip.path }}"
       force: yes
     become: False
@@ -54,7 +55,8 @@
     delegate_to: localhost
 
 - name: install pip
-  command: python {{ tmp_get_pip.path }}
+  #command: "{{ ansible_python.executable }} {{ tmp_get_pip.path }} {{ ansible_python_version|version_compare('2.7', '<')|ternary('--no-wheel', '') }}"
+  command: "{{ ansible_python.executable }} {{ tmp_get_pip.path }} --no-wheel"
   register: result
   changed_when: not result.stdout|search('already up-to-date')
 
