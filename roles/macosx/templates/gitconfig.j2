@@ -4,6 +4,12 @@
 [alias]
 	graph-log = !"git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset) %C(bold cyan)(committed: %cD)%C(reset) %C(bold yellow)%d%C(reset)%n''          %C(white)%B%C(reset)%n''          %C(dim white)- %an <%ae> %C(reset) %C(dim white)(committer: %cn <%ce>)%C(reset)' --all"
 	graph-log-brief = !"git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all"
+	branch-name = rev-parse --abbrev-ref HEAD
+	short-hash = rev-parse --short HEAD
+	latest-tagname = describe --abbrev=0 --tags
+	changelist = log --no-merges --pretty=format:\"* %s\"
+	changelist-tag = !"git changelist \"$(git latest-tagname)\".."
+	fetch-status = !"git fetch --all --prune && git stash list && git status"
 [core]
 	excludesfile = /Users/{{ ansible_user_id }}/.gitexcludes
 	autocrlf = input

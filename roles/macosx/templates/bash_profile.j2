@@ -1,23 +1,18 @@
-# Homebrew Config
-export HOMEBREW_GITHUB_API_TOKEN={{ homebrew_github_api_token }}
-if [ -f $(brew --prefix)/etc/bash_completion ]; then
-	. $(brew --prefix)/etc/bash_completion
-fi
+# Put Homebrew's sbin on the PATH
+export PATH="/usr/local/sbin:$PATH"
 
-# Show git branch & state in prompt
-GIT_PS1_SHOWDIRTYSTATE=true
-export PS1='[\h:\u \W$(__git_ps1)]\$ '
-
-# Python virtualenvwrapper setup
-export WORKON_HOME=$HOME/.virtualenvs
-export PROJECT_HOME=$HOME/code
-source /usr/local/bin/virtualenvwrapper.sh
+# Put brewed python2 on the PATH
+export PATH="/usr/local/opt/python/libexec/bin:$PATH"
 
 # Java config
-export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
-export JRE_HOME=$JAVA_HOME/jre
 export JAVA7=$(/usr/libexec/java_home -v 1.7)
 export JAVA8=$(/usr/libexec/java_home -v 1.8)
+{% if cask_apps.java is defined %}
+export JAVA9=$(/usr/libexec/java_home -v 9)
+{% endif %}
+export JAVA_HOME=$JAVA8
+export JRE_HOME=$JAVA_HOME/jre
+export PATH="$JAVA_HOME/bin:$PATH"
 
 {% if homebrew_apps.maven is defined %}
 # Maven config
@@ -40,4 +35,19 @@ export GROOVY_HOME=/usr/local/opt/groovysdk/libexec
 export NVM_DIR="$HOME/.nvm"
 . "/usr/local/opt/nvm/nvm.sh"
 {% endif %}
+
+# Python virtualenvwrapper setup
+export WORKON_HOME=$HOME/.virtualenvs
+export PROJECT_HOME=$HOME/code
+source /usr/local/bin/virtualenvwrapper.sh
+
+# Homebrew Config
+export HOMEBREW_GITHUB_API_TOKEN={{ homebrew_github_api_token }}
+if [ -f $(brew --prefix)/etc/bash_completion ]; then
+	. $(brew --prefix)/etc/bash_completion
+fi
+
+# Show git branch & state in prompt
+GIT_PS1_SHOWDIRTYSTATE=true
+export PS1='[\h:\u \W$(__git_ps1)]\$ '
 

@@ -12,6 +12,7 @@ cask_apps:
   flux: {}
   intellij-idea: {}
   java: {}
+  java8: {}
   java7: {}
   keepassxc: {}
   pycharm: {}

@@ -3,10 +3,11 @@
 homebrew_taps:
   - caskroom/cask
   - caskroom/versions
+  - homebrew/dupes
 
 cask_apps:
   firefox: {}
-  java: {}
+  java8: {}
   java7: {}
 
 homebrew_apps:
