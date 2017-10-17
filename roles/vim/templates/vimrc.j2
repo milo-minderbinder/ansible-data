@@ -83,7 +83,7 @@ augroup vimrc
 augroup END
 
 " Custom filetype associations
-au BufNewFile,BufRead *.ftl set syntax=jsp
+au BufNewFile,BufRead *.ftl,*.vm set syntax=jsp
 au BufNewFile,BufRead *.java set tabstop=4 |
 	\ set softtabstop=4 |
 	\ set shiftwidth=4 |
@@ -218,7 +218,7 @@ autocmd! GUIEnter * set vb t_vb=
 if has("gui_running")
 	let g:airline_powerline_fonts=1
 {% if ansible_os_family == 'Darwin' %}
-	set guifont=Sauce\ Code\ Powerline:h15
+	set guifont=Source\ Code\ Pro\ for\ Powerline:h15
 {% else %}
 	set guifont=Source\ Code\ Pro\ for\ Powerline\ 13
 {% endif %}
