@@ -34,6 +34,8 @@ homebrew_apps:
   grep: {}
   groovysdk: {}
   homebrew/php/composer: {}
+  jmeter:
+    install_options: 'with-plugins'
   jython: {}
   macvim:
     install_options: 'with-override-system-vim,with-lua,with-luajit,with-python3'
