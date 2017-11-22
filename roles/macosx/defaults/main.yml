@@ -1,6 +1,7 @@
 ---
 
 homebrew_taps:
+  - buo/cask-upgrade
   - caskroom/cask
   - caskroom/versions
   - homebrew/dupes

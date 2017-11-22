@@ -1,4 +1,6 @@
 .DS_Store
+__pycache__/
+*.egg-info/
 *.py[cod]
 *.sw[po]
 .idea/
