@@ -1,6 +1,7 @@
 ---
 
 homebrew_taps:
+  - buo/cask-upgrade
   - caskroom/cask
   - caskroom/versions
   - homebrew/dupes
@@ -30,6 +31,7 @@ homebrew_apps:
   dos2unix: {}
   geckodriver: {}
   git: {}
+  gnupg: {}
   gradle: {}
   grep: {}
   groovysdk: {}

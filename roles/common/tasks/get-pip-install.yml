@@ -55,7 +55,6 @@
     delegate_to: localhost
 
 - name: install pip
-  #command: "{{ ansible_python.executable }} {{ tmp_get_pip.path }} {{ ansible_python_version|version_compare('2.7', '<')|ternary('--no-wheel', '') }}"
   command: "{{ ansible_python.executable }} {{ tmp_get_pip.path }} --no-wheel"
   register: result
   changed_when: not result.stdout|search('already up-to-date')

@@ -7,6 +7,7 @@
   debug:
     var: common
 
+# note: wheel dropped support for Python < 2.7 after wheel 0.29.0
 - name: pip install wheel
   pip:
     name: wheel
