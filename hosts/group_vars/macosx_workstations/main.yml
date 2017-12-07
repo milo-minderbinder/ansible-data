@@ -23,6 +23,7 @@ cask_apps:
 
 homebrew_apps:
   bash-completion: {}
+  bfg: {}
   brew-cask-completion: {}
   cloc: {}
   cmake: {}

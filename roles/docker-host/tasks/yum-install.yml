@@ -5,17 +5,21 @@
     name: '{{ item }}'
     state: absent
   with_items:
-    - container-selinux
+    #- container-selinux
     - docker
     - docker-common
     - docker-engine
     - docker-selinux
 
-- name: install yum-utils
+- name: install docker dependencies
   yum:
-    name: yum-utils
+    name: '{{ item }}'
     state: latest
     update_cache: yes
+  with_items:
+    - yum-utils
+    - device-mapper-persistent-data
+    - lvm2
 
 - name: add Docker CE stable repo
   command: >

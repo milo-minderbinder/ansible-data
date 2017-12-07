@@ -1,7 +1,7 @@
 ---
 
 - hosts: jenkins_hosts
-  become: True
+  become: true
   vars:
     jenkins_args:
       - "{{ (jenkins_url_prefix|default('', True) != '' ) | ternary(['--prefix=', jenkins_url_prefix|default]|join|trim, '') }}"
