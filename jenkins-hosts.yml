@@ -99,7 +99,6 @@
   roles:
     - geerlingguy.jenkins
     - ansible
-  tasks:
-    - name: include php.yml playbook
-      include: php.yml
+
+- import_playbook: php.yml
 
