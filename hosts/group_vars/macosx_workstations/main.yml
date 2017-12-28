@@ -19,6 +19,7 @@ cask_apps:
   pycharm: {}
   slack: {}
   spotify: {}
+  transmission: {}
   vlc: {}
 
 homebrew_apps:
