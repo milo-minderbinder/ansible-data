@@ -52,9 +52,9 @@ homebrew_apps:
   plantuml: {}
   python: {}
   python3: {}
+  ripgrep: {}
+  ruby: {}
   sbt: {}
-  thrift:
-    install_options: "with-java,with-python"
   weechat:
     install_options: "with-python"
 

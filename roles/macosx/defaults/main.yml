@@ -15,6 +15,8 @@ homebrew_apps:
   bash-completion: {}
   brew-cask-completion: {}
   git: {}
+  gnupg: {}
+  grep: {}
   python: {}
   python3: {}
 
