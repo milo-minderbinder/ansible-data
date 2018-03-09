@@ -1,20 +1,18 @@
 ---
 
 homebrew_taps:
-  - buo/cask-upgrade
   - caskroom/cask
   - caskroom/versions
-  - homebrew/dupes
   - homebrew/php
 
 cask_apps:
-  docker: {}
+  docker-edge: {}
   firefox: {}
   flux: {}
   intellij-idea: {}
   java: {}
-  java8: {}
   java7: {}
+  java8: {}
   keepassxc: {}
   pycharm: {}
   slack: {}
@@ -41,22 +39,28 @@ homebrew_apps:
   jmeter:
     install_options: 'with-plugins'
   jython: {}
+  kubernetes-cli: {}
+  lastpass-cli:
+    install_options: 'with-pinentry'
   macvim:
-    install_options: 'with-override-system-vim,with-lua,with-luajit,with-python3'
+    install_options: 'with-lua,with-luajit,with-override-system-vim'
   maven: {}
   moreutils: {}
   nmap: {}
   node: {}
   nvm: {}
+  openssl@1.1: {}
+  p7zip: {}
   phantomjs: {}
   plantuml: {}
   python: {}
-  python3: {}
+  python@2: {}
   ripgrep: {}
   ruby: {}
   sbt: {}
+  sslyze: {}
   weechat:
-    install_options: "with-python"
+    install_options: "with-python@2"
 
 git_user: Milo Minderbinder
 git_email: minderbinder.enterprises@gmail.com

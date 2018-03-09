@@ -10,7 +10,7 @@
     cmake: {}
     git: {}
     macvim:
-      install_options: 'with-override-system-vim,with-lua,with-luajit,with-python3'
+      install_options: 'with-lua,with-luajit,with-override-system-vim'
     python: {}
-    python3: {}
+    python@2: {}
 

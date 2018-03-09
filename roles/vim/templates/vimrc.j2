@@ -179,7 +179,7 @@ nnorem <leader>l :MarkLocation<CR>
 nnorem <leader>f :MakeFinding<CR>
 nnorem <leader>F "fp
 nnorem <leader>n :noh<CR>
-nnorem <leader>D :diffoff<CR>
+nnorem <leader>D :q<CR>:diffoff<CR>
 vnorem // y:call setreg('9', escape(@", '\\/.*$^~[]'))<cr>/<c-r>9<cr>
 
 {% if ansible_os_family == 'Darwin' %}

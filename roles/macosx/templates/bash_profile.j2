@@ -1,9 +1,6 @@
 # Put Homebrew's sbin on the PATH
 export PATH="/usr/local/sbin:$PATH"
 
-# Put brewed python2 on the PATH
-export PATH="/usr/local/opt/python/libexec/bin:$PATH"
-
 # Java config
 export JAVA7=$(/usr/libexec/java_home -v 1.7)
 export JAVA8=$(/usr/libexec/java_home -v 1.8)
@@ -41,7 +38,7 @@ export WORKON_HOME=$HOME/.virtualenvs
 export PROJECT_HOME=$HOME/code
 source /usr/local/bin/virtualenvwrapper.sh
 
-# Homebrew Config
+# Homebrew config
 export HOMEBREW_GITHUB_API_TOKEN={{ homebrew_github_api_token }}
 if [ -f $(brew --prefix)/etc/bash_completion ]; then
 	. $(brew --prefix)/etc/bash_completion

@@ -1,10 +1,8 @@
 ---
 
 homebrew_taps:
-  - buo/cask-upgrade
   - caskroom/cask
   - caskroom/versions
-  - homebrew/dupes
 
 cask_apps:
   firefox: {}
@@ -17,8 +15,10 @@ homebrew_apps:
   git: {}
   gnupg: {}
   grep: {}
+  lastpass-cli:
+    install_options: 'with-pinentry'
   python: {}
-  python3: {}
+  python@2: {}
 
 git_user: Milo Minderbinder
 git_email: minderbinder.enterprises@gmail.com
