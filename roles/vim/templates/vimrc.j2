@@ -107,6 +107,7 @@ au BufNewFile,BufRead *.yaml set tabstop=2 |
 au BufNewFile,BufRead *.yml,*.yaml set filetype=ansible
 
 " Custom commands
+command! -nargs=* -complete=shellcmd R new | setlocal buftype=nofile bufhidden=hide noswapfile | 0r !<args>
 command! MarkLocation :let @f=expand('%:p') . '(' . line('.') . ')'
 command! MakeFinding :let @f=expand('%:p') . '(' . line('.') . '):' . "\n" . getline('.')
 command! -nargs=1 Venv :VirtualEnvActivate <args> | YcmRestartServer
