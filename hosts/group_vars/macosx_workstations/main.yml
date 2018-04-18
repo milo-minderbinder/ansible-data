@@ -3,7 +3,6 @@
 homebrew_taps:
   - caskroom/cask
   - caskroom/versions
-  - homebrew/php
 
 cask_apps:
   docker-edge: {}
@@ -11,7 +10,6 @@ cask_apps:
   flux: {}
   intellij-idea: {}
   java: {}
-  java7: {}
   java8: {}
   keepassxc: {}
   pycharm: {}
@@ -19,6 +17,7 @@ cask_apps:
   spotify: {}
   transmission: {}
   vlc: {}
+  zulu7: {}
 
 homebrew_apps:
   bash-completion: {}
@@ -35,7 +34,7 @@ homebrew_apps:
   gradle: {}
   grep: {}
   groovysdk: {}
-  homebrew/php/composer: {}
+  composer: {}
   jmeter:
     install_options: 'with-plugins'
   jython: {}
@@ -52,6 +51,8 @@ homebrew_apps:
   openssl@1.1: {}
   p7zip: {}
   phantomjs: {}
+  php@5.6: {}
+  php@7.1: {}
   plantuml: {}
   python: {}
   python@2: {}
@@ -59,8 +60,6 @@ homebrew_apps:
   ruby: {}
   sbt: {}
   sslyze: {}
-  weechat:
-    install_options: "with-python@2"
 
 git_user: Milo Minderbinder
 git_email: minderbinder.enterprises@gmail.com

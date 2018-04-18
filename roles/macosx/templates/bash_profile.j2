@@ -2,7 +2,9 @@
 export PATH="/usr/local/sbin:$PATH"
 
 # Java config
+{% if cask_apps.zulu7 is defined %}
 export JAVA7=$(/usr/libexec/java_home -v 1.7)
+{% endif %}
 export JAVA8=$(/usr/libexec/java_home -v 1.8)
 {% if cask_apps.java is defined %}
 export JAVA9=$(/usr/libexec/java_home -v 9)

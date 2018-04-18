@@ -7,7 +7,6 @@ homebrew_taps:
 cask_apps:
   firefox: {}
   java8: {}
-  java7: {}
 
 homebrew_apps:
   bash-completion: {}
