@@ -8,6 +8,7 @@ export JAVA7=$(/usr/libexec/java_home -v 1.7)
 export JAVA8=$(/usr/libexec/java_home -v 1.8)
 {% if cask_apps.java is defined %}
 export JAVA9=$(/usr/libexec/java_home -v 9)
+export JAVA10=$(/usr/libexec/java_home -v 10)
 {% endif %}
 export JAVA_HOME=$JAVA8
 export JRE_HOME=$JAVA_HOME/jre
@@ -35,10 +36,12 @@ export NVM_DIR="$HOME/.nvm"
 . "/usr/local/opt/nvm/nvm.sh"
 {% endif %}
 
-# Python virtualenvwrapper setup
-export WORKON_HOME=$HOME/.virtualenvs
-export PROJECT_HOME=$HOME/code
-source /usr/local/bin/virtualenvwrapper.sh
+# Python pyenv config
+#export WORKON_HOME=$HOME/.virtualenvs
+export WORKON_HOME=$HOME/.venvs
+if command -v pyenv 1>/dev/null 2>&1; then
+	eval "$(pyenv init -)"
+fi
 
 # Homebrew config
 export HOMEBREW_GITHUB_API_TOKEN={{ homebrew_github_api_token }}
