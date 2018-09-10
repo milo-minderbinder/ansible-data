@@ -5,6 +5,7 @@ homebrew_taps:
   - caskroom/versions
 
 cask_apps:
+  android-sdk: {}
   docker-edge: {}
   firefox: {}
   flux: {}
@@ -25,13 +26,17 @@ homebrew_apps:
   brew-cask-completion: {}
   cloc: {}
   cmake: {}
+  coreutils: {}
   ddate: {}
   dependency-check: {}
   dos2unix: {}
   geckodriver: {}
-  git: {}
+  git:
+    install_options: 'with-pcre2'
   gnupg: {}
-  gradle: {}
+  go: {}
+  gradle:
+    install_options: 'with-all'
   grep: {}
   groovysdk: {}
   composer: {}

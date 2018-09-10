@@ -14,6 +14,14 @@ export JAVA_HOME=$JAVA8
 export JRE_HOME=$JAVA_HOME/jre
 export PATH="$JAVA_HOME/bin:$PATH"
 
+{% if homebrew_apps.go is defined %}
+# Go config
+export GOPATH=$HOME/go
+export GOROOT=/usr/local/opt/go/libexec
+export PATH="$GOPATH/bin:$PATH"
+export PATH="$GOROOT/bin:$PATH"
+{% endif %}
+
 {% if homebrew_apps.maven is defined %}
 # Maven config
 export M2_HOME=/usr/local/opt/maven/libexec
@@ -30,6 +38,12 @@ export GRADLE_HOME=/usr/local/opt/gradle/libexec
 export GROOVY_HOME=/usr/local/opt/groovysdk/libexec
 {% endif %}
 
+{% if cask_apps.android-sdk is defined %}
+# Android config
+export ANDROID_SDK_ROOT="$(brew --prefix)/share/android-sdk"
+export ANDROID_HOME="$ANDROID_SDK_ROOT"
+{% endif %}
+
 {% if homebrew_apps.nvm is defined %}
 # nvm config
 export NVM_DIR="$HOME/.nvm"
@@ -42,6 +56,8 @@ export WORKON_HOME=$HOME/.venvs
 if command -v pyenv 1>/dev/null 2>&1; then
 	eval "$(pyenv init -)"
 fi
+export PYENV_ROOT="$(pyenv root)"
+export PIPENV_PYTHON="$PYENV_ROOT/shims/python"
 
 # Homebrew config
 export HOMEBREW_GITHUB_API_TOKEN={{ homebrew_github_api_token }}
@@ -56,3 +72,5 @@ GIT_PS1_SHOWDIRTYSTATE=true
 export PS1='[\h:\u \W$(__git_ps1)]\$ '
 
 export EDITOR=/usr/local/bin/vim
+
+export SSH_AUTH_SOCK=$HOME/.yubiagent/sock
