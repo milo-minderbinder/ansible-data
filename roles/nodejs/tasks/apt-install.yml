@@ -15,6 +15,7 @@
 
   - name: execute node setup script
     shell: bash {{ tmp_node_setup.path }}
+    become: true
 
   - name: install nodejs apt
     apt: name=nodejs state=latest update_cache=yes

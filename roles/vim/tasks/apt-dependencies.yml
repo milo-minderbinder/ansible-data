@@ -1,11 +1,13 @@
 ---
 
 - name: install dependencies apt
-  apt: name={{ item }} state=latest update_cache=yes
-  with_items:
-    - git
-    - build-essential
-    - cmake
-    - python-dev
-    - python3-dev
-    - vim
+  apt:
+    name:
+      - git
+      - build-essential
+      - cmake
+      - python-dev
+      - python3-dev
+      - vim
+    state: latest
+    update_cache: yes

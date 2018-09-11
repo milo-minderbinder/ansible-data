@@ -27,6 +27,9 @@ let NERDTreeIgnore=['__pycache__$[[dir]]', '\.pyc$[[file]]'{{ ", '\~$', '\.DS_St
 let NERDTreeCascadeSingleChildDir=1
 let NERDTreeMinimalUI=1
 
+" NERDTree plugin to show git status indicators
+Plugin 'Xuyuanp/nerdtree-git-plugin'
+
 " Recursively diff two directories
 Plugin 'will133/vim-dirdiff'
 
@@ -84,6 +87,10 @@ augroup vimrc
 				\ endif
 augroup END
 
+" Change the window-local current directory to the directory of the current
+" file, except when the file is in /tmp
+au BufEnter * if expand("%:p:h") !~ '^/tmp' | silent! lcd %:p:h | endif
+
 " Custom filetype associations
 au BufNewFile,BufRead *.ftl,*.vm set syntax=jsp
 au BufNewFile,BufRead *.java set tabstop=4 |
@@ -102,14 +109,15 @@ au BufNewFile,BufRead *.py set tabstop=4 |
 	\ set shiftwidth=4 |
 	\ set expandtab |
 	\ set autoindent
-au BufNewFile,BufRead *.yaml set tabstop=2 |
+au BufNewFile,BufRead *.yml,*.yaml set tabstop=2 |
 	\ set softtabstop=2 |
 	\ set shiftwidth=2 |
 	\ set expandtab |
 	\ set autoindent
-au BufNewFile,BufRead *.yml set filetype=ansible
+au BufNewFile,BufRead *.yml set filetype=yaml.ansible
 
 " Custom commands
+command! -nargs=1 SetSTS :set tabstop=<args> | set softtabstop=<args> | set shiftwidth=<args>
 command! -nargs=* -complete=shellcmd R new | setlocal buftype=nofile bufhidden=hide noswapfile | 0r !<args>
 command! -nargs=* -range=% -complete=shellcmd WR new | setlocal buftype=nofile bufhidden=hide noswapfile | 0r !sed -n <line1>,<line2>p # | <args>
 command! MarkLocation :let @f=expand('%:p') . '(' . line('.') . ')'
@@ -117,6 +125,7 @@ command! MakeFinding :let @f=expand('%:p') . '(' . line('.') . '):' . "\n" . get
 command! -nargs=1 Venv :VirtualEnvActivate <args> | YcmRestartServer
 command! -range=% JSONFormat :<line1>,<line2>!python -m json.tool
 command! -range=% CertText :<line1>,<line2>w !cat|sed -E s/^[[:space:]]*//|openssl x509 -text -noout|less
+command! -range=% CertText2 new | setlocal buftype=nofile bufhidden=hide noswapfile | execute '0r !sed -n '.<line1>.','.<line2>.'p # | sed -E s/^[[:space:]]*// | openssl x509 -text -noout' | normal gg
 
 {% if ansible_os_family == 'Darwin' %}
 function! Pygmentize(line1, line2, ...)
@@ -166,8 +175,23 @@ function! AnsibleVault(action)
 endfunction
 command! -nargs=1 -range=% AnsibleVault :call AnsibleVault(<args>)
 
+function! ExitNormalMode()
+    unmap <buffer> <C-ScrollWheelDown>
+    call feedkeys("a")
+endfunction
+
+function! EnterNormalMode()
+    if &buftype == 'terminal' && mode('') == 't'
+        call feedkeys("\<c-w>N")
+        call feedkeys("\<c-y>")
+        map <buffer> <C-ScrollWheelDown> :call ExitNormalMode()<CR>
+    endif
+endfunction
+
 " Custom keymappings
 let mapleader=','
+
+tmap <C-ScrollWheelUp> <c-w>:call EnterNormalMode()<CR>
 
 nnorem <leader>d :YcmCompleter GoToDeclaration<CR>
 nnorem <leader>i :YcmCompleter GoToDefinition<CR>
@@ -205,7 +229,7 @@ syntax on
 set nu
 set cursorline
 set hlsearch
-set autochdir
+set noautochdir
 set diffopt=filler,vertical
 
 " Editor options
@@ -223,6 +247,7 @@ autocmd! GUIEnter * set vb t_vb=
 if has("gui_running")
 	let g:airline_powerline_fonts=1
 {% if ansible_os_family == 'Darwin' %}
+	set macmeta
 	set guifont=Source\ Code\ Pro\ for\ Powerline:h15
 {% else %}
 	set guifont=Source\ Code\ Pro\ for\ Powerline\ 13

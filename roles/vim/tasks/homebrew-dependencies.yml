@@ -8,7 +8,8 @@
     update_homebrew: yes
   with_dict:
     cmake: {}
-    git: {}
+    git:
+      install_options: 'with-pcre2'
     macvim:
       install_options: 'with-lua,with-luajit,with-override-system-vim'
     python: {}

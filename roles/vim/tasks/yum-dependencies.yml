@@ -5,18 +5,22 @@
     name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm
     state: installed
     update_cache: yes
+  become: true
 
 - name: install dependencies yum
-  yum: name={{ item }} state=latest update_cache=yes
-  with_items:
-    - automake
-    - cmake
-    - gcc
-    - gcc-c++
-    - git
-    - kernel-devel
-    - make
-    - python-devel
-    - python34-devel
-    - vim-enhanced
+  yum:
+    name:
+      - automake
+      - cmake
+      - gcc
+      - gcc-c++
+      - git
+      - kernel-devel
+      - make
+      - python-devel
+      - python36-devel
+      - vim-enhanced
+    state: latest
+    update_cache: yes
+  become: true
 
