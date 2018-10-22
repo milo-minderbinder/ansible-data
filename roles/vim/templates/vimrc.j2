@@ -10,9 +10,11 @@ call vundle#begin()
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
 
+{% if vim_installed_version is version('8.0.0', '>=') %}
 " autocompletion
 Plugin 'Valloric/YouCompleteMe'
 let g:ycm_autoclose_preview_window_after_completion=1
+{% endif %}
 
 " Python virtualenv support within Vim (and Vim plugins - works with
 " YouCompleteMe)
@@ -175,23 +177,27 @@ function! AnsibleVault(action)
 endfunction
 command! -nargs=1 -range=% AnsibleVault :call AnsibleVault(<args>)
 
+{% if vim_installed_version is version('8.0.0', '>=') %}
 function! ExitNormalMode()
-    unmap <buffer> <C-ScrollWheelDown>
-    call feedkeys("a")
+	unmap <buffer> <C-ScrollWheelDown>
+	call feedkeys("a")
 endfunction
 
 function! EnterNormalMode()
-    if &buftype == 'terminal' && mode('') == 't'
-        call feedkeys("\<c-w>N")
-        call feedkeys("\<c-y>")
-        map <buffer> <C-ScrollWheelDown> :call ExitNormalMode()<CR>
-    endif
+	if &buftype == 'terminal' && mode('') == 't'
+		call feedkeys("\<c-w>N")
+		call feedkeys("\<c-y>")
+		map <buffer> <C-ScrollWheelDown> :call ExitNormalMode()<CR>
+	endif
 endfunction
+{% endif %}
 
 " Custom keymappings
 let mapleader=','
 
+{% if vim_installed_version is version('8.0.0', '>=') %}
 tmap <C-ScrollWheelUp> <c-w>:call EnterNormalMode()<CR>
+{% endif %}
 
 nnorem <leader>d :YcmCompleter GoToDeclaration<CR>
 nnorem <leader>i :YcmCompleter GoToDefinition<CR>
@@ -204,10 +210,13 @@ xmap <leader>c<Space> <plug>NERDCommenterComment
 nmap <leader>cc <plug>NERDCommenterToggle
 xmap <leader>cc <plug>NERDCommenterToggle
 
+nmap <leader>b Oimport pdb; pdb.set_trace()<ESC>
+nmap <leader>B Oimport ipdb; ipdb.set_trace()<ESC>
 nnorem <leader>l :MarkLocation<CR>
 nnorem <leader>f :MakeFinding<CR>
 nnorem <leader>F "fp
 nnorem <leader>n :noh<CR>
+nmap <leader>s /\s\+$<CR>
 nnorem <leader>D :q<CR>:diffoff<CR>
 vnorem // y:call setreg('9', escape(@", '\\/.*$^~[]'))<cr>/<c-r>9<cr>
 

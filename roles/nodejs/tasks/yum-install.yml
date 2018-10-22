@@ -24,6 +24,7 @@
 
   - name: install nodejs yum
     yum: name=nodejs state=latest update_cache=yes
+    become: true
 
   always:
     - name: remove node setup script

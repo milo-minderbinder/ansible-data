@@ -8,10 +8,17 @@
     update_homebrew: yes
   with_dict:
     cmake: {}
-    git:
-      install_options: 'with-pcre2'
+    git: {}
     macvim:
       install_options: 'with-lua,with-luajit,with-override-system-vim'
     python: {}
     python@2: {}
+
+- name: brew info macvim
+  command: brew info --json=v1 macvim
+  register: result
+
+- name: set vim_installed_version fact
+  set_fact:
+    vim_installed_version: "{{ (result.stdout | from_json | first).linked_keg }}"
 

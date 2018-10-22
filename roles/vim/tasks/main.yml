@@ -11,11 +11,16 @@
 
 - name: install typescript
   npm: name=typescript state=latest global=yes
+  become: true
 
 - name: clone Vundle
   git:
     repo: https://github.com/VundleVim/Vundle.vim.git
     dest: '{{ ansible_user_dir }}/.vim/bundle/Vundle.vim'
+
+- name: debug vim_installed_version
+  debug:
+    var: vim_installed_version
 
 - name: vimrc template
   template:
@@ -33,7 +38,7 @@
   register: ycm
 
 - name: compile YouCompleteMe
-  command: python3 install.py --clang-completer --tern-completer
+  command: python3 install.py --clang-completer --js-completer
   args:
     chdir: '{{ ansible_user_dir }}/.vim/bundle/YouCompleteMe'
   when: ycm.stat.isdir is defined and ycm.stat.isdir

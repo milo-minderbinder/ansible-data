@@ -24,3 +24,11 @@
     update_cache: yes
   become: true
 
+- name: get package info
+  package_facts:
+    manager: auto
+
+- name: set vim_installed_version fact
+  set_fact:
+    vim_installed_version: "{{ ansible_facts.packages['vim-enhanced'] | map(attribute='version') | max }}"
+
