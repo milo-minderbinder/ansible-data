@@ -1,3 +1,8 @@
+{#
+# vi: filetype=vim
+#}
+set pythonthreehome=/usr/local/opt/python3/Frameworks/Python.framework/Versions/3.7
+
 set nocompatible
 filetype off
 
@@ -15,6 +20,9 @@ Plugin 'VundleVim/Vundle.vim'
 Plugin 'Valloric/YouCompleteMe'
 let g:ycm_autoclose_preview_window_after_completion=1
 {% endif %}
+
+" Go language support
+Plugin 'fatih/vim-go'
 
 " Python virtualenv support within Vim (and Vim plugins - works with
 " YouCompleteMe)
@@ -63,16 +71,16 @@ Plugin 'pearofducks/ansible-vim'
 
 
 " All of your Plugins must be added before the following line
-call vundle#end()            " required
-filetype plugin indent on    " required
+call vundle#end()			 " required
+filetype plugin indent on	 " required
 " To ignore plugin indent changes, instead use:
 "filetype plugin on
 "
 " Brief help
-" :PluginList          - list configured plugins
-" :PluginInstall(!)    - install (update) plugins
-" :PluginSearch(!) foo - search (or refresh cache first) for foo
-" :PluginClean(!)      - confirm (or auto-approve) removal of unused plugins
+" :PluginList			- list configured plugins
+" :PluginInstall(!)		- install (update) plugins
+" :PluginSearch(!) foo	- search (or refresh cache first) for foo
+" :PluginClean(!)		- confirm (or auto-approve) removal of unused plugins
 "
 " see :h vundle for more details or wiki for FAQ
 " Put your non-Plugin stuff after this line
@@ -84,39 +92,14 @@ set encoding=utf-8
 augroup vimrc
 	au BufReadPre * setlocal foldmethod=indent
 	au BufWinEnter * if &fdm == 'indent' |
-				\ :normal zR<CR> |
 				\ setlocal foldmethod=manual |
+				\ :normal zR<CR> |
 				\ endif
 augroup END
 
 " Change the window-local current directory to the directory of the current
 " file, except when the file is in /tmp
 au BufEnter * if expand("%:p:h") !~ '^/tmp' | silent! lcd %:p:h | endif
-
-" Custom filetype associations
-au BufNewFile,BufRead *.ftl,*.vm set syntax=jsp
-au BufNewFile,BufRead *.java set tabstop=4 |
-	\ set softtabstop=4 |
-	\ set shiftwidth=4 |
-	\ set expandtab |
-	\ set autoindent
-au BufNewFile,BufRead *.groovy,*.gradle,Jenkinsfile,Jenkinsfile* set syntax=groovy |
-	\ set tabstop=4 |
-	\ set softtabstop=4 |
-	\ set shiftwidth=4 |
-	\ set expandtab |
-	\ set autoindent
-au BufNewFile,BufRead *.py set tabstop=4 |
-	\ set softtabstop=4 |
-	\ set shiftwidth=4 |
-	\ set expandtab |
-	\ set autoindent
-au BufNewFile,BufRead *.yml,*.yaml set tabstop=2 |
-	\ set softtabstop=2 |
-	\ set shiftwidth=2 |
-	\ set expandtab |
-	\ set autoindent
-au BufNewFile,BufRead *.yml set filetype=yaml.ansible
 
 " Custom commands
 command! -nargs=1 SetSTS :set tabstop=<args> | set softtabstop=<args> | set shiftwidth=<args>
@@ -178,11 +161,15 @@ endfunction
 command! -nargs=1 -range=% AnsibleVault :call AnsibleVault(<args>)
 
 {% if vim_installed_version is version('8.0.0', '>=') %}
+" Handles returning to terminal mode from normal mode entered through
+" EnterNormalMode()
 function! ExitNormalMode()
 	unmap <buffer> <C-ScrollWheelDown>
 	call feedkeys("a")
 endfunction
 
+" Handle entering normal mode from terminal mode, and maps CTRL+SCROLL-DOWN
+" to return to terminal mode
 function! EnterNormalMode()
 	if &buftype == 'terminal' && mode('') == 't'
 		call feedkeys("\<c-w>N")
@@ -242,11 +229,11 @@ set noautochdir
 set diffopt=filler,vertical
 
 " Editor options
-set ai
 set noexpandtab
 set tabstop=4
-set softtabstop=4
+set softtabstop=0
 set shiftwidth=4
+set ai
 
 set noerrorbells
 set novisualbell
@@ -263,4 +250,5 @@ if has("gui_running")
 {% endif %}
 	set background=dark
 	colorscheme solarized
+	set guioptions+=k
 endif

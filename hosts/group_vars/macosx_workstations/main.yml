@@ -28,11 +28,14 @@ homebrew_apps:
   cmake: {}
   composer: {}
   coreutils: {}
+  dep: {}
   ddate: {}
   dependency-check: {}
   dos2unix: {}
   geckodriver: {}
   git: {}
+  glide: {}
+  gnu-getopt: {}
   gnupg: {}
   go: {}
   gradle:
@@ -43,10 +46,10 @@ homebrew_apps:
     install_options: 'with-plugins'
   jython: {}
   kubernetes-cli: {}
-  lastpass-cli:
-    install_options: 'with-pinentry'
-  macvim:
-    install_options: 'with-lua,with-luajit,with-override-system-vim'
+  lastpass-cli: {}
+  lua: {}
+  luajit: {}
+  macvim: {}
   maven: {}
   moreutils: {}
   nmap: {}
@@ -56,6 +59,7 @@ homebrew_apps:
   p7zip: {}
   php@5.6: {}
   php@7.1: {}
+  pinentry: {}
   pipenv: {}
   plantuml: {}
   pyenv: {}

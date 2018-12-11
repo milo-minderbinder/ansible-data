@@ -56,6 +56,14 @@
     backup: yes
   when: nerdtree.stat.isdir is defined and nerdtree.stat.isdir
 
+- name: copy filetype.vim
+  copy:
+    src: filetype.vim
+    dest: '{{ ansible_user_dir }}/.vim/after/filetype.vim'
+    mode: 0755
+    force: no
+    backup: yes
+
 - name: copy ideavimrc
   copy:
     src: ideavimrc
