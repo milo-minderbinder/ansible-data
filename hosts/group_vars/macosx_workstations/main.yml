@@ -9,6 +9,7 @@ cask_apps:
   docker-edge: {}
   firefox: {}
   flux: {}
+  goland: {}
   intellij-idea: {}
   java: {}
   java8: {}
@@ -38,8 +39,7 @@ homebrew_apps:
   gnu-getopt: {}
   gnupg: {}
   go: {}
-  gradle:
-    install_options: 'with-all'
+  gradle: {}
   grep: {}
   groovysdk: {}
   jmeter:
