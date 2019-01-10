@@ -8,7 +8,7 @@ export JAVA7=$(/usr/libexec/java_home -v 1.7)
 export JAVA8=$(/usr/libexec/java_home -v 1.8)
 {% if cask_apps.java is defined %}
 export JAVA9=$(/usr/libexec/java_home -v 9)
-export JAVA10=$(/usr/libexec/java_home -v 10)
+export JAVA11=$(/usr/libexec/java_home -v 11)
 {% endif %}
 export JAVA_HOME=$JAVA8
 export JRE_HOME=$JAVA_HOME/jre
@@ -18,8 +18,8 @@ export PATH="$JAVA_HOME/bin:$PATH"
 # Go config
 export GOPATH=$HOME/go
 export GOROOT=/usr/local/opt/go/libexec
-export PATH="$GOPATH/bin:$PATH"
 export PATH="$GOROOT/bin:$PATH"
+export PATH="$GOPATH/bin:$PATH"
 {% endif %}
 
 {% if homebrew_apps.maven is defined %}
@@ -47,12 +47,13 @@ export ANDROID_HOME="$ANDROID_SDK_ROOT"
 {% if homebrew_apps.nvm is defined %}
 # nvm config
 export NVM_DIR="$HOME/.nvm"
-. "/usr/local/opt/nvm/nvm.sh"
+[ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
+[ -s "/usr/local/opt/nvm/etc/bash_completion" ] && . "/usr/local/opt/nvm/etc/bash_completion"  # This loads nvm bash_completion
 {% endif %}
 
 # Python pyenv config
 #export WORKON_HOME=$HOME/.virtualenvs
-export WORKON_HOME=$HOME/.venvs
+export WORKON_HOME="$HOME/.venvs"
 if command -v pyenv 1>/dev/null 2>&1; then
 	eval "$(pyenv init -)"
 fi
@@ -72,5 +73,8 @@ GIT_PS1_SHOWDIRTYSTATE=true
 export PS1='[\h:\u \W$(__git_ps1)]\$ '
 
 export EDITOR=/usr/local/bin/vim
+
+# use vi keybindings in bash
+set -o vi
 
 export SSH_AUTH_SOCK=$HOME/.yubiagent/sock

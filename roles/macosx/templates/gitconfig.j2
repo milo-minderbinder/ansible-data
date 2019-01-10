@@ -4,12 +4,19 @@
 [alias]
 	graph-log = !"git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset) %C(bold cyan)(committed: %cD)%C(reset) %C(bold yellow)%d%C(reset)%n''          %C(white)%B%C(reset)%n''          %C(dim white)- %an <%ae> %C(reset) %C(dim white)(committer: %cn <%ce>)%C(reset)' --all"
 	graph-log-brief = !"git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all"
+	remote-name = !"git for-each-ref --format='%(upstream:remotename)' \"$(git symbolic-ref HEAD)\""
+	remote-url = !"git config --get \"remote.$(git remote-name).url\""
+	remote-host = !"git remote-url | sed -E -e 's#(git@|https?://)([^:/]+).*#\\2#'"
+	org-and-repo = !"git remote-url | sed -E -e 's|.*[:/](.*/.*)|\\1|' -e 's|\\.git$||'"
+	open-github = !"echo "opening: https://$(git remote-host)/$(git org-and-repo)" && open \"https://$(git remote-host)/$(git org-and-repo)\""
 	branch-name = rev-parse --abbrev-ref HEAD
 	short-hash = rev-parse --short HEAD
 	latest-tagname = describe --abbrev=0 --tags
 	changelist = log --no-merges --pretty=format:\"* %s\"
 	changelist-tag = !"git changelist \"$(git latest-tagname)\".."
 	fetch-status = !"git fetch --all --prune && git stash list && git status"
+	squash-merge = !"git merge --squash $1 && git commit --edit -m \"$(git log --format=%B ..$1)\" && echo squashed and merged "
+	list-all-commits = log --all --reflog --pretty=format:"%H"
 [core]
 	excludesfile = /Users/{{ ansible_user_id }}/.gitexcludes
 	autocrlf = input
