@@ -6,9 +6,12 @@ export PATH="/usr/local/sbin:$PATH"
 export JAVA7=$(/usr/libexec/java_home -v 1.7)
 {% endif %}
 export JAVA8=$(/usr/libexec/java_home -v 1.8)
-{% if cask_apps.java is defined %}
 export JAVA9=$(/usr/libexec/java_home -v 9)
+{% if cask_apps.java11 is defined %}
 export JAVA11=$(/usr/libexec/java_home -v 11)
+{% endif %}
+{% if cask_apps.java is defined %}
+export JAVA12=$(/usr/libexec/java_home -v 12)
 {% endif %}
 export JAVA_HOME=$JAVA8
 export JRE_HOME=$JAVA_HOME/jre
@@ -51,6 +54,12 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "/usr/local/opt/nvm/etc/bash_completion" ] && . "/usr/local/opt/nvm/etc/bash_completion"  # This loads nvm bash_completion
 {% endif %}
 
+{% if homebrew_apps.hab is defined %}
+# hab config
+eval "$(hab cli completers --shell bash)"
+export HAB_AUTH_TOKEN="{{ hab_auth_token }}"
+{% endif %}
+
 # Python pyenv config
 #export WORKON_HOME=$HOME/.virtualenvs
 export WORKON_HOME="$HOME/.venvs"
@@ -58,7 +67,6 @@ if command -v pyenv 1>/dev/null 2>&1; then
 	eval "$(pyenv init -)"
 fi
 export PYENV_ROOT="$(pyenv root)"
-export PIPENV_PYTHON="$PYENV_ROOT/shims/python"
 
 # Homebrew config
 export HOMEBREW_GITHUB_API_TOKEN={{ homebrew_github_api_token }}
@@ -77,4 +85,5 @@ export EDITOR=/usr/local/bin/vim
 # use vi keybindings in bash
 set -o vi
 
+alias xml-format="XMLLINT_INDENT=$'\t' xmllint --format"
 export SSH_AUTH_SOCK=$HOME/.yubiagent/sock

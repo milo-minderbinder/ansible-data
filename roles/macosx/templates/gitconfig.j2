@@ -8,7 +8,7 @@
 	remote-url = !"git config --get \"remote.$(git remote-name).url\""
 	remote-host = !"git remote-url | sed -E -e 's#(git@|https?://)([^:/]+).*#\\2#'"
 	org-and-repo = !"git remote-url | sed -E -e 's|.*[:/](.*/.*)|\\1|' -e 's|\\.git$||'"
-	open-github = !"echo "opening: https://$(git remote-host)/$(git org-and-repo)" && open \"https://$(git remote-host)/$(git org-and-repo)\""
+	browse = !"echo "opening: https://$(git remote-host)/$(git org-and-repo)" && open \"https://$(git remote-host)/$(git org-and-repo)\""
 	branch-name = rev-parse --abbrev-ref HEAD
 	short-hash = rev-parse --short HEAD
 	latest-tagname = describe --abbrev=0 --tags
@@ -22,3 +22,5 @@
 	autocrlf = input
 [commit]
 	gpgsign = true
+[log]
+	date = iso-strict-local

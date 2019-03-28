@@ -26,7 +26,7 @@ Plugin 'fatih/vim-go'
 
 " Python virtualenv support within Vim (and Vim plugins - works with
 " YouCompleteMe)
-Plugin 'jmcantrell/vim-virtualenv'
+"Plugin 'jmcantrell/vim-virtualenv'
 
 " Git wrapper
 Plugin 'tpope/vim-fugitive'
@@ -160,6 +160,12 @@ function! AnsibleVault(action)
 endfunction
 command! -nargs=1 -range=% AnsibleVault :call AnsibleVault(<args>)
 
+" Run macro on each line in visual selection
+function! ExecuteMacroOverVisualRange()
+	echo "@".getcmdline()
+	execute ":'<,'>normal @".nr2char(getchar())
+endfunction
+
 {% if vim_installed_version is version('8.0.0', '>=') %}
 " Handles returning to terminal mode from normal mode entered through
 " EnterNormalMode()
@@ -181,6 +187,8 @@ endfunction
 
 " Custom keymappings
 let mapleader=','
+
+xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>
 
 {% if vim_installed_version is version('8.0.0', '>=') %}
 tmap <C-ScrollWheelUp> <c-w>:call EnterNormalMode()<CR>
@@ -251,4 +259,6 @@ if has("gui_running")
 	set background=dark
 	colorscheme solarized
 	set guioptions+=k
+	set lines=999 columns=999
+	nmap <leader>M :set lines=999 columns=999<CR>
 endif
