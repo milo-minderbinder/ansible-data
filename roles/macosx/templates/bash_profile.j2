@@ -5,7 +5,9 @@ export PATH="/usr/local/sbin:$PATH"
 {% if cask_apps.zulu7 is defined %}
 export JAVA7=$(/usr/libexec/java_home -v 1.7)
 {% endif %}
+{% if cask_apps.java8 is defined %}
 export JAVA8=$(/usr/libexec/java_home -v 1.8)
+{% endif %}
 export JAVA9=$(/usr/libexec/java_home -v 9)
 {% if cask_apps.java11 is defined %}
 export JAVA11=$(/usr/libexec/java_home -v 11)
@@ -13,8 +15,8 @@ export JAVA11=$(/usr/libexec/java_home -v 11)
 {% if cask_apps.java is defined %}
 export JAVA12=$(/usr/libexec/java_home -v 12)
 {% endif %}
-export JAVA_HOME=$JAVA8
-export JRE_HOME=$JAVA_HOME/jre
+export JAVA_HOME="$JAVA11"
+export JRE_HOME="$JAVA_HOME/jre"
 export PATH="$JAVA_HOME/bin:$PATH"
 
 {% if homebrew_apps.go is defined %}

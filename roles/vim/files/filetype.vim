@@ -6,12 +6,12 @@ augroup filetypedetect
 	" au! commands to set the filetype go here
 	au BufNewFile,BufRead *.ftl,*.vm setlocal syntax=jsp
 	au BufNewFile,BufRead *.java
-		\ setlocal noexpandtab |
+		\ setlocal expandtab |
 		\ setlocal shiftwidth=4 |
 		\ setlocal tabstop=4 |
 		\ setlocal softtabstop=0
 	au BufNewFile,BufRead *.groovy,*.gradle,Jenkinsfile,Jenkinsfile* setlocal syntax=groovy |
-		\ setlocal noexpandtab |
+		\ setlocal expandtab |
 		\ setlocal shiftwidth=4 |
 		\ setlocal tabstop=4 |
 		\ setlocal softtabstop=0

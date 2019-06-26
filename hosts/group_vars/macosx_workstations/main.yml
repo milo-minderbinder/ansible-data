@@ -12,6 +12,7 @@ cask_apps:
   goland: {}
   intellij-idea: {}
   java: {}
+  java11: {}
   java8: {}
   keepassxc: {}
   pycharm: {}
@@ -29,13 +30,11 @@ homebrew_apps:
   cmake: {}
   composer: {}
   coreutils: {}
-  dep: {}
   ddate: {}
   dependency-check: {}
   dos2unix: {}
   geckodriver: {}
   git: {}
-  glide: {}
   gnu-getopt: {}
   gnupg: {}
   go: {}
@@ -43,11 +42,9 @@ homebrew_apps:
   grep: {}
   gron: {}
   groovysdk: {}
-  jmeter:
-    install_options: 'with-plugins'
+  jmeter: {}
   jq: {}
   jython: {}
-  kubernetes-cli: {}
   lastpass-cli: {}
   lua: {}
   luajit: {}
@@ -71,6 +68,7 @@ homebrew_apps:
   sbt: {}
   shellcheck: {}
   sslyze: {}
+  yarn: {}
 
 git_user: Milo Minderbinder
 git_email: minderbinder.enterprises@gmail.com
