@@ -1,36 +1,45 @@
 # Put Homebrew's sbin on the PATH
-export PATH="/usr/local/sbin:$PATH"
+if [ -z "$(printf '%s' "${PATH}" | grep '/usr/local/sbin')" ]; then
+	printf "Putting Homebrew's sbin on the PATH\n" >&2
+	export PATH="/usr/local/sbin:$PATH"
+fi
 
 # Java config
 {% if cask_apps.zulu7 is defined %}
 export JAVA7=$(/usr/libexec/java_home -v 1.7)
 {% endif %}
-{% if cask_apps.java8 is defined %}
+{% if cask_apps.adoptopenjdk8 is defined %}
 export JAVA8=$(/usr/libexec/java_home -v 1.8)
 {% endif %}
 export JAVA9=$(/usr/libexec/java_home -v 9)
-{% if cask_apps.java11 is defined %}
+{% if cask_apps.adoptopenjdk11 is defined %}
 export JAVA11=$(/usr/libexec/java_home -v 11)
 {% endif %}
 {% if cask_apps.java is defined %}
-export JAVA12=$(/usr/libexec/java_home -v 12)
+export JAVA13=$(/usr/libexec/java_home -v 13)
 {% endif %}
 export JAVA_HOME="$JAVA11"
 export JRE_HOME="$JAVA_HOME/jre"
-export PATH="$JAVA_HOME/bin:$PATH"
+if [ -z "$(printf '%s' "${PATH}" | grep "$JAVA_HOME/bin")" ]; then
+	export PATH="$JAVA_HOME/bin:$PATH"
+fi
 
 {% if homebrew_apps.go is defined %}
 # Go config
-export GOPATH=$HOME/go
+export GOPATH="$HOME/go"
 export GOROOT=/usr/local/opt/go/libexec
-export PATH="$GOROOT/bin:$PATH"
-export PATH="$GOPATH/bin:$PATH"
+if [ -z "$(printf '%s' "${PATH}" | grep "$GOROOT/bin")" ]; then
+	export PATH="$GOROOT/bin:$PATH"
+fi
+if [ -z "$(printf '%s' "${PATH}" | grep "$GOPATH/bin")" ]; then
+	export PATH="$GOPATH/bin:$PATH"
+fi
 {% endif %}
 
 {% if homebrew_apps.maven is defined %}
 # Maven config
 export M2_HOME=/usr/local/opt/maven/libexec
-export M2=$M2_HOME/bin
+export M2="$M2_HOME/bin"
 {% endif %}
 
 {% if homebrew_apps.gradle is defined %}

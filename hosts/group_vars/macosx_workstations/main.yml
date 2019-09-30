@@ -3,6 +3,7 @@
 homebrew_taps:
   - caskroom/cask
   - caskroom/versions
+  - adoptopenjdk/openjdk
 
 cask_apps:
   android-sdk: {}
@@ -12,11 +13,12 @@ cask_apps:
   goland: {}
   intellij-idea: {}
   java: {}
-  java11: {}
-  java8: {}
+  adoptopenjdk11: {}
+  adoptopenjdk8: {}
   keepassxc: {}
   pycharm: {}
   slack: {}
+  spectacle: {}
   spotify: {}
   transmission: {}
   vlc: {}

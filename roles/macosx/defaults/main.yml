@@ -14,8 +14,7 @@ homebrew_apps:
   git: {}
   gnupg: {}
   grep: {}
-  lastpass-cli:
-    install_options: 'with-pinentry'
+  lastpass-cli: {}
   pipenv: {}
   pyenv: {}
   python: {}
