@@ -9,8 +9,7 @@
   with_dict:
     cmake: {}
     git: {}
-    macvim:
-      install_options: 'with-lua,with-luajit,with-override-system-vim'
+    macvim: {}
     python: {}
     python@2: {}
 
