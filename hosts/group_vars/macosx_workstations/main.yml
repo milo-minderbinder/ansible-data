@@ -1,11 +1,15 @@
 ---
 
+ansible_become: false
+
 homebrew_taps:
   - caskroom/cask
   - caskroom/versions
   - adoptopenjdk/openjdk
 
 cask_apps:
+  adoptopenjdk11: {}
+  adoptopenjdk8: {}
   android-sdk: {}
   docker-edge: {}
   firefox: {}
@@ -13,8 +17,6 @@ cask_apps:
   goland: {}
   intellij-idea: {}
   java: {}
-  adoptopenjdk11: {}
-  adoptopenjdk8: {}
   keepassxc: {}
   pycharm: {}
   slack: {}
@@ -62,8 +64,8 @@ homebrew_apps:
   openssl@1.1: {}
   p7zip: {}
   php@7.1: {}
-  pinentry: {}
   pinentry-mac: {}
+  pinentry: {}
   pipenv: {}
   plantuml: {}
   pyenv: {}
