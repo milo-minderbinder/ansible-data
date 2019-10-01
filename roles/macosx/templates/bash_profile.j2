@@ -97,4 +97,5 @@ export EDITOR=/usr/local/bin/vim
 set -o vi
 
 alias xml-format="XMLLINT_INDENT=$'\t' xmllint --format"
-export SSH_AUTH_SOCK=$HOME/.yubiagent/sock
+#export SSH_AUTH_SOCK=$HOME/.yubiagent/sock
+export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
