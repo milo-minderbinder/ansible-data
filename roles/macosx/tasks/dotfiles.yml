@@ -4,8 +4,8 @@
   template:
     src: bash_profile.j2
     dest: '{{ ansible_user_dir}}/.bash_profile'
-    mode: 0644
-    force: no
+    mode: 0600
+    force: yes
     backup: yes
 
 - name: copy gitexcludes

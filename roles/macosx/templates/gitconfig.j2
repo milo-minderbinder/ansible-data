@@ -18,6 +18,7 @@
 	squash-merge = !"git merge --squash $1 && git commit --edit -m \"$(git log --format=%B ..$1)\" && echo squashed and merged "
 	list-all-commits = log --all --reflog --pretty=format:"%H"
 	cleanex = clean -fdx -e '*.iml' -e '*.iws' -e '*.ipr' -e '.idea'
+	bva = branch -vva
 [core]
 	excludesfile = /Users/{{ ansible_user_id }}/.gitexcludes
 	autocrlf = input

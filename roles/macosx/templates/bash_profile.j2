@@ -79,23 +79,39 @@ if command -v pyenv 1>/dev/null 2>&1; then
 fi
 export PYENV_ROOT="$(pyenv root)"
 
+# ansible config
+export ANSIBLE_CONFIG="$HOME/.ansible.cfg"
+{% if homebrew_apps.lastpass-cli is defined %}
+export ANSIBLE_VAULT_PASSWORD_FILE="$HOME/.vault_pass.bash"
+{% endif %}
+{% if cask_apps.docker is defined or cask_apps.docker-edge is defined %}
+export DOCKER_CONFIG_FILE="$HOME/.docker.yml"
+{% endif %}
+
 # Homebrew config
 export HOMEBREW_GITHUB_API_TOKEN={{ homebrew_github_api_token }}
-if [ -f $(brew --prefix)/etc/bash_completion ]; then
-	. $(brew --prefix)/etc/bash_completion
+if [ -f "$(brew --prefix)/etc/bash_completion" ]; then
+	. "$(brew --prefix)/etc/bash_completion"
 fi
-
-export GPG_TTY=$(tty)
 
 # Show git branch & state in prompt
 GIT_PS1_SHOWDIRTYSTATE=true
 export PS1='[\h:\u \W$(__git_ps1)]\$ '
 
 export EDITOR=/usr/local/bin/vim
+export GPG_TTY=$(tty)
+export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
+#export SSH_AUTH_SOCK="$HOME/.yubiagent/sock"
 
 # use vi keybindings in bash
 set -o vi
 
 alias xml-format="XMLLINT_INDENT=$'\t' xmllint --format"
-#export SSH_AUTH_SOCK=$HOME/.yubiagent/sock
-export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
+
+if [ -d "${HOME}/.bash_profile.d" ]; then
+	while IFS=	read -r; do
+		printf 'sourcing file in bash profile: %s\n' "${REPLY}"
+		source "${REPLY}"
+	done < <(find "${HOME}/.bash_profile.d" -type f -iname '*.bash' | sort)
+fi
+

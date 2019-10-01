@@ -3,22 +3,36 @@
 homebrew_taps:
   - caskroom/cask
   - caskroom/versions
+  - adoptopenjdk/openjdk
 
 cask_apps:
+  adoptopenjdk11: {}
+  adoptopenjdk8: {}
   firefox: {}
-  java8: {}
+  flux: {}
+  java: {}
+  spectacle: {}
+  vlc: {}
 
 homebrew_apps:
   bash-completion: {}
   brew-cask-completion: {}
+  coreutils: {}
+  dos2unix: {}
   git: {}
   gnupg: {}
   grep: {}
+  grep: {}
+  gron: {}
   lastpass-cli: {}
+  macvim: {}
+  moreutils: {}
   pipenv: {}
   pyenv: {}
   python: {}
   python@2: {}
+  ripgrep: {}
+  shellcheck: {}
 
 git_user: Milo Minderbinder
 git_email: minderbinder.enterprises@gmail.com
