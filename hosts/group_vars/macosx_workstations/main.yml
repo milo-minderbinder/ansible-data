@@ -34,7 +34,9 @@ homebrew_apps:
   coreutils: {}
   ddate: {}
   dependency-check: {}
+  dive: {}
   dos2unix: {}
+  expect: {}
   geckodriver: {}
   git: {}
   gnu-getopt: {}
@@ -44,6 +46,7 @@ homebrew_apps:
   grep: {}
   gron: {}
   groovysdk: {}
+  hopenpgp-tools: {}
   jmeter: {}
   jq: {}
   jython: {}
@@ -60,6 +63,7 @@ homebrew_apps:
   p7zip: {}
   php@7.1: {}
   pinentry: {}
+  pinentry-mac: {}
   pipenv: {}
   plantuml: {}
   pyenv: {}
@@ -71,6 +75,7 @@ homebrew_apps:
   shellcheck: {}
   sslyze: {}
   yarn: {}
+  ykman: {}
 
 git_user: Milo Minderbinder
 git_email: minderbinder.enterprises@gmail.com
