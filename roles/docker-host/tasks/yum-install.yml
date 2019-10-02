@@ -2,24 +2,27 @@
 
 - name: uninstall old versions
   yum:
-    name: '{{ item }}'
+    name:
+      - docker
+      - docker-client
+      - docker-client-latest
+      - docker-common
+      - docker-latest
+      - docker-latest-logrotate
+      - docker-logrotate
+      - docker-selinux
+      - docker-engine-selinux
+      - docker-engine
     state: absent
-  with_items:
-    #- container-selinux
-    - docker
-    - docker-common
-    - docker-engine
-    - docker-selinux
 
 - name: install docker dependencies
   yum:
-    name: '{{ item }}'
+    name:
+      - yum-utils
+      - device-mapper-persistent-data
+      - lvm2
     state: latest
     update_cache: yes
-  with_items:
-    - yum-utils
-    - device-mapper-persistent-data
-    - lvm2
 
 - name: add Docker CE stable repo
   command: >
@@ -36,3 +39,15 @@
     update_cache: yes
   notify: restart docker daemon
 
+- name: create docker group
+  group:
+    name: docker
+    state: present
+
+- name: add user to docker group
+  user:
+    append: yes
+    create_home: no
+    groups: docker
+    name: "{{ ansible_user }}"
+    state: present

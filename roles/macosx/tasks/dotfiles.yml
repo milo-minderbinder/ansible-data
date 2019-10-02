@@ -4,7 +4,7 @@
   template:
     src: bash_profile.j2
     dest: '{{ ansible_user_dir}}/.bash_profile'
-    mode: 0644
+    mode: 0600
     force: no
     backup: yes
 

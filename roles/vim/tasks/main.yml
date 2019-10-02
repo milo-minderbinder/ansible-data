@@ -11,11 +11,28 @@
 
 - name: install typescript
   npm: name=typescript state=latest global=yes
+  become: true
+
+- name: create vim dir
+  file:
+    path: '{{ ansible_user_dir}}/.vim'
+    state: directory
+    mode: 0755
+
+- name: create vim after scripts dir
+  file:
+    path: '{{ ansible_user_dir}}/.vim/after'
+    state: directory
+    mode: 0755
 
 - name: clone Vundle
   git:
     repo: https://github.com/VundleVim/Vundle.vim.git
     dest: '{{ ansible_user_dir }}/.vim/bundle/Vundle.vim'
+
+- name: debug vim_installed_version
+  debug:
+    var: vim_installed_version
 
 - name: vimrc template
   template:
@@ -28,12 +45,18 @@
 - name: install vim plugins
   command: vim +PluginInstall +qall
 
+#- name: clean vim plugins
+  #command: vim +PluginClean +qall
+
+#- name: update vim plugins
+  #command: vim +PluginUpdate +qall
+
 - name: check if YouCompleteMe installed
   stat: path='{{ ansible_user_dir }}/.vim/bundle/YouCompleteMe'
   register: ycm
 
 - name: compile YouCompleteMe
-  command: python3 install.py --clang-completer --tern-completer
+  command: python3 install.py --clang-completer --ts-completer
   args:
     chdir: '{{ ansible_user_dir }}/.vim/bundle/YouCompleteMe'
   when: ycm.stat.isdir is defined and ycm.stat.isdir
@@ -50,6 +73,14 @@
     force: no
     backup: yes
   when: nerdtree.stat.isdir is defined and nerdtree.stat.isdir
+
+- name: copy filetype.vim
+  copy:
+    src: filetype.vim
+    dest: '{{ ansible_user_dir }}/.vim/after/filetype.vim'
+    mode: 0755
+    force: no
+    backup: yes
 
 - name: copy ideavimrc
   copy:

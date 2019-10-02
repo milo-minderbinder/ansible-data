@@ -1,24 +1,30 @@
 ---
 
+ansible_become: false
+
 homebrew_taps:
   - caskroom/cask
   - caskroom/versions
-  - homebrew/php
+  - adoptopenjdk/openjdk
 
 cask_apps:
+  adoptopenjdk11: {}
+  adoptopenjdk8: {}
+  android-sdk: {}
   docker-edge: {}
   firefox: {}
   flux: {}
+  goland: {}
   intellij-idea: {}
   java: {}
-  java7: {}
-  java8: {}
   keepassxc: {}
   pycharm: {}
   slack: {}
+  spectacle: {}
   spotify: {}
   transmission: {}
   vlc: {}
+  zulu7: {}
 
 homebrew_apps:
   bash-completion: {}
@@ -26,24 +32,30 @@ homebrew_apps:
   brew-cask-completion: {}
   cloc: {}
   cmake: {}
+  composer: {}
+  coreutils: {}
   ddate: {}
   dependency-check: {}
+  dive: {}
   dos2unix: {}
+  expect: {}
   geckodriver: {}
   git: {}
+  gnu-getopt: {}
   gnupg: {}
+  go: {}
   gradle: {}
   grep: {}
+  gron: {}
   groovysdk: {}
-  homebrew/php/composer: {}
-  jmeter:
-    install_options: 'with-plugins'
+  hopenpgp-tools: {}
+  jmeter: {}
+  jq: {}
   jython: {}
-  kubernetes-cli: {}
-  lastpass-cli:
-    install_options: 'with-pinentry'
-  macvim:
-    install_options: 'with-lua,with-luajit,with-override-system-vim'
+  lastpass-cli: {}
+  lua: {}
+  luajit: {}
+  macvim: {}
   maven: {}
   moreutils: {}
   nmap: {}
@@ -51,16 +63,22 @@ homebrew_apps:
   nvm: {}
   openssl@1.1: {}
   p7zip: {}
-  phantomjs: {}
+  php@7.1: {}
+  pinentry-mac: {}
+  pinentry: {}
+  pipenv: {}
   plantuml: {}
+  pyenv: {}
   python: {}
   python@2: {}
   ripgrep: {}
   ruby: {}
   sbt: {}
+  shellcheck: {}
   sslyze: {}
-  weechat:
-    install_options: "with-python@2"
+  yarn: {}
+  ykman: {}
+  yubikey-personalization: {}
 
 git_user: Milo Minderbinder
 git_email: minderbinder.enterprises@gmail.com

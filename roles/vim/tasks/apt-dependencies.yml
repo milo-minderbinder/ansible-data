@@ -1,11 +1,22 @@
 ---
 
 - name: install dependencies apt
-  apt: name={{ item }} state=latest update_cache=yes
-  with_items:
-    - git
-    - build-essential
-    - cmake
-    - python-dev
-    - python3-dev
-    - vim
+  apt:
+    name:
+      - git
+      - build-essential
+      - cmake
+      - python-dev
+      - python3-dev
+      - vim
+    state: latest
+    update_cache: yes
+  become: true
+
+- name: get package info
+  package_facts:
+    manager: auto
+
+- name: set vim_installed_version fact
+  set_fact:
+    vim_installed_version: "{{ ansible_facts.packages['vim'] | map(attribute='version') | map('regex_search', '^2:.*') | select() | select('version', '2:8.0.0', '>=') | max | regex_replace('^\\d+:') }}"

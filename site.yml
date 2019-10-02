@@ -1,6 +1,6 @@
 ---
 
-- include: containers.yml
+- import_playbook: containers.yml
 
 - hosts: workstations
   tasks:
@@ -8,11 +8,11 @@
   tags:
     - always
 
-- include: macosx-workstations.yml
+- import_playbook: macosx-workstations.yml
 
-- include: workstations.yml
+- import_playbook: workstations.yml
 
-- include: docker-hosts.yml
+- import_playbook: docker-hosts.yml
 
-- include: jenkins-hosts.yml
+- import_playbook: jenkins-hosts.yml
 

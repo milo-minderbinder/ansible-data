@@ -11,3 +11,7 @@
   tags:
     - dotfiles
 
+- include: gpg-config.yml
+  tags:
+    - gpg-config
+

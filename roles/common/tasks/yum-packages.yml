@@ -10,10 +10,11 @@
     update_cache: yes
 
 - name: install common packages
-  yum: name={{ item }} state=latest
-  with_items:
-    - python
-    - iputils
+  yum:
+    name:
+      - python
+      - iputils
+    state: latest
 
 - name: install openssh-server
   yum: name=openssh-server state=latest
@@ -27,12 +28,13 @@
 
 # see: https://cryptography.io/en/latest/installation/#building-cryptography-on-linux
 - name: install cryptography package dependencies
-  yum: name={{ item }} state=latest
-  with_items:
-    - gcc
-    - libffi-devel
-    - openssl-devel
-    - python-devel
+  yum:
+    name:
+      - gcc
+      - libffi-devel
+      - openssl-devel
+      - python-devel
+    state: latest
   when: common.sni_fix | default('no') | bool
   #when: ansible_python_version|version_compare('2.7.9', '<')
 

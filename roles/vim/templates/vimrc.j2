@@ -1,3 +1,8 @@
+{#
+# vi: filetype=vim
+#}
+set pythonthreehome=/usr/local/opt/python3/Frameworks/Python.framework/Versions/3.7
+
 set nocompatible
 filetype off
 
@@ -10,13 +15,18 @@ call vundle#begin()
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
 
+{% if vim_installed_version is version('8.0.0', '>=') %}
 " autocompletion
-Plugin 'Valloric/YouCompleteMe'
+Plugin 'ycm-core/YouCompleteMe'
 let g:ycm_autoclose_preview_window_after_completion=1
+{% endif %}
+
+" Go language support
+Plugin 'fatih/vim-go'
 
 " Python virtualenv support within Vim (and Vim plugins - works with
 " YouCompleteMe)
-Plugin 'jmcantrell/vim-virtualenv'
+"Plugin 'jmcantrell/vim-virtualenv'
 
 " Git wrapper
 Plugin 'tpope/vim-fugitive'
@@ -27,11 +37,16 @@ let NERDTreeIgnore=['__pycache__$[[dir]]', '\.pyc$[[file]]'{{ ", '\~$', '\.DS_St
 let NERDTreeCascadeSingleChildDir=1
 let NERDTreeMinimalUI=1
 
+" NERDTree plugin to show git status indicators
+Plugin 'Xuyuanp/nerdtree-git-plugin'
+
 " Recursively diff two directories
 Plugin 'will133/vim-dirdiff'
 
 " Full path fuzzy file, buffer, mru, tag, ... finder
 Plugin 'ctrlpvim/ctrlp.vim'
+let g:ctrlp_root_markers=['pom.xml', 'build.gradle', 'package.json', 'Pipfile']
+let g:ctrlp_regexp=1
 
 " Code commenting utilities/bindings
 Plugin 'scrooloose/nerdcommenter'
@@ -56,16 +71,16 @@ Plugin 'pearofducks/ansible-vim'
 
 
 " All of your Plugins must be added before the following line
-call vundle#end()            " required
-filetype plugin indent on    " required
+call vundle#end()			 " required
+filetype plugin indent on	 " required
 " To ignore plugin indent changes, instead use:
 "filetype plugin on
 "
 " Brief help
-" :PluginList          - list configured plugins
-" :PluginInstall(!)    - install (update) plugins
-" :PluginSearch(!) foo - search (or refresh cache first) for foo
-" :PluginClean(!)      - confirm (or auto-approve) removal of unused plugins
+" :PluginList			- list configured plugins
+" :PluginInstall(!)		- install (update) plugins
+" :PluginSearch(!) foo	- search (or refresh cache first) for foo
+" :PluginClean(!)		- confirm (or auto-approve) removal of unused plugins
 "
 " see :h vundle for more details or wiki for FAQ
 " Put your non-Plugin stuff after this line
@@ -77,41 +92,25 @@ set encoding=utf-8
 augroup vimrc
 	au BufReadPre * setlocal foldmethod=indent
 	au BufWinEnter * if &fdm == 'indent' |
-				\ :normal zR<CR> |
 				\ setlocal foldmethod=manual |
+				\ :normal zR<CR> |
 				\ endif
 augroup END
 
-" Custom filetype associations
-au BufNewFile,BufRead *.ftl,*.vm set syntax=jsp
-au BufNewFile,BufRead *.java set tabstop=4 |
-	\ set softtabstop=4 |
-	\ set shiftwidth=4 |
-	\ set expandtab |
-	\ set autoindent
-au BufNewFile,BufRead *.groovy,*.gradle,Jenkinsfile,Jenkinsfile* set syntax=groovy |
-	\ set tabstop=4 |
-	\ set softtabstop=4 |
-	\ set shiftwidth=4 |
-	\ set expandtab |
-	\ set autoindent
-au BufNewFile,BufRead *.py set tabstop=4 |
-	\ set softtabstop=4 |
-	\ set shiftwidth=4 |
-	\ set expandtab |
-	\ set autoindent
-au BufNewFile,BufRead *.yaml set tabstop=2 |
-	\ set softtabstop=2 |
-	\ set shiftwidth=2 |
-	\ set autoindent
-au BufNewFile,BufRead *.yml,*.yaml set filetype=ansible
+" Change the window-local current directory to the directory of the current
+" file, except when the file is in /tmp
+au BufEnter * if expand("%:p:h") !~ '^/tmp' | silent! lcd %:p:h | endif
 
 " Custom commands
+command! -nargs=1 SetSTS :set tabstop=<args> | set softtabstop=<args> | set shiftwidth=<args>
+command! -nargs=* -complete=shellcmd R new | setlocal buftype=nofile bufhidden=hide noswapfile | 0r !<args>
+command! -nargs=* -range=% -complete=shellcmd WR new | setlocal buftype=nofile bufhidden=hide noswapfile | 0r !sed -n <line1>,<line2>p "#" | <args>
 command! MarkLocation :let @f=expand('%:p') . '(' . line('.') . ')'
 command! MakeFinding :let @f=expand('%:p') . '(' . line('.') . '):' . "\n" . getline('.')
 command! -nargs=1 Venv :VirtualEnvActivate <args> | YcmRestartServer
 command! -range=% JSONFormat :<line1>,<line2>!python -m json.tool
 command! -range=% CertText :<line1>,<line2>w !cat|sed -E s/^[[:space:]]*//|openssl x509 -text -noout|less
+command! -range=% CertText2 new | setlocal buftype=nofile bufhidden=hide noswapfile | execute '0r !sed -n '.<line1>.','.<line2>.'p # | sed -E s/^[[:space:]]*// | openssl x509 -text -noout' | normal gg
 
 {% if ansible_os_family == 'Darwin' %}
 function! Pygmentize(line1, line2, ...)
@@ -161,8 +160,39 @@ function! AnsibleVault(action)
 endfunction
 command! -nargs=1 -range=% AnsibleVault :call AnsibleVault(<args>)
 
+" Run macro on each line in visual selection
+function! ExecuteMacroOverVisualRange()
+	echo "@".getcmdline()
+	execute ":'<,'>normal @".nr2char(getchar())
+endfunction
+
+{% if vim_installed_version is version('8.0.0', '>=') %}
+" Handles returning to terminal mode from normal mode entered through
+" EnterNormalMode()
+function! ExitNormalMode()
+	unmap <buffer> <C-ScrollWheelDown>
+	call feedkeys("a")
+endfunction
+
+" Handle entering normal mode from terminal mode, and maps CTRL+SCROLL-DOWN
+" to return to terminal mode
+function! EnterNormalMode()
+	if &buftype == 'terminal' && mode('') == 't'
+		call feedkeys("\<c-w>N")
+		call feedkeys("\<c-y>")
+		map <buffer> <C-ScrollWheelDown> :call ExitNormalMode()<CR>
+	endif
+endfunction
+{% endif %}
+
 " Custom keymappings
 let mapleader=','
+
+xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>
+
+{% if vim_installed_version is version('8.0.0', '>=') %}
+tmap <C-ScrollWheelUp> <c-w>:call EnterNormalMode()<CR>
+{% endif %}
 
 nnorem <leader>d :YcmCompleter GoToDeclaration<CR>
 nnorem <leader>i :YcmCompleter GoToDefinition<CR>
@@ -175,10 +205,13 @@ xmap <leader>c<Space> <plug>NERDCommenterComment
 nmap <leader>cc <plug>NERDCommenterToggle
 xmap <leader>cc <plug>NERDCommenterToggle
 
+nmap <leader>b Oimport pdb; pdb.set_trace()<ESC>
+nmap <leader>B Oimport ipdb; ipdb.set_trace()<ESC>
 nnorem <leader>l :MarkLocation<CR>
 nnorem <leader>f :MakeFinding<CR>
 nnorem <leader>F "fp
 nnorem <leader>n :noh<CR>
+nmap <leader>s /\s\+$<CR>
 nnorem <leader>D :q<CR>:diffoff<CR>
 vnorem // y:call setreg('9', escape(@", '\\/.*$^~[]'))<cr>/<c-r>9<cr>
 
@@ -200,15 +233,15 @@ syntax on
 set nu
 set cursorline
 set hlsearch
-set autochdir
+set noautochdir
 set diffopt=filler,vertical
 
 " Editor options
-set ai
 set noexpandtab
 set tabstop=4
-set softtabstop=4
+set softtabstop=0
 set shiftwidth=4
+set ai
 
 set noerrorbells
 set novisualbell
@@ -218,10 +251,14 @@ autocmd! GUIEnter * set vb t_vb=
 if has("gui_running")
 	let g:airline_powerline_fonts=1
 {% if ansible_os_family == 'Darwin' %}
+	set macmeta
 	set guifont=Source\ Code\ Pro\ for\ Powerline:h15
 {% else %}
 	set guifont=Source\ Code\ Pro\ for\ Powerline\ 13
 {% endif %}
 	set background=dark
 	colorscheme solarized
+	set guioptions+=k
+	set lines=999 columns=999
+	nmap <leader>M :set lines=999 columns=999<CR>
 endif

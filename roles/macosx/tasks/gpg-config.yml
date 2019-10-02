@@ -1,0 +1,24 @@
+---
+
+- name: create config dir
+  file:
+    path: '{{ ansible_user_dir}}/.gnupg'
+    state: directory
+    mode: '0700'
+
+- name: copy gpg.conf
+  get_url:
+    #checksum: sha1:
+    backup: yes
+    dest: '{{ ansible_user_dir}}/.gnupg/gpg.conf'
+    force: no
+    mode: '0640'
+    url: https://raw.githubusercontent.com/drduh/config/master/gpg.conf
+
+- name: gpg-agent.conf template
+  template:
+    backup: yes
+    dest: '{{ ansible_user_dir}}/.gnupg/gpg-agent.conf'
+    force: no
+    mode: '0640'
+    src: gpg-agent.conf.j2

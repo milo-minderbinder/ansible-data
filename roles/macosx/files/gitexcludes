@@ -1,8 +1,16 @@
+# OS
 .DS_Store
+
+# Python
 __pycache__/
 *.egg-info/
 *.py[cod]
+
+# Vim
 *.sw[po]
+.ycm_extra_conf.py
+
+# Intellij-IDEA
 .idea/
 *.iml
 *.ipr

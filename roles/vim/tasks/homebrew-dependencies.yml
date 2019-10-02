@@ -9,8 +9,15 @@
   with_dict:
     cmake: {}
     git: {}
-    macvim:
-      install_options: 'with-lua,with-luajit,with-override-system-vim'
+    macvim: {}
     python: {}
     python@2: {}
+
+- name: brew info macvim
+  command: brew info --json=v1 macvim
+  register: result
+
+- name: set vim_installed_version fact
+  set_fact:
+    vim_installed_version: "{{ (result.stdout | from_json | first).linked_keg }}"
 
