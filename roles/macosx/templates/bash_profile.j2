@@ -6,17 +6,17 @@ fi
 
 # Java config
 {% if cask_apps['zulu7'] is defined %}
-export JAVA7=$(/usr/libexec/java_home -v 1.7)
+export JAVA7="$(/usr/libexec/java_home -v 1.7)"
 {% endif %}
 {% if cask_apps['adoptopenjdk8'] is defined %}
-export JAVA8=$(/usr/libexec/java_home -v 1.8)
+export JAVA8="$(/usr/libexec/java_home -v 1.8)"
 {% endif %}
-export JAVA9=$(/usr/libexec/java_home -v 9)
+export JAVA9="$(/usr/libexec/java_home -v 9)"
 {% if cask_apps['adoptopenjdk11'] is defined %}
-export JAVA11=$(/usr/libexec/java_home -v 11)
+export JAVA11="$(/usr/libexec/java_home -v 11)"
 {% endif %}
 {% if cask_apps['java'] is defined %}
-export JAVA13=$(/usr/libexec/java_home -v 13)
+export JAVA13="$(/usr/libexec/java_home -v 13)"
 {% endif %}
 export JAVA_HOME="$JAVA11"
 export JRE_HOME="$JAVA_HOME/jre"

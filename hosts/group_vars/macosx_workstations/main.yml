@@ -6,6 +6,7 @@ homebrew_taps:
   - caskroom/cask
   - caskroom/versions
   - adoptopenjdk/openjdk
+  - habitat-sh/habitat
 
 cask_apps:
   adoptopenjdk11: {}
@@ -48,6 +49,7 @@ homebrew_apps:
   grep: {}
   gron: {}
   groovysdk: {}
+  hab: {}
   hopenpgp-tools: {}
   jmeter: {}
   jq: {}
