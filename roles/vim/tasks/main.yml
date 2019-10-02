@@ -13,6 +13,18 @@
   npm: name=typescript state=latest global=yes
   become: true
 
+- name: create vim dir
+  file:
+    path: '{{ ansible_user_dir}}/.vim'
+    state: directory
+    mode: 0755
+
+- name: create vim after scripts dir
+  file:
+    path: '{{ ansible_user_dir}}/.vim/after'
+    state: directory
+    mode: 0755
+
 - name: clone Vundle
   git:
     repo: https://github.com/VundleVim/Vundle.vim.git
@@ -32,6 +44,12 @@
 
 - name: install vim plugins
   command: vim +PluginInstall +qall
+
+#- name: clean vim plugins
+  #command: vim +PluginClean +qall
+
+#- name: update vim plugins
+  #command: vim +PluginUpdate +qall
 
 - name: check if YouCompleteMe installed
   stat: path='{{ ansible_user_dir }}/.vim/bundle/YouCompleteMe'

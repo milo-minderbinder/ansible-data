@@ -1,0 +1,11 @@
+{% if cask_apps['gpg-suite'] is defined %}
+pinentry-program /usr/local/MacGPG2/libexec/pinentry-mac.app/Contents/MacOS/pinentry-mac
+{% elif homebrew_apps['pinentry-mac'] is defined %}
+pinentry-program /usr/local/bin/pinentry-mac
+{% else %}
+#pinentry-program /usr/local/bin/pinentry
+{% endif %}
+enable-ssh-support
+default-cache-ttl 7200
+max-cache-ttl 7200
+

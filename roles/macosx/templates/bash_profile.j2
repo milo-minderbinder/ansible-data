@@ -5,17 +5,17 @@ if [ -z "$(printf '%s' "${PATH}" | grep '/usr/local/sbin')" ]; then
 fi
 
 # Java config
-{% if cask_apps.zulu7 is defined %}
+{% if cask_apps['zulu7'] is defined %}
 export JAVA7=$(/usr/libexec/java_home -v 1.7)
 {% endif %}
-{% if cask_apps.adoptopenjdk8 is defined %}
+{% if cask_apps['adoptopenjdk8'] is defined %}
 export JAVA8=$(/usr/libexec/java_home -v 1.8)
 {% endif %}
 export JAVA9=$(/usr/libexec/java_home -v 9)
-{% if cask_apps.adoptopenjdk11 is defined %}
+{% if cask_apps['adoptopenjdk11'] is defined %}
 export JAVA11=$(/usr/libexec/java_home -v 11)
 {% endif %}
-{% if cask_apps.java is defined %}
+{% if cask_apps['java'] is defined %}
 export JAVA13=$(/usr/libexec/java_home -v 13)
 {% endif %}
 export JAVA_HOME="$JAVA11"
@@ -24,7 +24,7 @@ if [ -z "$(printf '%s' "${PATH}" | grep "$JAVA_HOME/bin")" ]; then
 	export PATH="$JAVA_HOME/bin:$PATH"
 fi
 
-{% if homebrew_apps.go is defined %}
+{% if homebrew_apps['go'] is defined %}
 # Go config
 export GOPATH="$HOME/go"
 export GOROOT=/usr/local/opt/go/libexec
@@ -36,36 +36,36 @@ if [ -z "$(printf '%s' "${PATH}" | grep "$GOPATH/bin")" ]; then
 fi
 {% endif %}
 
-{% if homebrew_apps.maven is defined %}
+{% if homebrew_apps['maven'] is defined %}
 # Maven config
 export M2_HOME=/usr/local/opt/maven/libexec
 export M2="$M2_HOME/bin"
 {% endif %}
 
-{% if homebrew_apps.gradle is defined %}
+{% if homebrew_apps['gradle'] is defined %}
 # Gradle config
 export GRADLE_HOME=/usr/local/opt/gradle/libexec
 {% endif %}
 
-{% if homebrew_apps.groovysdk is defined %}
+{% if homebrew_apps['groovysdk'] is defined %}
 # Groovy config
 export GROOVY_HOME=/usr/local/opt/groovysdk/libexec
 {% endif %}
 
-{% if cask_apps.android-sdk is defined %}
+{% if cask_apps['android-sdk'] is defined %}
 # Android config
 export ANDROID_SDK_ROOT="$(brew --prefix)/share/android-sdk"
 export ANDROID_HOME="$ANDROID_SDK_ROOT"
 {% endif %}
 
-{% if homebrew_apps.nvm is defined %}
+{% if homebrew_apps['nvm'] is defined %}
 # nvm config
 export NVM_DIR="$HOME/.nvm"
 [ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
 [ -s "/usr/local/opt/nvm/etc/bash_completion" ] && . "/usr/local/opt/nvm/etc/bash_completion"  # This loads nvm bash_completion
 {% endif %}
 
-{% if homebrew_apps.hab is defined %}
+{% if homebrew_apps['hab'] is defined %}
 # hab config
 eval "$(hab cli completers --shell bash)"
 export HAB_AUTH_TOKEN="{{ hab_auth_token }}"
@@ -81,10 +81,10 @@ export PYENV_ROOT="$(pyenv root)"
 
 # ansible config
 export ANSIBLE_CONFIG="$HOME/.ansible.cfg"
-{% if homebrew_apps.lastpass-cli is defined %}
+{% if homebrew_apps['lastpass-cli'] is defined %}
 export ANSIBLE_VAULT_PASSWORD_FILE="$HOME/.vault_pass.bash"
 {% endif %}
-{% if cask_apps.docker is defined or cask_apps.docker-edge is defined %}
+{% if cask_apps['docker'] is defined or cask_apps['docker-edge'] is defined %}
 export DOCKER_CONFIG_FILE="$HOME/.docker.yml"
 {% endif %}
 
@@ -99,8 +99,10 @@ GIT_PS1_SHOWDIRTYSTATE=true
 export PS1='[\h:\u \W$(__git_ps1)]\$ '
 
 export EDITOR=/usr/local/bin/vim
-export GPG_TTY=$(tty)
+
+export GPG_TTY="$(tty)"
 export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
+gpgconf --launch gpg-agent
 #export SSH_AUTH_SOCK="$HOME/.yubiagent/sock"
 
 # use vi keybindings in bash

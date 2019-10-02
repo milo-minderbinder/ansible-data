@@ -5,7 +5,7 @@
     src: bash_profile.j2
     dest: '{{ ansible_user_dir}}/.bash_profile'
     mode: 0600
-    force: yes
+    force: no
     backup: yes
 
 - name: copy gitexcludes

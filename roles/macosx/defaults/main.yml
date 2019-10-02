@@ -22,7 +22,6 @@ homebrew_apps:
   git: {}
   gnupg: {}
   grep: {}
-  grep: {}
   gron: {}
   lastpass-cli: {}
   macvim: {}
