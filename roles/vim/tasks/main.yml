@@ -56,7 +56,7 @@
   register: ycm
 
 - name: compile YouCompleteMe
-  command: python3 install.py --clang-completer --ts-completer
+  command: /usr/local/bin/python3 install.py --clang-completer --ts-completer
   args:
     chdir: '{{ ansible_user_dir }}/.vim/bundle/YouCompleteMe'
   when: ycm.stat.isdir is defined and ycm.stat.isdir
