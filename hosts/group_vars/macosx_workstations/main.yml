@@ -11,7 +11,7 @@ cask_apps:
   adoptopenjdk11: {}
   adoptopenjdk8: {}
   android-sdk: {}
-  docker-edge: {}
+  #docker-edge: {}
   firefox: {}
   flux: {}
   goland: {}

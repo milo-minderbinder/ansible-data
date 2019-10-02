@@ -5,7 +5,7 @@
     src: bash_profile.j2
     dest: '{{ ansible_user_dir}}/.bash_profile'
     mode: 0600
-    force: no
+    force: yes
     backup: yes
 
 - name: copy gitexcludes
@@ -13,7 +13,7 @@
     src: gitexcludes
     dest: '{{ ansible_user_dir}}/.gitexcludes'
     mode: 0755
-    force: no
+    force: yes
     backup: yes
 
 - name: gitconfig template
@@ -21,6 +21,6 @@
     src: gitconfig.j2
     dest: '{{ ansible_user_dir}}/.gitconfig'
     mode: 0755
-    force: no
+    force: yes
     backup: yes
 
