@@ -2,6 +2,8 @@
 pinentry-program /usr/local/MacGPG2/libexec/pinentry-mac.app/Contents/MacOS/pinentry-mac
 {% elif homebrew_apps['pinentry-mac'] is defined %}
 pinentry-program /usr/local/bin/pinentry-mac
+{% elif homebrew_apps['pinentry'] is defined %}
+pinentry-program /usr/local/bin/pinentry
 {% else %}
 #pinentry-program /usr/local/bin/pinentry
 {% endif %}
