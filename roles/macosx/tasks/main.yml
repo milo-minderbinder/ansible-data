@@ -15,3 +15,7 @@
   tags:
     - gpg-config
 
+- include: ssh-config.yml
+  tags:
+    - ssh-config
+

@@ -20,7 +20,7 @@
 	cleanex = clean -fdx -e '*.iml' -e '*.iws' -e '*.ipr' -e '.idea'
 	bva = branch -vva
 [core]
-	excludesfile = /Users/{{ ansible_user_id }}/.gitexcludes
+	excludesfile = {{ ansible_user_dir }}/.gitexcludes
 	autocrlf = input
 [commit]
 	gpgsign = true
