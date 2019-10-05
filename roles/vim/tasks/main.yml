@@ -15,15 +15,17 @@
 
 - name: create vim dir
   file:
-    path: '{{ ansible_user_dir}}/.vim'
+    path: '{{ ansible_user_dir }}/.vim'
     state: directory
-    mode: 0755
+    mode: '0755'
+    owner: '{{ ansible_user_id }}'
 
 - name: create vim after scripts dir
   file:
-    path: '{{ ansible_user_dir}}/.vim/after'
+    path: '{{ ansible_user_dir }}/.vim/after'
     state: directory
-    mode: 0755
+    mode: '0755'
+    owner: '{{ ansible_user_id }}'
 
 - name: clone Vundle
   git:
@@ -38,7 +40,8 @@
   template:
     src: vimrc.j2
     dest: '{{ ansible_user_dir }}/.vimrc'
-    mode: 0644
+    mode: '0644'
+    owner: '{{ ansible_user_id }}'
     force: yes
     backup: yes
 
@@ -69,7 +72,8 @@
   copy:
     src: yank_mapping.vim
     dest: '{{ ansible_user_dir }}/.vim/bundle/nerdtree/nerdtree_plugin/yank_mapping.vim'
-    mode: 0755
+    mode: '0755'
+    owner: '{{ ansible_user_id }}'
     force: yes
     backup: yes
   when: nerdtree.stat.isdir is defined and nerdtree.stat.isdir
@@ -78,7 +82,8 @@
   copy:
     src: filetype.vim
     dest: '{{ ansible_user_dir }}/.vim/after/filetype.vim'
-    mode: 0755
+    mode: '0755'
+    owner: '{{ ansible_user_id }}'
     force: yes
     backup: yes
 
@@ -86,7 +91,8 @@
   copy:
     src: ideavimrc
     dest: '{{ ansible_user_dir }}/.ideavimrc'
-    mode: 0755
+    mode: '0755'
+    owner: '{{ ansible_user_id }}'
     force: yes
     backup: yes
 
