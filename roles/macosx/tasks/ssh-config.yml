@@ -1,0 +1,33 @@
+- name: copy system sshd config
+  copy:
+    src: sshd_config
+    dest: /etc/ssh/sshd_config
+    mode: '0644'
+    owner: '{{ ansible_user_id }}'
+    force: no
+    backup: yes
+  become: true
+
+- name: create user ssh client config directory
+  file:
+    path: '{{ ansible_user_dir }}/.ssh'
+    state: directory
+    mode: '0700'
+    owner: '{{ ansible_user_id }}'
+
+- name: create user ssh config
+  copy:
+    src: ssh_config
+    dest: '{{ ansible_user_dir }}/.ssh/config'
+    mode: '0644'
+    owner: '{{ ansible_user_id }}'
+    force: no
+    backup: yes
+
+- name: set authorized_keys
+  authorized_key:
+    user: "{{ ansible_user_id }}"
+    exclusive: no
+    key: https://github.com/milo-minderbinder.keys
+    state: present
+

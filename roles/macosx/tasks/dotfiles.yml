@@ -3,24 +3,31 @@
 - name: bash_profile template
   template:
     src: bash_profile.j2
-    dest: '{{ ansible_user_dir}}/.bash_profile'
-    mode: 0600
-    force: no
+    dest: '{{ ansible_user_dir }}/.bash_profile'
+    mode: '0600'
+    force: yes
     backup: yes
+
+- name: create bash_profile.d dir
+  file:
+    dest: '{{ ansible_user_dir }}/.bash_profile.d'
+    state: directory
+    mode: '0700'
+    owner: '{{ ansible_user_id }}'
 
 - name: copy gitexcludes
   copy:
     src: gitexcludes
-    dest: '{{ ansible_user_dir}}/.gitexcludes'
-    mode: 0755
-    force: no
+    dest: '{{ ansible_user_dir }}/.gitexcludes'
+    mode: '0755'
+    force: yes
     backup: yes
 
 - name: gitconfig template
   template:
     src: gitconfig.j2
-    dest: '{{ ansible_user_dir}}/.gitconfig'
-    mode: 0755
-    force: no
+    dest: '{{ ansible_user_dir }}/.gitconfig'
+    mode: '0755'
+    force: yes
     backup: yes
 
