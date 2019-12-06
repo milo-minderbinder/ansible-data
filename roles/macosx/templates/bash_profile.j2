@@ -90,9 +90,7 @@ export DOCKER_CONFIG_FILE="$HOME/.docker.yml"
 
 # Homebrew config
 export HOMEBREW_GITHUB_API_TOKEN={{ homebrew_github_api_token }}
-if [ -f "$(brew --prefix)/etc/bash_completion" ]; then
-	. "$(brew --prefix)/etc/bash_completion"
-fi
+[[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && . "/usr/local/etc/profile.d/bash_completion.sh"
 
 # Show git branch & state in prompt
 GIT_PS1_SHOWDIRTYSTATE=true

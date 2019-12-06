@@ -50,7 +50,8 @@ homebrew_apps:
   gron: {}
   groovysdk: {}
   hab: {}
-  hopenpgp-tools: {}
+  #hopenpgp-tools: {}
+  htop: {}
   jmeter: {}
   jq: {}
   jython: {}
@@ -79,7 +80,7 @@ homebrew_apps:
   sslyze: {}
   yarn: {}
   ykman: {}
-  yubikey-personalization: {}
+  ykpers: {}
 
 git_user: Milo Minderbinder
 git_email: minderbinder.enterprises@gmail.com
