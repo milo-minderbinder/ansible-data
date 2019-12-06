@@ -12,7 +12,7 @@
     #checksum: sha1:
     backup: yes
     dest: '{{ ansible_user_dir }}/.gnupg/gpg.conf'
-    force: yes
+    force: no
     mode: '0640'
     owner: '{{ ansible_user_id }}'
     url: https://raw.githubusercontent.com/drduh/config/master/gpg.conf
@@ -21,7 +21,7 @@
   template:
     backup: yes
     dest: '{{ ansible_user_dir }}/.gnupg/gpg-agent.conf'
-    force: yes
+    force: no
     mode: '0640'
     owner: '{{ ansible_user_id }}'
     src: gpg-agent.conf.j2

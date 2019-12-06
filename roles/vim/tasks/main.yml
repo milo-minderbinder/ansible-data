@@ -42,7 +42,7 @@
     dest: '{{ ansible_user_dir }}/.vimrc'
     mode: '0644'
     owner: '{{ ansible_user_id }}'
-    force: yes
+    force: no
     backup: yes
 
 - name: install vim plugins
@@ -74,7 +74,7 @@
     dest: '{{ ansible_user_dir }}/.vim/bundle/nerdtree/nerdtree_plugin/yank_mapping.vim'
     mode: '0755'
     owner: '{{ ansible_user_id }}'
-    force: yes
+    force: no
     backup: yes
   when: nerdtree.stat.isdir is defined and nerdtree.stat.isdir
 
@@ -84,7 +84,7 @@
     dest: '{{ ansible_user_dir }}/.vim/after/filetype.vim'
     mode: '0755'
     owner: '{{ ansible_user_id }}'
-    force: yes
+    force: no
     backup: yes
 
 - name: copy ideavimrc
@@ -93,6 +93,6 @@
     dest: '{{ ansible_user_dir }}/.ideavimrc'
     mode: '0755'
     owner: '{{ ansible_user_id }}'
-    force: yes
+    force: no
     backup: yes
 
