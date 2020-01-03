@@ -19,6 +19,7 @@
 	list-all-commits = log --all --reflog --pretty=format:"%H"
 	cleanex = clean -fdx -e '*.iml' -e '*.iws' -e '*.ipr' -e '.idea'
 	bva = branch -vva
+	diff-stat-sort = !git diff --stat --stat-width \"$(tput cols)\" --color=always | sort -k3
 [core]
 	excludesfile = {{ ansible_user_dir }}/.gitexcludes
 	autocrlf = input
