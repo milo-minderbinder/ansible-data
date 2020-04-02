@@ -108,7 +108,8 @@ command! -nargs=* -range=% -complete=shellcmd WR new | setlocal buftype=nofile b
 command! MarkLocation :let @f=expand('%:p') . '(' . line('.') . ')'
 command! MakeFinding :let @f=expand('%:p') . '(' . line('.') . '):' . "\n" . getline('.')
 command! -nargs=1 Venv :VirtualEnvActivate <args> | YcmRestartServer
-command! -range=% JSONFormat :<line1>,<line2>!python -m json.tool
+command! -range=% JSONFormat :<line1>,<line2>!python3 -m json.tool
+command! -range=% XMLFormat :<line1>,<line2>!cat | XMLLINT_INDENT=$'\t' xmllint --format -
 command! -range=% CertText :<line1>,<line2>w !cat|sed -E s/^[[:space:]]*//|openssl x509 -text -noout|less
 command! -range=% CertText2 new | setlocal buftype=nofile bufhidden=hide noswapfile | execute '0r !sed -n '.<line1>.','.<line2>.'p # | sed -E s/^[[:space:]]*// | openssl x509 -text -noout' | normal gg
 
