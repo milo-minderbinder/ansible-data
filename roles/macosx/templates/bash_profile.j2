@@ -1,3 +1,5 @@
+export BASH_SILENCE_DEPRECATION_WARNING=1
+
 # Put Homebrew's sbin on the PATH
 if [ -z "$(printf '%s' "${PATH}" | grep '/usr/local/sbin')" ]; then
 	printf "Putting Homebrew's sbin on the PATH\n" >&2
@@ -16,7 +18,7 @@ export JAVA9="$(/usr/libexec/java_home -v 9)"
 export JAVA11="$(/usr/libexec/java_home -v 11)"
 {% endif %}
 {% if cask_apps['java'] is defined %}
-export JAVA13="$(/usr/libexec/java_home -v 13)"
+export JAVA14="$(/usr/libexec/java_home -v 14)"
 {% endif %}
 export JAVA_HOME="$JAVA11"
 export JRE_HOME="$JAVA_HOME/jre"
@@ -63,6 +65,7 @@ export ANDROID_HOME="$ANDROID_SDK_ROOT"
 export NVM_DIR="$HOME/.nvm"
 [ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
 [ -s "/usr/local/opt/nvm/etc/bash_completion" ] && . "/usr/local/opt/nvm/etc/bash_completion"  # This loads nvm bash_completion
+export HUSKY_SKIP_INSTALL=1
 {% endif %}
 
 {% if homebrew_apps['hab'] is defined %}
@@ -71,6 +74,7 @@ eval "$(hab cli completers --shell bash)"
 export HAB_AUTH_TOKEN="{{ hab_auth_token }}"
 {% endif %}
 
+{% if homebrew_apps['pyenv'] is defined %}
 # Python pyenv config
 #export WORKON_HOME=$HOME/.virtualenvs
 export WORKON_HOME="$HOME/.venvs"
@@ -78,6 +82,13 @@ if command -v pyenv 1>/dev/null 2>&1; then
 	eval "$(pyenv init -)"
 fi
 export PYENV_ROOT="$(pyenv root)"
+{% endif %}
+{% if homebrew_apps['pipenv'] is defined %}
+# Python Pipenv config
+if command -v pipenv 1>/dev/null 2>&1; then
+	eval "$(pipenv --completion)"
+fi
+{% endif %}
 
 # ansible config
 export ANSIBLE_CONFIG="$HOME/.ansible.cfg"
@@ -90,9 +101,7 @@ export DOCKER_CONFIG_FILE="$HOME/.docker.yml"
 
 # Homebrew config
 export HOMEBREW_GITHUB_API_TOKEN={{ homebrew_github_api_token }}
-if [ -f "$(brew --prefix)/etc/bash_completion" ]; then
-	. "$(brew --prefix)/etc/bash_completion"
-fi
+[[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && . "/usr/local/etc/profile.d/bash_completion.sh"
 
 # Show git branch & state in prompt
 GIT_PS1_SHOWDIRTYSTATE=true
@@ -109,6 +118,7 @@ gpgconf --launch gpg-agent
 set -o vi
 
 alias xml-format="XMLLINT_INDENT=$'\t' xmllint --format"
+alias docker-images-by-size="docker images | sort -k7 -h"
 
 if [ -d "${HOME}/.bash_profile.d" ]; then
 	while IFS=	read -r; do

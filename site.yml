@@ -1,6 +1,6 @@
 ---
 
-- import_playbook: containers.yml
+#- import_playbook: containers.yml
 
 - hosts: workstations
   tasks:
@@ -12,7 +12,7 @@
 
 - import_playbook: workstations.yml
 
-- import_playbook: docker-hosts.yml
+#- import_playbook: docker-hosts.yml
 
-- import_playbook: jenkins-hosts.yml
+#- import_playbook: jenkins-hosts.yml
 

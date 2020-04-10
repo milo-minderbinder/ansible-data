@@ -12,7 +12,7 @@ cask_apps:
   adoptopenjdk11: {}
   adoptopenjdk8: {}
   android-sdk: {}
-  docker-edge: {}
+  #docker-edge: {}
   firefox: {}
   flux: {}
   goland: {}
@@ -50,7 +50,8 @@ homebrew_apps:
   gron: {}
   groovysdk: {}
   hab: {}
-  hopenpgp-tools: {}
+  #hopenpgp-tools: {}
+  htop: {}
   jmeter: {}
   jq: {}
   jython: {}
@@ -66,7 +67,6 @@ homebrew_apps:
   openssl@1.1: {}
   p7zip: {}
   php@7.1: {}
-  pinentry-mac: {}
   pinentry: {}
   pipenv: {}
   plantuml: {}
@@ -80,7 +80,7 @@ homebrew_apps:
   sslyze: {}
   yarn: {}
   ykman: {}
-  yubikey-personalization: {}
+  ykpers: {}
 
 git_user: Milo Minderbinder
 git_email: minderbinder.enterprises@gmail.com
