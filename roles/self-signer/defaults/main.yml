@@ -2,11 +2,11 @@
 
 ca_fqdn: "ca.{{ ansible_domain | default(ansible_hostname + '.local', true) }}"
 ca_key: "{{ ansible_user_dir }}/certificates/{{ ca_fqdn|regex_replace('[^\\w]', '_') }}.key"
-ca_cert: "{{ ansible_user_dir }}/certificates/{{ ca_fqdn|regex_replace('[^\\w]', '_') }}.crt"
+ca_cert: "{{ ansible_user_dir }}/certificates/{{ ca_fqdn|regex_replace('[^\\w]', '_') }}.pem"
 ca_password: "password"
 ca_subj: "/C=US/ST=DC/L=Washington/O=Minderbinder Enterprises/OU=Security/CN={{ ca_fqdn }}/emailAddress=minderbinder.enterprises@gmail.com"
 host_fqdn: "{{ ansible_fqdn }}"
 host_key: "{{ ansible_user_dir }}/certificates/{{ host_fqdn|regex_replace('[^\\w]', '_') }}.key"
-host_cert: "{{ ansible_user_dir }}/certificates/{{ host_fqdn|regex_replace('[^\\w]', '_') }}.crt"
+host_cert: "{{ ansible_user_dir }}/certificates/{{ host_fqdn|regex_replace('[^\\w]', '_') }}.pem"
 host_ip: "{{ ansible_default_ipv4.address }}"
 

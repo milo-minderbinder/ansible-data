@@ -3,8 +3,9 @@
 ansible_become: false
 
 homebrew_taps:
-  - caskroom/cask
-  - caskroom/versions
+  - homebrew/cask
+  - homebrew/cask-fonts
+  - homebrew/cask-versions
   - adoptopenjdk/openjdk
   - habitat-sh/habitat
 
@@ -15,13 +16,15 @@ cask_apps:
   #docker-edge: {}
   firefox: {}
   flux: {}
+  font-source-code-pro: {}
+  font-source-code-pro-for-powerline: {}
   goland: {}
   intellij-idea: {}
-  java: {}
   keepassxc: {}
+  postman: {}
   pycharm: {}
+  rectangle: {}
   slack: {}
-  spectacle: {}
   spotify: {}
   transmission: {}
   vlc: {}
@@ -42,20 +45,25 @@ homebrew_apps:
   expect: {}
   geckodriver: {}
   git: {}
+  glide: {}
   gnu-getopt: {}
   gnupg: {}
   go: {}
   gradle: {}
+  gradle-completion: {}
   grep: {}
   gron: {}
   groovysdk: {}
   hab: {}
   #hopenpgp-tools: {}
   htop: {}
+  #infer: {}
+  #jfrog-cli: {}
   jmeter: {}
   jq: {}
   jython: {}
   lastpass-cli: {}
+  libxml2
   lua: {}
   luajit: {}
   macvim: {}
@@ -64,18 +72,18 @@ homebrew_apps:
   nmap: {}
   node: {}
   nvm: {}
+  openjdk: {}
   openssl@1.1: {}
   p7zip: {}
-  php@7.1: {}
   pinentry: {}
   pipenv: {}
   plantuml: {}
   pyenv: {}
   python: {}
-  python@2: {}
   ripgrep: {}
   ruby: {}
   sbt: {}
+  semgrep: {}
   shellcheck: {}
   sslyze: {}
   yarn: {}
