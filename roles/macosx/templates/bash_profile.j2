@@ -1,7 +1,7 @@
 export BASH_SILENCE_DEPRECATION_WARNING=1
 
 # Put Homebrew's sbin on the PATH
-if [ -z "$(printf '%s' "${PATH}" | grep '/usr/local/sbin')" ]; then
+if [ -z "$(printf "${PATH}" | tr ':' '\n' | grep '^/usr/local/sbin')" ]; then
 	printf "Putting Homebrew's sbin on the PATH\n" >&2
 	export PATH="/usr/local/sbin:$PATH"
 fi
@@ -22,7 +22,7 @@ export JAVA14="$(/usr/libexec/java_home -v 14)"
 {% endif %}
 export JAVA_HOME="$JAVA11"
 export JRE_HOME="$JAVA_HOME/jre"
-if [ -z "$(printf '%s' "${PATH}" | grep "$JAVA_HOME/bin")" ]; then
+if [ -z "$(printf "${PATH}" | tr ':' '\n' | grep "^$JAVA_HOME/bin")" ]; then
 	export PATH="$JAVA_HOME/bin:$PATH"
 fi
 
@@ -30,10 +30,10 @@ fi
 # Go config
 export GOPATH="$HOME/go"
 export GOROOT=/usr/local/opt/go/libexec
-if [ -z "$(printf '%s' "${PATH}" | grep "$GOROOT/bin")" ]; then
+if [ -z "$(printf "${PATH}" | tr ':' '\n' | grep "^$GOROOT/bin")" ]; then
 	export PATH="$GOROOT/bin:$PATH"
 fi
-if [ -z "$(printf '%s' "${PATH}" | grep "$GOPATH/bin")" ]; then
+if [ -z "$(printf "${PATH}" | tr ':' '\n' | grep "^$GOPATH/bin")" ]; then
 	export PATH="$GOPATH/bin:$PATH"
 fi
 {% endif %}
