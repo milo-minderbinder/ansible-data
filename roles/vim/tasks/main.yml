@@ -7,7 +7,7 @@
   include_role:
     name: nodejs
   vars:
-    node_version: 8
+    node_version: 10
 
 - name: install typescript
   npm: name=typescript state=latest global=yes

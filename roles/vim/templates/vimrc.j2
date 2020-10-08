@@ -31,6 +31,9 @@ Plugin 'fatih/vim-go'
 " Git wrapper
 Plugin 'tpope/vim-fugitive'
 
+" Gutter indicators for lines added, modified, and removed to git index
+Plugin 'airblade/vim-gitgutter'
+
 " Filesystem tree explorer
 Plugin 'scrooloose/nerdtree'
 let NERDTreeIgnore=['__pycache__$[[dir]]', '\.pyc$[[file]]'{{ ", '\~$', '\.DS_Store$[[file]]'" if ansible_os_family == 'Darwin' else "" }}]
@@ -69,6 +72,8 @@ Plugin 'mustache/vim-mustache-handlebars'
 " and Ansible's hosts files
 Plugin 'pearofducks/ansible-vim'
 
+" Syntax for PowerShell
+Plugin 'PProvost/vim-ps1'
 
 " All of your Plugins must be added before the following line
 call vundle#end()			 " required
@@ -92,7 +97,6 @@ set encoding=utf-8
 augroup vimrc
 	au BufReadPre * setlocal foldmethod=indent
 	au BufWinEnter * if &fdm == 'indent' |
-				\ setlocal foldmethod=manual |
 				\ :normal zR<CR> |
 				\ endif
 augroup END
@@ -236,6 +240,7 @@ set cursorline
 set hlsearch
 set noautochdir
 set diffopt=filler,vertical
+set showcmd
 
 " Editor options
 set noexpandtab

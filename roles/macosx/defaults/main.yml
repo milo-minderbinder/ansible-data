@@ -1,8 +1,9 @@
 ---
 
 homebrew_taps:
-  - caskroom/cask
-  - caskroom/versions
+  - homebrew/cask
+  - homebrew/cask-fonts
+  - homebrew/cask-versions
   - adoptopenjdk/openjdk
 
 cask_apps:
@@ -10,26 +11,29 @@ cask_apps:
   adoptopenjdk8: {}
   firefox: {}
   flux: {}
-  java: {}
-  spectacle: {}
+  rectangle: {}
   vlc: {}
 
 homebrew_apps:
   bash-completion: {}
   brew-cask-completion: {}
   coreutils: {}
+  ddate: {}
   dos2unix: {}
   git: {}
+  gnu-getopt: {}
   gnupg: {}
   grep: {}
   gron: {}
+  jq: {}
   lastpass-cli: {}
   macvim: {}
+  maven: {}
   moreutils: {}
+  openjdk: {}
   pipenv: {}
   pyenv: {}
   python: {}
-  python@2: {}
   ripgrep: {}
   shellcheck: {}
 

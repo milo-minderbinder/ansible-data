@@ -25,7 +25,6 @@ cask_apps:
   pycharm: {}
   rectangle: {}
   slack: {}
-  spotify: {}
   transmission: {}
   vlc: {}
   zulu7: {}
@@ -63,7 +62,7 @@ homebrew_apps:
   jq: {}
   jython: {}
   lastpass-cli: {}
-  libxml2
+  libxml2: {}
   lua: {}
   luajit: {}
   macvim: {}
