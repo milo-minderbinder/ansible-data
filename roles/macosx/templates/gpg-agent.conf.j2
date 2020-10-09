@@ -1,8 +1,8 @@
-{% if cask_apps['gpg-suite'] is defined %}
+{% if 'gpg-suite' in cask_apps %}
 pinentry-program /usr/local/MacGPG2/libexec/pinentry-mac.app/Contents/MacOS/pinentry-mac
-{% elif homebrew_apps['pinentry-mac'] is defined %}
+{% elif 'pinentry-mac' in homebrew_apps %}
 pinentry-program /usr/local/bin/pinentry-mac
-{% elif homebrew_apps['pinentry'] is defined %}
+{% elif 'pinentry' in homebrew_apps %}
 pinentry-program /usr/local/bin/pinentry
 {% else %}
 #pinentry-program /usr/local/bin/pinentry

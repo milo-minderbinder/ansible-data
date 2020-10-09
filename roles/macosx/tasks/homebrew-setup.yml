@@ -11,20 +11,14 @@
     name: '{{ item }}'
   with_items: '{{ homebrew_taps }}'
 
-- name: install cask apps
-  homebrew_cask:
-    name: '{{ item }}'
-    state: present
-    install_options: '{{ cask_apps[item].install_options|default(omit) }}'
-  with_items: '{{ cask_apps }}'
-
-# Note that we must use `with_dict` below to prevent `squash_actions` 
-# from flattening `item` into a single list and passing to `name:`
-# see: https://github.com/ansible/ansible-modules-extras/issues/3624
 - name: install homebrew apps
   homebrew:
-    name: '{{ item.key }}'
+    name: '{{ homebrew_apps }}'
     state: latest
-    install_options: '{{ item.value.install_options|default(omit) }}'
-  with_dict: '{{ homebrew_apps }}'
+
+- name: install cask apps
+  homebrew_cask:
+    name: '{{ cask_apps }}'
+    state: present
+    sudo_password: '{{ ansible_become_pass }}'
 

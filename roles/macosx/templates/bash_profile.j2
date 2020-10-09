@@ -1,23 +1,24 @@
 export BASH_SILENCE_DEPRECATION_WARNING=1
 
-# Put Homebrew's sbin on the PATH
-if [ -z "$(printf "${PATH}" | tr ':' '\n' | grep '^/usr/local/sbin')" ]; then
-	printf "Putting Homebrew's sbin on the PATH\n" >&2
-	export PATH="/usr/local/sbin:$PATH"
-fi
+for path_entry in '/usr/local/bin' '/usr/local/sbin'; do
+	if [ -z "$(printf "${PATH}" | tr ':' '\n' | grep "^${path_entry}")" ]; then
+		printf 'Adding %s to the PATH\n' "${path_entry}" >&2
+		export PATH="${path_entry}:$PATH"
+	fi
+done
 
 # Java config
-{% if cask_apps['zulu7'] is defined %}
+{% if 'zulu7' in cask_apps %}
 export JAVA7="$(/usr/libexec/java_home -v 1.7)"
 {% endif %}
-{% if cask_apps['adoptopenjdk8'] is defined %}
+{% if 'adoptopenjdk/openjdk/adoptopenjdk8' in cask_apps %}
 export JAVA8="$(/usr/libexec/java_home -v 1.8)"
 {% endif %}
 export JAVA9="$(/usr/libexec/java_home -v 9)"
-{% if cask_apps['adoptopenjdk11'] is defined %}
+{% if 'adoptopenjdk/openjdk/adoptopenjdk11' in cask_apps %}
 export JAVA11="$(/usr/libexec/java_home -v 11)"
 {% endif %}
-{% if cask_apps['java'] is defined %}
+{% if 'openjdk' in cask_apps %}
 export JAVA14="$(/usr/libexec/java_home -v 14)"
 {% endif %}
 export JAVA_HOME="$JAVA11"
@@ -26,7 +27,7 @@ if [ -z "$(printf "${PATH}" | tr ':' '\n' | grep "^$JAVA_HOME/bin")" ]; then
 	export PATH="$JAVA_HOME/bin:$PATH"
 fi
 
-{% if homebrew_apps['go'] is defined %}
+{% if 'go' in homebrew_apps %}
 # Go config
 export GOPATH="$HOME/go"
 export GOROOT=/usr/local/opt/go/libexec
@@ -38,29 +39,29 @@ if [ -z "$(printf "${PATH}" | tr ':' '\n' | grep "^$GOPATH/bin")" ]; then
 fi
 {% endif %}
 
-{% if homebrew_apps['maven'] is defined %}
+{% if 'maven' in homebrew_apps %}
 # Maven config
 export M2_HOME=/usr/local/opt/maven/libexec
 export M2="$M2_HOME/bin"
 {% endif %}
 
-{% if homebrew_apps['gradle'] is defined %}
+{% if 'gradle' in homebrew_apps %}
 # Gradle config
 export GRADLE_HOME=/usr/local/opt/gradle/libexec
 {% endif %}
 
-{% if homebrew_apps['groovysdk'] is defined %}
+{% if 'groovysdk' in homebrew_apps %}
 # Groovy config
 export GROOVY_HOME=/usr/local/opt/groovysdk/libexec
 {% endif %}
 
-{% if cask_apps['android-sdk'] is defined %}
+{% if 'android-sdk' in cask_apps %}
 # Android config
 export ANDROID_SDK_ROOT="$(brew --prefix)/share/android-sdk"
 export ANDROID_HOME="$ANDROID_SDK_ROOT"
 {% endif %}
 
-{% if homebrew_apps['nvm'] is defined %}
+{% if 'nvm' in homebrew_apps %}
 # nvm config
 export NVM_DIR="$HOME/.nvm"
 [ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
@@ -68,19 +69,19 @@ export NVM_DIR="$HOME/.nvm"
 export HUSKY_SKIP_INSTALL=1
 {% endif %}
 
-{% if homebrew_apps['hab'] is defined %}
+{% if 'hab' in homebrew_apps %}
 # hab config
 eval "$(hab cli completers --shell bash)"
 export HAB_AUTH_TOKEN="{{ hab_auth_token }}"
 {% endif %}
 
-{% if homebrew_apps['python'] is defined %}
+{% if 'python' in homebrew_apps %}
 # Python config
 if command -v pip3 1>/dev/null 2>&1; then
 	eval "$(pip3 completion --bash)"
 fi
 {% endif %}
-{% if homebrew_apps['pyenv'] is defined %}
+{% if 'pyenv' in homebrew_apps %}
 # Python pyenv config
 #export WORKON_HOME=$HOME/.virtualenvs
 export WORKON_HOME="$HOME/.venvs"
@@ -89,7 +90,7 @@ if command -v pyenv 1>/dev/null 2>&1; then
 fi
 export PYENV_ROOT="$(pyenv root)"
 {% endif %}
-{% if homebrew_apps['pipenv'] is defined %}
+{% if 'pipenv' in homebrew_apps %}
 # Python Pipenv config
 if command -v pipenv 1>/dev/null 2>&1; then
 	eval "$(pipenv --completion)"
@@ -98,10 +99,10 @@ fi
 
 # ansible config
 export ANSIBLE_CONFIG="$HOME/.ansible.cfg"
-{% if homebrew_apps['lastpass-cli'] is defined %}
+{% if 'lastpass-cli' in homebrew_apps %}
 export ANSIBLE_VAULT_PASSWORD_FILE="$HOME/.vault_pass.bash"
 {% endif %}
-{% if cask_apps['docker'] is defined or cask_apps['docker-edge'] is defined %}
+{% if 'docker' in cask_apps or 'docker-edge' in cask_apps %}
 export DOCKER_CONFIG_FILE="$HOME/.docker.yml"
 {% endif %}
 
@@ -116,8 +117,8 @@ export PS1='[\h:\u \W$(__git_ps1)]\$ '
 export EDITOR=/usr/local/bin/vim
 
 export GPG_TTY="$(tty)"
-export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
-gpgconf --launch gpg-agent
+#export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
+#gpgconf --launch gpg-agent
 #export SSH_AUTH_SOCK="$HOME/.yubiagent/sock"
 
 # use vi keybindings in bash

@@ -7,35 +7,39 @@ homebrew_taps:
   - adoptopenjdk/openjdk
 
 cask_apps:
-  adoptopenjdk11: {}
-  adoptopenjdk8: {}
-  firefox: {}
-  flux: {}
-  rectangle: {}
-  vlc: {}
+  - adoptopenjdk/openjdk/adoptopenjdk11
+  - adoptopenjdk/openjdk/adoptopenjdk8
+  - firefox
+  - flux
+  - rectangle
+  - vlc
 
 homebrew_apps:
-  bash-completion: {}
-  brew-cask-completion: {}
-  coreutils: {}
-  ddate: {}
-  dos2unix: {}
-  git: {}
-  gnu-getopt: {}
-  gnupg: {}
-  grep: {}
-  gron: {}
-  jq: {}
-  lastpass-cli: {}
-  macvim: {}
-  maven: {}
-  moreutils: {}
-  openjdk: {}
-  pipenv: {}
-  pyenv: {}
-  python: {}
-  ripgrep: {}
-  shellcheck: {}
+  - bash-completion
+  - brew-cask-completion
+  - coreutils
+  - ddate
+  - dos2unix
+  - expect
+  - git
+  - gnu-getopt
+  - gnupg
+  - grep
+  - gron
+  - jq
+  - lastpass-cli
+  - libxml2
+  - macvim
+  - maven
+  - moreutils
+  - openjdk
+  - pinentry
+  - pipenv
+  - pyenv
+  - python
+  - ripgrep
+  - shellcheck
+  - svn
 
 git_user: Milo Minderbinder
 git_email: minderbinder.enterprises@gmail.com
