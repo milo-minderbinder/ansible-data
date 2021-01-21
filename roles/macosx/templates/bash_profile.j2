@@ -1,42 +1,39 @@
 export BASH_SILENCE_DEPRECATION_WARNING=1
 
-for path_entry in '/usr/local/bin' '/usr/local/sbin'; do
-	if [ -z "$(printf "${PATH}" | tr ':' '\n' | grep "^${path_entry}")" ]; then
-		printf 'Adding %s to the PATH\n' "${path_entry}" >&2
-		export PATH="${path_entry}:$PATH"
-	fi
-done
+add_to_path() {
+	for path_entry in "$@"; do
+		if [ -d "${path_entry}" ] && [ -z "$(printf '%s' "${PATH}" | tr ':' '\n' | grep -F --line-regexp "${path_entry}")" ]; then
+			printf 'Adding %s to PATH\n' "${path_entry}" >&2
+			export PATH="${path_entry}:${PATH}"
+		fi
+	done
+}
+
+add_to_path '/usr/local/bin' '/usr/local/sbin'
 
 # Java config
 {% if 'zulu7' in cask_apps %}
-export JAVA7="$(/usr/libexec/java_home -v 1.7)"
+export JAVA7="$(/usr/libexec/java_home -F -v 1.7)"
 {% endif %}
 {% if 'adoptopenjdk/openjdk/adoptopenjdk8' in cask_apps %}
-export JAVA8="$(/usr/libexec/java_home -v 1.8)"
+export JAVA8="$(/usr/libexec/java_home -F -v 1.8)"
 {% endif %}
-export JAVA9="$(/usr/libexec/java_home -v 9)"
+export JAVA9="$(/usr/libexec/java_home -F -v 9)"
 {% if 'adoptopenjdk/openjdk/adoptopenjdk11' in cask_apps %}
-export JAVA11="$(/usr/libexec/java_home -v 11)"
+export JAVA11="$(/usr/libexec/java_home -F -v 11)"
 {% endif %}
 {% if 'openjdk' in cask_apps %}
-export JAVA14="$(/usr/libexec/java_home -v 14)"
+export JAVA15="$(/usr/libexec/java_home -F -v 15)"
 {% endif %}
 export JAVA_HOME="$JAVA11"
 export JRE_HOME="$JAVA_HOME/jre"
-if [ -z "$(printf "${PATH}" | tr ':' '\n' | grep "^$JAVA_HOME/bin")" ]; then
-	export PATH="$JAVA_HOME/bin:$PATH"
-fi
+add_to_path "${JAVA_HOME}/bin"
 
 {% if 'go' in homebrew_apps %}
 # Go config
 export GOPATH="$HOME/go"
 export GOROOT=/usr/local/opt/go/libexec
-if [ -z "$(printf "${PATH}" | tr ':' '\n' | grep "^$GOROOT/bin")" ]; then
-	export PATH="$GOROOT/bin:$PATH"
-fi
-if [ -z "$(printf "${PATH}" | tr ':' '\n' | grep "^$GOPATH/bin")" ]; then
-	export PATH="$GOPATH/bin:$PATH"
-fi
+add_to_path "${GOROOT}/bin" "${GOPATH}/bin"
 {% endif %}
 
 {% if 'maven' in homebrew_apps %}
@@ -103,7 +100,7 @@ export ANSIBLE_CONFIG="$HOME/.ansible.cfg"
 export ANSIBLE_VAULT_PASSWORD_FILE="$HOME/.vault_pass.bash"
 {% endif %}
 {% if 'docker' in cask_apps or 'docker-edge' in cask_apps %}
-export DOCKER_CONFIG_FILE="$HOME/.docker.yml"
+#export DOCKER_CONFIG_FILE="$HOME/.docker.yml"
 {% endif %}
 
 # Homebrew config

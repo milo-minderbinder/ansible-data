@@ -19,3 +19,7 @@
   tags:
     - ssh-config
 
+- include: lastpass-config.yml
+  tags:
+    - lastpass-config
+

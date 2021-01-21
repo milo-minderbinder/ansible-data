@@ -10,7 +10,6 @@ cask_apps:
   - adoptopenjdk/openjdk/adoptopenjdk11
   - adoptopenjdk/openjdk/adoptopenjdk8
   - firefox
-  - flux
   - rectangle
   - vlc
 
@@ -30,6 +29,7 @@ homebrew_apps:
   - lastpass-cli
   - libxml2
   - macvim
+  - make
   - maven
   - moreutils
   - openjdk
@@ -39,7 +39,7 @@ homebrew_apps:
   - python
   - ripgrep
   - shellcheck
-  - svn
+  - subversion
 
 git_user: Milo Minderbinder
 git_email: minderbinder.enterprises@gmail.com

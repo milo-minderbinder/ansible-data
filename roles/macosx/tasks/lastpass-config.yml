@@ -1,0 +1,24 @@
+---
+
+- name: create .lpass dir
+  file:
+    dest: '{{ ansible_user_dir }}/.lpass'
+    state: directory
+    mode: '0700'
+    owner: '{{ ansible_user_id }}'
+
+- name: copy .lpass files
+  copy:
+    src: '{{ item }}'
+    dest: '{{ ansible_user_dir }}/.lpass/'
+    mode: '0600'
+    owner: '{{ ansible_user_id }}'
+    force: no
+    backup: yes
+  loop:
+    - alias.lsc
+    - alias.phraseclip
+    - alias.pwclip
+    - alias.uclip
+    - env
+

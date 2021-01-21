@@ -14,7 +14,6 @@ cask_apps:
   - adoptopenjdk/openjdk/adoptopenjdk8
   #- docker-edge
   #- firefox
-  - flux
   - font-source-code-pro
   - font-source-code-pro-for-powerline
   - goland
@@ -43,7 +42,6 @@ homebrew_apps:
   - expect
   - geckodriver
   - git
-  - glide
   - gnu-getopt
   - gnupg
   - go
@@ -65,11 +63,11 @@ homebrew_apps:
   - lua
   - luajit
   - macvim
+  - make
   - maven
   - moreutils
   - nmap
   - node
-  - nvm
   - openjdk
   - openssl@1.1
   - p7zip
@@ -84,7 +82,7 @@ homebrew_apps:
   - semgrep
   - shellcheck
   - sslyze
-  - svn
+  - subversion
   - yarn
   - ykman
   - ykpers
