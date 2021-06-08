@@ -33,7 +33,7 @@ Plugin 'tpope/vim-fugitive'
 Plugin 'airblade/vim-gitgutter'
 
 " Filesystem tree explorer
-Plugin 'scrooloose/nerdtree'
+Plugin 'preservim/nerdtree'
 let NERDTreeIgnore=['__pycache__$[[dir]]', '\.pyc$[[file]]'{{ ", '\~$', '\.DS_Store$[[file]]'" if ansible_os_family == 'Darwin' else "" }}]
 let NERDTreeCascadeSingleChildDir=1
 let NERDTreeMinimalUI=1
@@ -50,7 +50,8 @@ let g:ctrlp_root_markers=['pom.xml', 'build.gradle', 'package.json', 'Pipfile']
 let g:ctrlp_regexp=1
 
 " Code commenting utilities/bindings
-Plugin 'scrooloose/nerdcommenter'
+"Plugin 'preservim/nerdcommenter'
+Plugin 'tpope/vim-commentary'
 
 " B-e-a-utiful colorscheme for Vim
 Plugin 'altercation/vim-colors-solarized'
@@ -203,10 +204,12 @@ nnorem <leader>k :YcmCompleter GetDoc<CR>
 
 nnorem <C-N> :NERDTreeToggle<CR>
 
-nmap <leader>c<Space> <plug>NERDCommenterComment
-xmap <leader>c<Space> <plug>NERDCommenterComment
-nmap <leader>cc <plug>NERDCommenterToggle
-xmap <leader>cc <plug>NERDCommenterToggle
+"nmap <leader>c<Space> <plug>NERDCommenterComment
+"xmap <leader>c<Space> <plug>NERDCommenterComment
+"nmap <leader>cc <plug>NERDCommenterToggle
+"xmap <leader>cc <plug>NERDCommenterToggle
+nmap <leader>cc gcc
+vmap <leader>cc gc
 
 nmap <leader>b Oimport pdb; pdb.set_trace()<ESC>
 nmap <leader>B Oimport ipdb; ipdb.set_trace()<ESC>
@@ -216,7 +219,8 @@ nnorem <leader>F "fp
 nnorem <leader>n :noh<CR>
 nmap <leader>s /\s\+$<CR>
 nnorem <leader>D :q<CR>:diffoff<CR>
-vnorem // y:call setreg('9', escape(@", '\\/.*$^~[]'))<cr>/<c-r>9<cr>
+"vnorem // y:call setreg('9', escape(@", '\\/.*$^~[]'))<cr>/<c-r>9<cr>
+vnorem // y:call setreg('9', substitute(substitute(escape(@", '\\/.*$^~[]'), '\n', '\\n', 'g'), '\r', '\\r', 'g'))<cr>/<c-r>9<cr>
 
 {% if ansible_os_family == 'Darwin' %}
 " Map <leader>o to <C-w>F -> Opens file under cursor to line:
