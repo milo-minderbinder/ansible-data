@@ -11,7 +11,8 @@
 	browse = !"echo "opening: https://$(git remote-host)/$(git org-and-repo)" && open \"https://$(git remote-host)/$(git org-and-repo)\""
 	branch-name = rev-parse --abbrev-ref HEAD
 	short-hash = rev-parse --short HEAD
-	latest-tagname = describe --abbrev=0 --tags
+	closest-tagname = describe --abbrev=0 --tags
+	latest-tagname = !"git fetch --tags && git closest-tagname FETCH_HEAD"
 	changelist = log --no-merges --pretty=format:\"* %s\"
 	changelist-tag = !"git changelist \"$(git latest-tagname)\".."
 	fetch-status = !"git fetch --all --prune && git stash list && git status"
@@ -27,6 +28,10 @@
 	gpgsign = true
 [log]
 	date = iso-strict-local
+[init]
+	defaultBranch = main
+[diff]
+	submodule = log
 [gpg]
 	program = /usr/local/bin/gpg
 [pull]

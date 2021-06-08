@@ -31,3 +31,11 @@
     force: no
     backup: yes
 
+- name: copy pbcopyt.bash
+  copy:
+    src: pbcopyt.bash
+    dest: '/usr/local/bin/pbcopyt'
+    mode: '0755'
+    force: no
+    backup: yes
+

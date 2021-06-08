@@ -23,7 +23,7 @@ export JAVA9="$(/usr/libexec/java_home -F -v 9)"
 export JAVA11="$(/usr/libexec/java_home -F -v 11)"
 {% endif %}
 {% if 'openjdk' in cask_apps %}
-export JAVA15="$(/usr/libexec/java_home -F -v 15)"
+export JAVA16="$(/usr/libexec/java_home -F -v 16)"
 {% endif %}
 export JAVA_HOME="$JAVA11"
 export JRE_HOME="$JAVA_HOME/jre"
@@ -61,8 +61,8 @@ export ANDROID_HOME="$ANDROID_SDK_ROOT"
 {% if 'nvm' in homebrew_apps %}
 # nvm config
 export NVM_DIR="$HOME/.nvm"
-[ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
-[ -s "/usr/local/opt/nvm/etc/bash_completion" ] && . "/usr/local/opt/nvm/etc/bash_completion"  # This loads nvm bash_completion
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 export HUSKY_SKIP_INSTALL=1
 {% endif %}
 
@@ -83,15 +83,27 @@ fi
 #export WORKON_HOME=$HOME/.virtualenvs
 export WORKON_HOME="$HOME/.venvs"
 if command -v pyenv 1>/dev/null 2>&1; then
+	export PYENV_ROOT="$(pyenv root)"
+	add_to_path "$PYENV_ROOT/bin"
+	add_to_path "$PYENV_ROOT/shims"
 	eval "$(pyenv init -)"
 fi
-export PYENV_ROOT="$(pyenv root)"
 {% endif %}
 {% if 'pipenv' in homebrew_apps %}
 # Python Pipenv config
 if command -v pipenv 1>/dev/null 2>&1; then
 	eval "$(pipenv --completion)"
 fi
+{% endif %}
+
+{% if 'shellcheck' in homebrew_apps %}
+# shellcheck config
+export SHELLCHECK_OPTS='--norc --enable=all --exclude=SC2250'
+{% endif %}
+
+{% if 'lastpass-cli' in homebrew_apps %}
+# lpass config
+export LPASS_CLIPBOARD_COMMAND="/usr/local/bin/pbcopyt"
 {% endif %}
 
 # ansible config
