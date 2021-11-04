@@ -23,7 +23,7 @@ export JAVA9="$(/usr/libexec/java_home -F -v 9)"
 export JAVA11="$(/usr/libexec/java_home -F -v 11)"
 {% endif %}
 {% if 'openjdk' in cask_apps %}
-export JAVA16="$(/usr/libexec/java_home -F -v 16)"
+export JAVA17="$(/usr/libexec/java_home -F -v 17)"
 {% endif %}
 export JAVA_HOME="$JAVA11"
 export JRE_HOME="$JAVA_HOME/jre"
@@ -133,8 +133,11 @@ export GPG_TTY="$(tty)"
 # use vi keybindings in bash
 set -o vi
 
-alias xml-format="XMLLINT_INDENT=$'\t' xmllint --format"
+# alias xml-format="XMLLINT_INDENT=$'\t' xmllint --format"
+xml-format() { cat "${1:--}" | sed -E 's/^[[:space:]]+//' | tr -d '\n' | XMLLINT_INDENT=$'\t' xmllint --format - ; };
 alias docker-images-by-size="docker images | sort -k7 -h"
+alias chistory='history | uniq -f 1 -c'
+bchistory() { chistory | tail -n "${1:-5}"; };
 
 if [ -d "${HOME}/.bash_profile.d" ]; then
 	while IFS=	read -r; do

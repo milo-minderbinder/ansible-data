@@ -3,9 +3,10 @@
 # Simple drop-in alternative for `pbcopy` which wipes the clipboard contents
 # after a set time (30 seconds by default).
 
-set -o errexit -o pipefail -o noclobber -o nounset
+set -o errexit -o errtrace -o noclobber -o nounset -o pipefail
 
-trap 'e=$?; if [ "$e" -ne "0" ]; then printf "LINE $BASH_LINENO: exit %s <- ${BASH_COMMAND}%s\\n" "$e" "$(printf " <- %s" "${FUNCNAME[@]:-main}")" 1>&2; fi' EXIT
+trap 'e=$?; if [ "$e" -ne "0" ]; then printf "LINE %s: exit %s <- %s%s\\n" "$BASH_LINENO" "$e" "${BASH_COMMAND}" "$(printf " <- %s" "${FUNCNAME[@]:-main}")" 1>&2; fi' EXIT
+
 
 PROGNAME="${0##*/}"
 VERSION="0.1"
@@ -48,15 +49,14 @@ pbcopyt() {
 }
 
 EXPIRE_TIME="30"
-while getopts 'ht' opt; do
+while getopts 'ht:' opt; do
 	case ${opt} in
 		h)
 			usage
 			exit 0
 			;;
 		t)
-			EXPIRE_TIME="$2"
-			shift 2
+			EXPIRE_TIME="$OPTARG"
 			;;
 		*)
 			usage
@@ -64,10 +64,13 @@ while getopts 'ht' opt; do
 			;;
 	esac
 done
+
+shift $(($OPTIND - 1))
 if [ "$#" -ne "0" ]; then
-	printf 'ERROR: unexpected args: %s\n\n' "$@"
+	>&2 printf 'ERROR: unexpected args: %s\n\n' "$*"
 	usage
 	exit 1
 fi
+
 pbcopyt "$EXPIRE_TIME"
 

@@ -2,8 +2,8 @@
 	name = {{ git_user }}
 	email = {{ git_email }}
 [alias]
-	graph-log = !"git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset) %C(bold cyan)(committed: %cD)%C(reset) %C(bold yellow)%d%C(reset)%n''          %C(white)%B%C(reset)%n''          %C(dim white)- %an <%ae> %C(reset) %C(dim white)(committer: %cn <%ce>)%C(reset)' --all"
-	graph-log-brief = !"git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all"
+	graph-log = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset) %C(bold cyan)(committed: %cD)%C(reset) %C(bold yellow)%d%C(reset)%n%C(white)%w(120,10,10)%B%w(0,10,10)%C(reset)%n%C(dim white)- %an <%ae> %C(reset) %C(dim white)(committer: %cn <%ce>)%C(reset)'
+	graph-log-brief = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)'
 	remote-name = !"git for-each-ref --format='%(upstream:remotename)' \"$(git symbolic-ref HEAD)\""
 	remote-url = !"git config --get \"remote.$(git remote-name).url\""
 	remote-host = !"git remote-url | sed -E -e 's#(git@|https?://|ssh://)([^:/]+).*#\\2#'"
@@ -24,15 +24,23 @@
 [core]
 	excludesfile = {{ ansible_user_dir }}/.gitexcludes
 	autocrlf = input
-[commit]
-	gpgsign = true
-[log]
-	date = iso-strict-local
 [init]
 	defaultBranch = main
+[log]
+	date = iso-strict-local
 [diff]
 	submodule = log
-[gpg]
-	program = /usr/local/bin/gpg
 [pull]
 	rebase = false
+[merge]
+	tool = vimdiff
+	conflictStyle = diff3
+{% if 'macvim' in homebrew_apps %}
+	guitool = gvimdiff
+{% endif %}
+{% if 'gnupg' in homebrew_apps %}
+[commit]
+	gpgsign = true
+[gpg]
+	program = /usr/local/bin/gpg
+{% endif %}
