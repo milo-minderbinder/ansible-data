@@ -6,12 +6,9 @@ homebrew_taps:
   - homebrew/cask
   - homebrew/cask-fonts
   - homebrew/cask-versions
-  - adoptopenjdk/openjdk
   - habitat-sh/habitat
 
 cask_apps:
-  - adoptopenjdk/openjdk/adoptopenjdk11
-  - adoptopenjdk/openjdk/adoptopenjdk8
   #- docker-edge
   #- firefox
   - font-source-code-pro
@@ -23,6 +20,8 @@ cask_apps:
   - pycharm
   - rectangle
   #- slack
+  - temurin8
+  - temurin11
   #- transmission
   - vlc
   - zulu7
