@@ -8,9 +8,17 @@
     force: no
     backup: yes
 
-- name: create bash_profile.d dir
+- name: bashrc template
+  template:
+    src: bashrc.j2
+    dest: '{{ ansible_user_dir }}/.bashrc'
+    mode: '0600'
+    force: no
+    backup: yes
+
+- name: create bashrc.d dir
   file:
-    dest: '{{ ansible_user_dir }}/.bash_profile.d'
+    dest: '{{ ansible_user_dir }}/.bashrc.d'
     state: directory
     mode: '0700'
     owner: '{{ ansible_user_id }}'

@@ -4,23 +4,30 @@
 [alias]
 	graph-log = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset) %C(bold cyan)(committed: %cD)%C(reset) %C(bold yellow)%d%C(reset)%n%C(white)%w(120,10,10)%B%w(0,10,10)%C(reset)%n%C(dim white)- %an <%ae> %C(reset) %C(dim white)(committer: %cn <%ce>)%C(reset)'
 	graph-log-brief = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)'
-	remote-name = !"git for-each-ref --format='%(upstream:remotename)' \"$(git symbolic-ref HEAD)\""
-	remote-url = !"git config --get \"remote.$(git remote-name).url\""
+	remote-url = ls-remote --get-url
+	remote-name = !"git remote -v | grep \"$(git ls-remote --get-url).*fetch\" | cut -f 1 | sed -n '1p'"
 	remote-host = !"git remote-url | sed -E -e 's#(git@|https?://|ssh://)([^:/]+).*#\\2#'"
 	org-and-repo = !"git remote-url | sed -E -e 's|.*[:/](.*/.*)|\\1|' -e 's|\\.git$||'"
 	browse = !"echo "opening: https://$(git remote-host)/$(git org-and-repo)" && open \"https://$(git remote-host)/$(git org-and-repo)\""
 	branch-name = rev-parse --abbrev-ref HEAD
 	short-hash = rev-parse --short HEAD
 	closest-tagname = describe --abbrev=0 --tags
-	latest-tagname = !"git fetch --tags && git closest-tagname FETCH_HEAD"
+	latest-tagname = !"git fetch --tags \"$(git ls-remote --get-url)\" && git closest-tagname FETCH_HEAD"
 	changelist = log --no-merges --pretty=format:\"* %s\"
 	changelist-tag = !"git changelist \"$(git latest-tagname)\".."
 	fetch-status = !"git fetch --all --prune && git stash list && git status"
 	squash-merge = !"git merge --squash $1 && git commit --edit -m \"$(git log --format=%B ..$1)\" && echo squashed and merged "
-	list-all-commits = log --all --reflog --pretty=format:"%H"
+	list-all-commits = rev-list --all --reflog
 	cleanex = clean -fdx -e '*.iml' -e '*.iws' -e '*.ipr' -e '.idea'
 	bva = branch -vva
 	diff-stat-sort = !git diff --stat --stat-width \"$(tput cols)\" --color=always | sort -t \"|\" -n -k2
+	lightweight-tags = !"git describe --tags $(git tag | git cat-file --batch-check='%(objectname) %(objecttype)' | grep -v ' tag$' | cut -d ' ' -f 1)"
+	annotated-tags = !"git describe $(git tag | git cat-file --batch-check='%(objectname) %(objecttype)' | grep ' tag$' | cut -d ' ' -f 1)"
+	; annotated-tags = !"git describe --abbrev=0 $(git tag) | sort | uniq -u"
+	sd4-pr-events = !"git sd4 events ls --type pr -f 'table {{.pipelineId}}|{{.id}}|{{sha .sha}}|{{.causeMessage}}|{{rel .createTime}}'"
+	sd4-pr-event = !"REV=\"${1:-HEAD}\"; shift; git sd4-pr-events | grep \"$(git rev-parse --short \"${REV}\")\" | cut -d '|' -f 2"
+	pr-commits = !"PR_NUM=\"${1:-*}\"; shift; REMOTE=\"${1:-$(git remote-name)}\"; shift; git ls-remote \"${REMOTE}\" \"refs/pull/${PR_NUM}/head\" | cut -f 1"
+	pr-commit-short = !"PR_NUM=\"${1:-*}\"; shift; REMOTE=\"${1:-$(git remote-name)}\"; shift; git rev-parse --short \"$(git pr-commits \"${PR_NUM}\" \"${REMOTE}\")\""
 [core]
 	excludesfile = {{ ansible_user_dir }}/.gitexcludes
 	autocrlf = input

@@ -1,9 +1,15 @@
 export BASH_SILENCE_DEPRECATION_WARNING=1
 
 add_to_path() {
+	local path_entries
+	path_entries="$(printf '%s' "${PATH}" | tr ':' '\n')"
 	for path_entry in "$@"; do
-		if [ -d "${path_entry}" ] && [ -z "$(printf '%s' "${PATH}" | tr ':' '\n' | grep -F --line-regexp "${path_entry}")" ]; then
-			printf 'Adding %s to PATH\n' "${path_entry}" >&2
+		if ! printf '%s' "${path_entries}" | grep --fixed-strings --line-regexp --quiet "${path_entry}"; then
+			if [ ! -d "${path_entry}" ]; then
+				printf '%sWARNING:%s Adding non-directory path to PATH: %s\n' "$(tput setaf 1)" "$(tput sgr0)" "${path_entry}" 1>&2
+			else
+				printf '%sINFO:%s Adding to PATH: %s\n' "$(tput setaf 2)" "$(tput sgr0)" "${path_entry}" 1>&2
+			fi
 			export PATH="${path_entry}:${PATH}"
 		fi
 	done
@@ -11,18 +17,20 @@ add_to_path() {
 
 add_to_path '/usr/local/bin' '/usr/local/sbin'
 
+export EDITOR=/usr/local/bin/vim
+
 # Java config
 {% if 'zulu7' in cask_apps %}
 export JAVA7="$(/usr/libexec/java_home -F -v 1.7)"
 {% endif %}
-{% if 'adoptopenjdk/openjdk/adoptopenjdk8' in cask_apps %}
+{% if 'temurin8' in cask_apps %}
 export JAVA8="$(/usr/libexec/java_home -F -v 1.8)"
 {% endif %}
-export JAVA9="$(/usr/libexec/java_home -F -v 9)"
-{% if 'adoptopenjdk/openjdk/adoptopenjdk11' in cask_apps %}
+#export JAVA9="$(/usr/libexec/java_home -F -v 9)"
+{% if 'temurin11' in cask_apps %}
 export JAVA11="$(/usr/libexec/java_home -F -v 11)"
 {% endif %}
-{% if 'openjdk' in cask_apps %}
+{% if 'openjdk' in homebrew_apps %}
 export JAVA17="$(/usr/libexec/java_home -F -v 17)"
 {% endif %}
 export JAVA_HOME="$JAVA11"
@@ -61,38 +69,23 @@ export ANDROID_HOME="$ANDROID_SDK_ROOT"
 {% if 'nvm' in homebrew_apps %}
 # nvm config
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 export HUSKY_SKIP_INSTALL=1
 {% endif %}
 
 {% if 'hab' in homebrew_apps %}
 # hab config
-eval "$(hab cli completers --shell bash)"
 export HAB_AUTH_TOKEN="{{ hab_auth_token }}"
 {% endif %}
 
-{% if 'python' in homebrew_apps %}
-# Python config
-if command -v pip3 1>/dev/null 2>&1; then
-	eval "$(pip3 completion --bash)"
-fi
-{% endif %}
 {% if 'pyenv' in homebrew_apps %}
+# Python config
 # Python pyenv config
 #export WORKON_HOME=$HOME/.virtualenvs
 export WORKON_HOME="$HOME/.venvs"
 if command -v pyenv 1>/dev/null 2>&1; then
-	export PYENV_ROOT="$(pyenv root)"
+	export PYENV_ROOT="$HOME/.pyenv"
 	add_to_path "$PYENV_ROOT/bin"
 	add_to_path "$PYENV_ROOT/shims"
-	eval "$(pyenv init -)"
-fi
-{% endif %}
-{% if 'pipenv' in homebrew_apps %}
-# Python Pipenv config
-if command -v pipenv 1>/dev/null 2>&1; then
-	eval "$(pipenv --completion)"
 fi
 {% endif %}
 
@@ -117,32 +110,7 @@ export ANSIBLE_VAULT_PASSWORD_FILE="$HOME/.vault_pass.bash"
 
 # Homebrew config
 export HOMEBREW_GITHUB_API_TOKEN={{ homebrew_github_api_token }}
-[[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && . "/usr/local/etc/profile.d/bash_completion.sh"
 
-# Show git branch & state in prompt
-GIT_PS1_SHOWDIRTYSTATE=true
-export PS1='[\h:\u \W$(__git_ps1)]\$ '
-
-export EDITOR=/usr/local/bin/vim
-
-export GPG_TTY="$(tty)"
-#export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
-#gpgconf --launch gpg-agent
-#export SSH_AUTH_SOCK="$HOME/.yubiagent/sock"
-
-# use vi keybindings in bash
-set -o vi
-
-# alias xml-format="XMLLINT_INDENT=$'\t' xmllint --format"
-xml-format() { cat "${1:--}" | sed -E 's/^[[:space:]]+//' | tr -d '\n' | XMLLINT_INDENT=$'\t' xmllint --format - ; };
-alias docker-images-by-size="docker images | sort -k7 -h"
-alias chistory='history | uniq -f 1 -c'
-bchistory() { chistory | tail -n "${1:-5}"; };
-
-if [ -d "${HOME}/.bash_profile.d" ]; then
-	while IFS=	read -r; do
-		printf 'sourcing file in bash profile: %s\n' "${REPLY}"
-		source "${REPLY}"
-	done < <(find "${HOME}/.bash_profile.d" -type f -iname '*.bash' | sort)
-fi
+# Runtime environment config
+source "${HOME}/.bashrc"
 

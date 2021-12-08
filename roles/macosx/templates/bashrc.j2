@@ -1,0 +1,58 @@
+# use vi keybindings in bash
+set -o vi
+# Show git branch & state in prompt
+GIT_PS1_SHOWDIRTYSTATE=true
+export PS1='[\h:\u \W$(__git_ps1)]\$ '
+
+export GPG_TTY="$(tty)"
+#export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
+#gpgconf --launch gpg-agent
+export SSH_AUTH_SOCK="$HOME/.yubiagent/sock"
+
+[[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && . "/usr/local/etc/profile.d/bash_completion.sh"
+
+{% if 'hab' in homebrew_apps %}
+# habitat config
+eval "$(hab cli completers --shell bash)"
+{% endif %}
+
+{% if 'python' in homebrew_apps %}
+# Python runtime config
+if command -v pip3 1>/dev/null 2>&1; then
+	eval "$(pip3 completion --bash)"
+fi
+{% endif %}
+{% if 'pyenv' in homebrew_apps %}
+# Python pyenv config
+if command -v pyenv 1>/dev/null 2>&1; then
+	eval "$(pyenv init -)"
+fi
+{% endif %}
+{% if 'pipenv' in homebrew_apps %}
+# Python Pipenv config
+# if command -v pipenv 1>/dev/null 2>&1; then
+#	eval "$(pipenv --completion)"
+# fi
+{% endif %}
+
+{% if 'nvm' in homebrew_apps %}
+# Node/JS runtime config
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+alias npm='npq-hero'
+alias yarn='NPQ_PKG_MGR=yarn npq-hero'
+{% endif %}
+
+# alias xml-format="XMLLINT_INDENT=$'\t' xmllint --format"
+xml-format() { cat "${1:--}" | sed -E 's/^[[:space:]]+//' | tr -d '\n' | XMLLINT_INDENT=$'\t' xmllint --format - ; };
+alias docker-images-by-size="docker images | sort -k7 -h"
+alias chistory='history | uniq -f 1 -c'
+bchistory() { chistory | tail -n "${1:-5}"; };
+
+if [ -d "${HOME}/.bashrc.d" ]; then
+	while IFS=	read -r; do
+		>&2 printf '\e[32mINFO\e[0m: sourcing file from %s: %s\n' "${BASH_SOURCE[0]}" "${REPLY}"
+		source "${REPLY}"
+	done < <(find "${HOME}/.bashrc.d" -type f -iname '*.bash' | sort)
+fi
+
