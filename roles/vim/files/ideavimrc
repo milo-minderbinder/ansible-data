@@ -1,5 +1,5 @@
 source ~/.vimrc
 
-vnorem // y/<c-r>"<cr>
-nnorem <leader>t :action GotoTest<CR>
-nnorem <C-N> :NERDTreeFocus<CR>
+xnoremap // y/<c-r>"<cr>
+nnoremap <leader>t :action GotoTest<CR>
+nnoremap <C-N> :NERDTreeFocus<CR>

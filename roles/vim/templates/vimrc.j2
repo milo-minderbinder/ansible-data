@@ -90,185 +90,262 @@ filetype plugin indent on	 " required
 " Put your non-Plugin stuff after this line
 
 " Standard configuration options follow
+let mapleader=','
+let g:airline_powerline_fonts=1
+syntax on
+if has("gui_running")
+	colorscheme solarized
+endif
+
+" Options (sections and order taken from :options)
+"  1 important
+"  2 moving around, searching and patterns
+set noautochdir
+"  3 tags
+"  4 displaying text
+set number
+if has("gui_running")
+	set columns=999 lines=999
+	nnoremap <leader>M :set columns=999 lines=999<CR>
+endif
+"  5 syntax, highlighting and spelling
+set background=dark
+set hlsearch
+set cursorline
+"  6 multiple windows
+set splitbelow
+set splitright
+set termwinsize=10x0
+"  7 multiple tab pages
+"  8 terminal
+"  9 using the mouse
+" 10 GUI
+set guifont=Source\ Code\ Pro\ for\ Powerline:h15
+set guioptions+=k
+set macmeta
+" 11 printing
+" 12 messages and info
+set showcmd
+set noerrorbells
+set novisualbell
+set t_vb=
+" 13 selecting text
+" 14 editing text
+" 15 tabs and indenting
+" set tabstop=4
+" set shiftwidth=4
+" set softtabstop=0
+" set noexpandtab
+set autoindent
+" 16 folding
+" 17 diff mode
+set diffopt=filler,vertical
+" 18 mapping
+" 19 reading and writing files
+" 20 the swap file
+" 21 command line editing
+" 22 executing external commands
+" 23 running make and jumping to errors (quickfix)
+set makeprg=gmake
+" 24 language specific
+" 25 multi-byte characters
 set encoding=utf-8
+" 26 various
 
-" Configure indent folding with manual folds
-augroup vimrc
-	au BufReadPre * setlocal foldmethod=indent
-	au BufWinEnter * if &fdm == 'indent' |
-				\ :normal zR<CR> |
-				\ endif
-augroup END
-
-" Change the window-local current directory to the directory of the current
-" file, except when the file is in /tmp
-au BufEnter * if expand("%:p:h") !~ '^/tmp' | silent! lcd %:p:h | endif
-
-" Custom commands
-command! -nargs=1 SetSTS :set tabstop=<args> | set softtabstop=<args> | set shiftwidth=<args>
-command! -nargs=* -complete=shellcmd R new | setlocal buftype=nofile bufhidden=hide noswapfile | 0r !<args>
-command! -nargs=* -range=% -complete=shellcmd WR new | setlocal buftype=nofile bufhidden=hide noswapfile | 0r !sed -n <line1>,<line2>p "#" | <args>
-command! -nargs=+ -complete=command C new | setlocal buftype=nofile bufhidden=hide noswapfile | pu=execute('<args>')
-command! MarkLocation :let @f=expand('%:p') . '(' . line('.') . ')'
-command! MakeFinding :let @f=expand('%:p') . '(' . line('.') . '):' . "\n" . getline('.')
-command! -nargs=1 Venv :VirtualEnvActivate <args> | YcmRestartServer
-command! -range=% JSONFormat :<line1>,<line2>!python3 -m json.tool
-command! -range=% XMLFormat :<line1>,<line2>!cat | XMLLINT_INDENT=$'\t' xmllint --format -
-command! -range=% CertText :<line1>,<line2>w !cat|sed -E s/^[[:space:]]*//|openssl x509 -text -noout|less
-command! -range=% CertText2 new | setlocal buftype=nofile bufhidden=hide noswapfile | execute '0r !sed -n '.<line1>.','.<line2>.'p # | sed -E s/^[[:space:]]*// | openssl x509 -text -noout' | normal gg
-
-{% if ansible_os_family == 'Darwin' %}
-function! Pygmentize(line1, line2, ...)
-	if a:0 < 1
-		let lexer = &ft
-	else
-		let lexer = a:1
-	end
-	let commit = systemlist("git rev-parse --short HEAD")[0]
-	"echo commit
-	normal "xy
-	"echo @x
-	" make sure to generate in the correct format
-	exec a:line1.','.a:line2.'!pygmentize -f html -o ~/tmp.html -O filename="'.@x.'@'.commit.'",full,linenos=table,lineseparator="<br/>",linenostart='.a:line1.' -l '.lexer
-	normal u
-endfunction
-command! -nargs=? -range=% Pygmentize :call Pygmentize(<line1>,<line2>,<args>)
-{% endif %}
-
-function! s:get_visual_selection()
-	" Why is this not a built-in Vim script function?!
-	let [lnum1, col1] = getpos("'<")[1:2]
-	let [lnum2, col2] = getpos("'>")[1:2]
-	let lines = getline(lnum1, lnum2)
-	let lines[-1] = lines[-1][: col2 - (&selection == 'inclusive' ? 1 : 2)]
-	let lines[0] = lines[0][col1 - 1:]
-	return join(lines, "\n")
-endfunction
-
-function! AnsibleVault(action)
-	let lines = s:get_visual_selection()
-	if a:action == "e"
-		let action = "encrypt_string"
-		let lines = join(split(lines, "\n")[:-1], "\n")
-		let lines = shellescape(lines)
-		let modlines = system('echo '.lines.' | sed -E -e s/\\\\$// | ansible-vault '.action)
-	elseif a:action == "d"
-		let action = "decrypt"
-		" Remove the first '!vault |' line
-		let lines = join(split(lines, "\n")[1:], "\n")
-		let lines = shellescape(lines)
-		let modlines = system('echo '.lines.' | sed -E -e s/[[:space:]]*// -e s/\\\\$// | ansible-vault '.action)
+" Custom functions
+function GetVisualSelection()
+	if mode() ==# 'n'
+		normal gv
 	endif
-	normal gv"_x
-	silent put=modlines
-	normal gvJ
+	let [line_start, column_start]	= getpos("v")[1:2]
+	let [line_end, column_end]		= getpos(".")[1:2]
+	if line_start > line_end
+		let [line_start, column_start, line_end, column_end] =
+					\ [line_end, column_end, line_start, column_start]
+	elseif line_start == line_end && column_start > column_end
+		let [column_start, column_end] =
+					\ [column_end, column_start]
+	endif
+	let lines = getline(line_start, line_end)
+	let mode = mode()
+	if mode ==# 'v'
+		" Must trim the end before the start, the beginning will shift left.
+		let lines[-1] = lines[-1][: column_end - (&selection == 'inclusive' ? 1 : 2)]
+		let lines[0] = lines[0][column_start - 1:]
+	elseif	mode ==# 'V'
+		" Line mode no need to trim start or end
+	elseif	mode == "\<c-v>"
+		" Block mode, trim every line
+		let new_lines = []
+		let i = 0
+		for line in lines
+			let lines[i] = line[column_start - 1: column_end - (&selection == 'inclusive' ? 1 : 2)]
+			let i = i + 1
+		endfor
+	else
+		return ''
+	endif
+	" echom lines
+	return lines
 endfunction
-command! -nargs=1 -range=% AnsibleVault :call AnsibleVault(<args>)
+
+function ShowVisualSelection()
+	let initial_bufnr = bufnr()
+	let visual_selection=GetVisualSelection()
+	new
+	let new_bufnr = bufnr()
+	1put! =visual_selection
+	normal! jddgg
+	execute 'resize' line('$', win_getid())
+	setlocal buftype=nofile bufhidden=delete noswapfile winfixheight
+	execute 'setfiletype' getbufvar(initial_bufnr, '&filetype', 'sh')
+	return new_bufnr
+endfunction
+command -range=% ShowVisualSelection call ShowVisualSelection()
+
+{% if vim_installed_version is version('8.0.0', '>=') %}
+function ExecuteVisualSelection()
+	let command_bufnr = ShowVisualSelection()
+	%terminal ++noclose
+	let output_bufnr = bufnr()
+	setlocal bufhidden=delete
+	execute 'au BufWinLeave <buffer='.command_bufnr.'> bdelete' output_bufnr
+	execute 'au BufWinLeave <buffer='.output_bufnr.'> bdelete' command_bufnr
+	return output_bufnr
+endfunction
+command -range=% ExecuteVisualSelection call ExecuteVisualSelection()
 
 " Run macro on each line in visual selection
-function! ExecuteMacroOverVisualRange()
+function ExecuteMacroOverVisualRange()
 	echo "@".getcmdline()
 	execute ":'<,'>normal @".nr2char(getchar())
 endfunction
 
-{% if vim_installed_version is version('8.0.0', '>=') %}
 " Handles returning to terminal mode from normal mode entered through
 " EnterNormalMode()
-function! ExitNormalMode()
+function ExitNormalMode()
 	unmap <buffer> <C-ScrollWheelDown>
 	call feedkeys("a")
 endfunction
 
 " Handle entering normal mode from terminal mode, and maps CTRL+SCROLL-DOWN
 " to return to terminal mode
-function! EnterNormalMode()
+function EnterNormalMode()
 	if &buftype == 'terminal' && mode('') == 't'
 		call feedkeys("\<c-w>N")
 		call feedkeys("\<c-y>")
-		map <buffer> <C-ScrollWheelDown> :call ExitNormalMode()<CR>
+		noremap <buffer> <C-ScrollWheelDown> :call ExitNormalMode()<CR>
 	endif
 endfunction
 {% endif %}
+function AnsibleVault(action)
+	let lines = GetVisualSelection()
+	if a:action == "e"
+		let modlines = systemlist("sed -E -e 's/\\\\$//' | ansible-vault encrypt_string", lines)
+	elseif a:action == "d"
+		" Remove the first '!vault |' line
+		let anchor_match = match(lines[0], '!vault |')
+		let anchor = ""
+		if anchor_match != -1
+			if anchor_match > 0
+				let anchor = lines[0][:anchor_match - 1]
+			endif
+			let lines = lines[1:]
+		endif
+		let modlines = systemlist("sed -E -e 's/[[:space:]]*//' -e 's/\\\\$//' | ansible-vault decrypt", lines)
+		let modlines[0] = anchor . modlines[0]
+	endif
+	normal! gv"_x
+	silent put =modlines
+	normal! gvJ
+endfunction
+command -nargs=1 -range=% AnsibleVault :call AnsibleVault(<f-args>)
+
+{% if ansible_os_family == 'Darwin' %}
+function Pygmentize(lexer = &filetype) range
+	let commit = systemlist("git rev-parse --short HEAD")[0]
+	"echo commit
+	normal! "xy
+	"echo @x
+	" make sure to generate in the correct format
+	exec a:firstline.','.a:lastline.'!pygmentize -f html -o ~/tmp.html -O filename="'.@x.'@'.commit.'",full,linenos=table,lineseparator="<br/>",linenostart='.a:firstline.' -l '.a:lexer
+	normal! u
+endfunction
+command -nargs=? -range=% Pygmentize <line1>,<line2>call Pygmentize(<f-args>)
+{% endif %}
+
+" Custom commands
+command -nargs=* -complete=shellcmd R new | setlocal buftype=nofile bufhidden=hide noswapfile | 0r !<args>
+command -nargs=* -range=% -complete=shellcmd WR call ShowVisualSelection() | silent %!<args>
+command -nargs=+ -complete=command C let s:c_output=execute(<q-args>) |
+			\ new | setlocal buftype=nofile bufhidden=hide noswapfile |
+			\ 1put! =s:c_output |
+			\ unlet s:c_output |
+			\ normal! gg
+command -nargs=1 SetSTS :set tabstop=<args> | set softtabstop=<args> | set shiftwidth=<args>
+command MarkLocation :let @f=expand('%:p') . '(' . line('.') . ')'
+command MakeFinding :let @f=expand('%:p') . '(' . line('.') . '):' . "\n" . getline('.')
+command -range=% JSONFormat :<line1>,<line2>!python3 -m json.tool
+command -range=% XMLFormat :<line1>,<line2>!cat | XMLLINT_INDENT=$'\t' xmllint --format -
+" command -range=% CertText :<line1>,<line2>w !cat|sed -E s/^[[:space:]]*//|openssl x509 -text -noout|less
+command -range=% CertText WR sed -E s/^[[:space:]]*// | openssl x509 -text -noout
+
+" Custom autocommands
+" Configure indent folding with manual folds
+augroup vimrc
+	au!
+	au BufReadPre * setlocal foldmethod=indent
+	au BufWinEnter * if &fdm == 'indent' |
+				\ :normal! zR<CR> |
+				\ endif
+	" Change the window-local current directory to the directory of the current
+	" file, except when the file is in /tmp
+	au BufEnter * if expand("%:p:h") !~ '^/tmp' | silent! lcd %:p:h | endif
+augroup END
+" autocmd! GUIEnter * set vb t_vb=
 
 " Custom keymappings
-let mapleader=','
+noremap <leader>m <Cmd>echom mode(1)<CR>
+xnoremap <leader>v <Cmd>ShowVisualSelection<CR>
+{% if vim_installed_version is version('8.0.0', '>=') %}
+xnoremap <leader>e <Cmd>ExecuteVisualSelection<CR>
+{% endif %}
+xnoremap <leader>p :WR<Space>
+nmap <leader>cc gcc
+xmap <leader>cc gc
 
 xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>
 
 {% if vim_installed_version is version('8.0.0', '>=') %}
-tmap <C-ScrollWheelUp> <c-w>:call EnterNormalMode()<CR>
+tnoremap <C-ScrollWheelUp> <c-w>:call EnterNormalMode()<CR>
 {% endif %}
 
-nnorem <leader>d :YcmCompleter GoToDeclaration<CR>
-nnorem <leader>i :YcmCompleter GoToDefinition<CR>
-nnorem <leader>k :YcmCompleter GetDoc<CR>
+nnoremap <leader>d :YcmCompleter GoToDeclaration<CR>
+nnoremap <leader>i :YcmCompleter GoToDefinition<CR>
+nnoremap <leader>k :YcmCompleter GetDoc<CR>
 
-nnorem <C-N> :NERDTreeToggle<CR>
+nnoremap <C-N> :NERDTreeToggle<CR>
 
-"nmap <leader>c<Space> <plug>NERDCommenterComment
-"xmap <leader>c<Space> <plug>NERDCommenterComment
-"nmap <leader>cc <plug>NERDCommenterToggle
-"xmap <leader>cc <plug>NERDCommenterToggle
-nmap <leader>cc gcc
-vmap <leader>cc gc
-
-nmap <leader>b Oimport pdb; pdb.set_trace()<ESC>
-nmap <leader>B Oimport ipdb; ipdb.set_trace()<ESC>
-nnorem <leader>C /^[<>\|=]\{7\}<CR>
-nnorem <leader>l :MarkLocation<CR>
-nnorem <leader>f :MakeFinding<CR>
-nnorem <leader>F "fp
-nnorem <leader>n :noh<CR>
-nmap <leader>s /\s\+$<CR>
-nnorem <leader>D :q<CR>:diffoff<CR>
-"vnorem // y:call setreg('9', escape(@", '\\/.*$^~[]'))<cr>/<c-r>9<cr>
-vnorem // y:call setreg('9', substitute(substitute(escape(@", '\\/.*$^~[]'), '\n', '\\n', 'g'), '\r', '\\r', 'g'))<cr>/<c-r>9<cr>
+nnoremap <leader>b Oimport pdb; pdb.set_trace()<ESC>
+nnoremap <leader>B Oimport ipdb; ipdb.set_trace()<ESC>
+nnoremap <leader>C /^[<>\|=]\{7\}<CR>
+nnoremap <leader>l :MarkLocation<CR>
+nnoremap <leader>f :MakeFinding<CR>
+nnoremap <leader>F "fp
+nnoremap <leader>n :noh<CR>
+nnoremap <leader>s /\s\+$<CR>
+nnoremap <leader>D :q<CR>:diffoff<CR>
+"xnoremap // y:call setreg('9', escape(@", '\\/.*$^~[]'))<cr>/<c-r>9<cr>
+xnoremap // y:call setreg('9', substitute(substitute(escape(@", '\\/.*$^~[]'), '\n', '\\n', 'g'), '\r', '\\r', 'g'))<cr>/<c-r>9<cr>
 
 {% if ansible_os_family == 'Darwin' %}
 " Map <leader>o to <C-w>F -> Opens file under cursor to line:
-nnorem <leader>o F
+nnoremap <leader>o F
 " Map <leader>O to <C-w>gF -> Opens file under cursor to line in a new tab:
-nnorem <leader>O gF
+nnoremap <leader>O gF
 {% else %}
 " Map <Alt-o> to <C-w>F -> Opens file under cursor to line:
-nnorem ï F
+nnoremap ï F
 " Map <Alt-O> to <C-w>gF -> Opens file under cursor to line in a new tab:
-nnorem Ï gF
+nnoremap Ï gF
 {% endif %}
-
-" UI Options
-syntax on
-
-set nu
-set cursorline
-set hlsearch
-set noautochdir
-set diffopt=filler,vertical
-set showcmd
-
-" Editor options
-set noexpandtab
-set tabstop=4
-set softtabstop=0
-set shiftwidth=4
-set ai
-
-set noerrorbells
-set novisualbell
-set t_vb=
-autocmd! GUIEnter * set vb t_vb=
-
-if has("gui_running")
-	let g:airline_powerline_fonts=1
-{% if ansible_os_family == 'Darwin' %}
-	set macmeta
-	set guifont=Source\ Code\ Pro\ for\ Powerline:h15
-{% else %}
-	set guifont=Source\ Code\ Pro\ for\ Powerline\ 13
-{% endif %}
-	set background=dark
-	colorscheme solarized
-	set guioptions+=k
-	set lines=999 columns=999
-	nmap <leader>M :set lines=999 columns=999<CR>
-endif
