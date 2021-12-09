@@ -4,13 +4,13 @@ homebrew_taps:
   - homebrew/cask
   - homebrew/cask-fonts
   - homebrew/cask-versions
-  - adoptopenjdk/openjdk
 
 cask_apps:
-  - adoptopenjdk/openjdk/adoptopenjdk11
-  - adoptopenjdk/openjdk/adoptopenjdk8
-  - firefox
+  - font-source-code-pro
+  - font-source-code-pro-for-powerline
   - rectangle
+  - temurin11
+  - temurin8
   - vlc
 
 homebrew_apps:
@@ -25,6 +25,7 @@ homebrew_apps:
   - gnupg
   - grep
   - gron
+  - htop
   - jq
   - lastpass-cli
   - libxml2
@@ -34,7 +35,6 @@ homebrew_apps:
   - moreutils
   - openjdk
   - pinentry
-  - pipenv
   - pyenv
   - python
   - ripgrep

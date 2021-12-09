@@ -198,7 +198,7 @@ function ShowVisualSelection()
 	normal! jddgg
 	execute 'resize' line('$', win_getid())
 	setlocal buftype=nofile bufhidden=delete noswapfile winfixheight
-	execute 'setfiletype' getbufvar(initial_bufnr, '&filetype', 'sh')
+	let &filetype = getbufvar(initial_bufnr, '&filetype')
 	return new_bufnr
 endfunction
 command -range=% ShowVisualSelection call ShowVisualSelection()
@@ -239,9 +239,10 @@ function EnterNormalMode()
 endfunction
 {% endif %}
 function AnsibleVault(action)
+	let AnsibleVault_path = get(g:, 'AnsibleVault_path', 'ansible-vault')
 	let lines = GetVisualSelection()
 	if a:action == "e"
-		let modlines = systemlist("sed -E -e 's/\\\\$//' | ansible-vault encrypt_string", lines)
+		let modlines = systemlist("sed -E -e 's/\\\\$//' | ".AnsibleVault_path."-vault encrypt_string", lines)
 	elseif a:action == "d"
 		" Remove the first '!vault |' line
 		let anchor_match = match(lines[0], '!vault |')
@@ -252,7 +253,7 @@ function AnsibleVault(action)
 			endif
 			let lines = lines[1:]
 		endif
-		let modlines = systemlist("sed -E -e 's/[[:space:]]*//' -e 's/\\\\$//' | ansible-vault decrypt", lines)
+		let modlines = systemlist("sed -E -e 's/[[:space:]]*//' -e 's/\\\\$//' | ".AnsibleVault_path." decrypt", lines)
 		let modlines[0] = anchor . modlines[0]
 	endif
 	normal! gv"_x
@@ -275,6 +276,7 @@ command -nargs=? -range=% Pygmentize <line1>,<line2>call Pygmentize(<f-args>)
 {% endif %}
 
 " Custom commands
+command ShowUnsavedChanges w !diff % -
 command -nargs=* -complete=shellcmd R new | setlocal buftype=nofile bufhidden=hide noswapfile | 0r !<args>
 command -nargs=* -range=% -complete=shellcmd WR call ShowVisualSelection() | silent %!<args>
 command -nargs=+ -complete=command C let s:c_output=execute(<q-args>) |

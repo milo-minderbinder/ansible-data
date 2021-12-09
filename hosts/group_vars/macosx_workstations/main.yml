@@ -18,6 +18,7 @@ cask_apps:
   - keepassxc
   - postman
   - pycharm
+  # - qmk-toolbox
   - rectangle
   #- slack
   - temurin8

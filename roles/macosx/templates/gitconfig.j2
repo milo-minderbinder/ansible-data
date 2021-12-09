@@ -24,7 +24,7 @@
 	lightweight-tags = !"git describe --tags $(git tag | git cat-file --batch-check='%(objectname) %(objecttype)' | grep -v ' tag$' | cut -d ' ' -f 1)"
 	annotated-tags = !"git describe $(git tag | git cat-file --batch-check='%(objectname) %(objecttype)' | grep ' tag$' | cut -d ' ' -f 1)"
 	; annotated-tags = !"git describe --abbrev=0 $(git tag) | sort | uniq -u"
-	sd4-pr-events = !"git sd4 events ls --type pr -f 'table {{.pipelineId}}|{{.id}}|{{sha .sha}}|{{.causeMessage}}|{{rel .createTime}}'"
+	sd4-pr-events = !"git sd4 events ls --type pr -f {% raw %}'table {{.pipelineId}}|{{.id}}|{{sha .sha}}|{{.causeMessage}}|{{rel .createTime}}'{% endraw %}"
 	sd4-pr-event = !"REV=\"${1:-HEAD}\"; shift; git sd4-pr-events | grep \"$(git rev-parse --short \"${REV}\")\" | cut -d '|' -f 2"
 	pr-commits = !"PR_NUM=\"${1:-*}\"; shift; REMOTE=\"${1:-$(git remote-name)}\"; shift; git ls-remote \"${REMOTE}\" \"refs/pull/${PR_NUM}/head\" | cut -f 1"
 	pr-commit-short = !"PR_NUM=\"${1:-*}\"; shift; REMOTE=\"${1:-$(git remote-name)}\"; shift; git rev-parse --short \"$(git pr-commits \"${PR_NUM}\" \"${REMOTE}\")\""
