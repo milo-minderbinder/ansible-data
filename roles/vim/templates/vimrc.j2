@@ -232,8 +232,8 @@ endfunction
 " to return to terminal mode
 function EnterNormalMode()
 	if &buftype == 'terminal' && mode('') == 't'
-		call feedkeys("\<c-w>N")
-		call feedkeys("\<c-y>")
+		call feedkeys("\<C-W>N")
+		call feedkeys("\<C-Y>")
 		noremap <buffer> <C-ScrollWheelDown> :call ExitNormalMode()<CR>
 	endif
 endfunction
@@ -264,16 +264,23 @@ command -nargs=1 -range=% AnsibleVault :call AnsibleVault(<f-args>)
 
 {% if ansible_os_family == 'Darwin' %}
 function Pygmentize(lexer = &filetype) range
-	let commit = systemlist("git rev-parse --short HEAD")[0]
-	"echo commit
-	normal! "xy
-	"echo @x
+	" echom "running pygmentize"
+	let commit = systemlist("git rev-parse --short HEAD 2>/dev/null || true")[0]
+	" echom "commit: ".commit
 	" make sure to generate in the correct format
-	exec a:firstline.','.a:lastline.'!pygmentize -f html -o ~/tmp.html -O filename="'.@x.'@'.commit.'",full,linenos=table,lineseparator="<br/>",linenostart='.a:firstline.' -l '.a:lexer
+	exec a:firstline.','.a:lastline.'!pygmentize -f html -o ~/tmp.html -O filename="'.expand("%").'@'.commit.'",full,linenos=table,lineseparator="<br/>",linenostart='.a:firstline.' -l '.a:lexer
 	normal! u
 endfunction
-command -nargs=? -range=% Pygmentize <line1>,<line2>call Pygmentize(<f-args>)
+command -nargs=? -range=% Pygmentize :<line1>,<line2>call Pygmentize(<f-args>)
 {% endif %}
+
+function HTMLize() range
+	exec a:firstline.','.a:lastline.'TOhtml'
+	saveas! ~/tmp.html
+	bdelete
+	!open ~/tmp.html
+endfunction
+command -range=% HTMLize <line1>,<line2>call HTMLize()
 
 " Custom commands
 command ShowUnsavedChanges w !diff % -
@@ -319,7 +326,7 @@ xmap <leader>cc gc
 xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>
 
 {% if vim_installed_version is version('8.0.0', '>=') %}
-tnoremap <C-ScrollWheelUp> <c-w>:call EnterNormalMode()<CR>
+tnoremap <C-ScrollWheelUp> <C-W>:call EnterNormalMode()<CR>
 {% endif %}
 
 nnoremap <leader>d :YcmCompleter GoToDeclaration<CR>
