@@ -115,7 +115,6 @@ set cursorline
 "  6 multiple windows
 set splitbelow
 set splitright
-set termwinsize=10x0
 "  7 multiple tab pages
 "  8 terminal
 "  9 using the mouse
@@ -153,12 +152,12 @@ set encoding=utf-8
 " 26 various
 
 " Custom functions
-function GetVisualSelection()
+function GetVisualSelection() abort
 	if mode() ==# 'n'
 		normal gv
 	endif
 	let [line_start, column_start]	= getpos("v")[1:2]
-	let [line_end, column_end]		= getpos(".")[1:2]
+	let [line_end, column_end]	= getpos(".")[1:2]
 	if line_start > line_end
 		let [line_start, column_start, line_end, column_end] =
 					\ [line_end, column_end, line_start, column_start]
@@ -189,26 +188,88 @@ function GetVisualSelection()
 	return lines
 endfunction
 
-function ShowVisualSelection()
+function ShowVisualSelection() abort
 	let initial_bufnr = bufnr()
 	let visual_selection=GetVisualSelection()
 	new
 	let new_bufnr = bufnr()
 	1put! =visual_selection
 	normal! jddgg
-	execute 'resize' line('$', win_getid())
+	" execute 'resize' line('$', win_getid())
+	execute 'resize' min([len(visual_selection), winheight(0)])
 	setlocal buftype=nofile bufhidden=delete noswapfile winfixheight
-	let &filetype = getbufvar(initial_bufnr, '&filetype')
+	let &l:filetype = getbufvar(initial_bufnr, '&filetype')
 	return new_bufnr
 endfunction
 command -range=% ShowVisualSelection call ShowVisualSelection()
 
 {% if vim_installed_version is version('8.0.0', '>=') %}
-function ExecuteVisualSelection()
+function TermUpdateSize(expr = '') abort
+	if a:expr != ''
+		let bufnr = bufnr(a:expr)
+	else
+		let bufnr = bufnr()
+	endif
+	if index(term_list(), bufnr) == -1
+		echoerr 'buffer' bufnr 'is not a terminal buffer!'
+		return -1
+	endif
+	let winid = bufwinid(bufnr)
+	let tabnr = win_id2tabwin(winid)[0]
+	" echom 'start status, win, term, lines: ' join([term_getstatus(bufnr), winheight(winid), term_getsize(bufnr)[0], line('$', winid)])
+	" let orig_height = term_getsize(bufnr)[0]
+	let orig_height = winheight(winid)
+	let height = orig_height
+	if stridx(term_getstatus(bufnr), "finished") != -1
+		" if terminal job is finished, shrink the window if taller than its output and fix its height
+		let height = min([height, line('$', winid)])
+		" echom 'setting fixed height for finished terminal buffer' bufnr 'from' orig_height 'to' height
+		" call term_setsize(bufnr, height, 0)
+		call win_execute(winid, 'resize '.height)
+		call settabwinvar(tabnr, winid, '&winfixheight', 1)
+	else
+		let height = max([10, min([height, line('$', winid)])])
+		" echom 'setting height for running terminal buffer' bufnr 'from' orig_height 'to' height
+		" call term_setsize(bufnr, height, 0)
+		call win_execute(winid, 'resize '.height)
+	endif
+	" echom 'end status, win, term, lines: ' join([term_getstatus(bufnr), winheight(winid), term_getsize(bufnr)[0], line('$', winid)])
+	return {
+				\'tabnr': tabnr,
+				\'winid': winid,
+				\'bufnr': bufnr,
+				\'orig_height': orig_height,
+				\'height': height,
+				\}
+endfunction
+
+function UpdateAllTermSizes() abort
+	for term_buf in term_list()
+		call TermUpdateSize(term_buf)
+	endfor
+endfunction
+
+" function MyJobCB(job, exit_status)
+" 	echom 'finished: '.a:job.' '.a:exit_status
+" 	echom 'buffer '.bufnr()
+" endfunction
+
+function ExecuteVisualSelection() abort
 	let command_bufnr = ShowVisualSelection()
-	%terminal ++noclose
-	let output_bufnr = bufnr()
-	setlocal bufhidden=delete
+	let term_opts = {
+				\"norestore": 1,
+				\"hidden": 1,
+				\"term_finish": "open",
+				\"term_opencmd": "sbuffer %d | setlocal bufhidden=delete | call TermUpdateSize()",
+				\"in_io": "buffer",
+				\"in_buf": command_bufnr,
+				\}
+				" \"exit_cb": function('MyJobCB'),
+	let output_bufnr = term_start([&shell], term_opts)
+	" %terminal ++noclose
+	" setlocal bufhidden=delete
+	" let output_bufnr = bufnr()
+	" call TermUpdateSize(output_bufnr)
 	execute 'au BufWinLeave <buffer='.command_bufnr.'> bdelete' output_bufnr
 	execute 'au BufWinLeave <buffer='.output_bufnr.'> bdelete' command_bufnr
 	return output_bufnr
@@ -238,7 +299,7 @@ function EnterNormalMode()
 	endif
 endfunction
 {% endif %}
-function AnsibleVault(action)
+function AnsibleVault(action) abort
 	let AnsibleVault_path = get(g:, 'AnsibleVault_path', 'ansible-vault')
 	let lines = GetVisualSelection()
 	if a:action == "e"
@@ -300,9 +361,9 @@ command -range=% XMLFormat :<line1>,<line2>!cat | XMLLINT_INDENT=$'\t' xmllint -
 command -range=% CertText WR sed -E s/^[[:space:]]*// | openssl x509 -text -noout
 
 " Custom autocommands
-" Configure indent folding with manual folds
 augroup vimrc
 	au!
+	" Configure indent folding with manual folds
 	au BufReadPre * setlocal foldmethod=indent
 	au BufWinEnter * if &fdm == 'indent' |
 				\ :normal! zR<CR> |
@@ -310,6 +371,7 @@ augroup vimrc
 	" Change the window-local current directory to the directory of the current
 	" file, except when the file is in /tmp
 	au BufEnter * if expand("%:p:h") !~ '^/tmp' | silent! lcd %:p:h | endif
+	au TerminalWinOpen * call TermUpdateSize()
 augroup END
 " autocmd! GUIEnter * set vb t_vb=
 

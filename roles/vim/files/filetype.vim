@@ -25,6 +25,8 @@ augroup filetypedetect
 		"\ setlocal shiftwidth=4 |
 		"\ setlocal tabstop=4 |
 		"\ setlocal softtabstop=4
+	au BufNewFile,BufRead pip.conf setlocal commentstring=#\ %s
+	au FileType toml setlocal commentstring=#\ %s
 	au BufNewFile,BufRead *.yml,*.yaml
 		\ setlocal expandtab |
 		\ setlocal shiftwidth=2 |
