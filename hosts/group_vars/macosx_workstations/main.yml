@@ -76,6 +76,7 @@ homebrew_apps:
   - plantuml
   - pyenv
   - python
+  - restic
   - ripgrep
   - ruby
   - sbt

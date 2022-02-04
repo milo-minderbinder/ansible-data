@@ -74,6 +74,9 @@ Plugin 'pearofducks/ansible-vim'
 " Syntax for PowerShell
 Plugin 'PProvost/vim-ps1'
 
+" Syntax for Lark
+Plugin 'lark-parser/vim-lark-syntax'
+
 " All of your Plugins must be added before the following line
 call vundle#end()			 " required
 filetype plugin indent on	 " required
@@ -276,6 +279,13 @@ function ExecuteVisualSelection() abort
 endfunction
 command -range=% ExecuteVisualSelection call ExecuteVisualSelection()
 
+function Base64DecodeVisualSelection() abort
+	let visual_selection = map(GetVisualSelection(), {_, v -> trim(v)})
+	let decoded = systemlist('base64 --decode', visual_selection)
+	return decoded
+endfunction
+command -range=% Base64DecodeVisualSelection call Base64DecodeVisualSelection()
+
 " Run macro on each line in visual selection
 function ExecuteMacroOverVisualRange()
 	echo "@".getcmdline()
@@ -303,7 +313,7 @@ function AnsibleVault(action) abort
 	let AnsibleVault_path = get(g:, 'AnsibleVault_path', 'ansible-vault')
 	let lines = GetVisualSelection()
 	if a:action == "e"
-		let modlines = systemlist("sed -E -e 's/\\\\$//' | ".AnsibleVault_path."-vault encrypt_string", lines)
+		let modlines = systemlist("sed -E -e 's/\\\\$//' | ".AnsibleVault_path." encrypt_string", lines)
 	elseif a:action == "d"
 		" Remove the first '!vault |' line
 		let anchor_match = match(lines[0], '!vault |')
@@ -316,6 +326,9 @@ function AnsibleVault(action) abort
 		endif
 		let modlines = systemlist("sed -E -e 's/[[:space:]]*//' -e 's/\\\\$//' | ".AnsibleVault_path." decrypt", lines)
 		let modlines[0] = anchor . modlines[0]
+	else
+		echoerr 'unknown action:' a:action
+		return -1
 	endif
 	normal! gv"_x
 	silent put =modlines
@@ -382,7 +395,6 @@ augroup vimrc
 	" Change the window-local current directory to the directory of the current
 	" file, except when the file is in /tmp
 	au BufEnter * if expand("%:p:h") !~ '^/tmp' | silent! lcd %:p:h | endif
-	au TerminalWinOpen * call TermUpdateSize()
 augroup END
 " autocmd! GUIEnter * set vb t_vb=
 

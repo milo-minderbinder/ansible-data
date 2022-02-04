@@ -27,6 +27,35 @@
     mode: '0755'
     owner: '{{ ansible_user_id }}'
 
+- name: copy filetype.vim
+  copy:
+    src: filetype.vim
+    dest: '{{ ansible_user_dir }}/.vim/after/filetype.vim'
+    mode: '0755'
+    owner: '{{ ansible_user_id }}'
+    force: no
+    backup: yes
+
+- name: create vim after ftplugin scripts dir
+  file:
+    path: '{{ ansible_user_dir }}/.vim/after/ftplugin'
+    state: directory
+    mode: '0755'
+    owner: '{{ ansible_user_id }}'
+
+- name: copy ftplugin scripts
+  copy:
+    src: '{{ item }}'
+    dest: '{{ ansible_user_dir }}/.vim/after/ftplugin/'
+    mode: '0755'
+    owner: '{{ ansible_user_id }}'
+    force: no
+    backup: yes
+  loop:
+    - groovy.vim
+    - java.vim
+    - python.vim
+
 - name: clone Vundle
   git:
     repo: https://github.com/VundleVim/Vundle.vim.git
@@ -77,15 +106,6 @@
     force: no
     backup: yes
   when: nerdtree.stat.isdir is defined and nerdtree.stat.isdir
-
-- name: copy filetype.vim
-  copy:
-    src: filetype.vim
-    dest: '{{ ansible_user_dir }}/.vim/after/filetype.vim'
-    mode: '0755'
-    owner: '{{ ansible_user_id }}'
-    force: no
-    backup: yes
 
 - name: copy ideavimrc
   copy:

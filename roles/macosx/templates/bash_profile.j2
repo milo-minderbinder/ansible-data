@@ -109,7 +109,7 @@ export ANSIBLE_VAULT_PASSWORD_FILE="$HOME/.vault_pass.bash"
 {% endif %}
 
 # Homebrew config
-export HOMEBREW_GITHUB_API_TOKEN={{ homebrew_github_api_token }}
+export HOMEBREW_GITHUB_API_TOKEN='{{ homebrew_github_api_token }}'
 
 # Runtime environment config
 source "${HOME}/.bashrc"
