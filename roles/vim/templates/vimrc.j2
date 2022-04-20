@@ -130,7 +130,7 @@ set macmeta
 set showcmd
 set noerrorbells
 set novisualbell
-set t_vb=
+set vb t_vb=
 " 13 selecting text
 " 14 editing text
 " 15 tabs and indenting
@@ -195,13 +195,13 @@ function ShowVisualSelection() abort
 	let initial_bufnr = bufnr()
 	let visual_selection=GetVisualSelection()
 	new
-	let new_bufnr = bufnr()
 	1put! =visual_selection
 	normal! jddgg
 	" execute 'resize' line('$', win_getid())
 	execute 'resize' min([len(visual_selection), winheight(0)])
 	setlocal buftype=nofile bufhidden=delete noswapfile winfixheight
 	let &l:filetype = getbufvar(initial_bufnr, '&filetype')
+	let new_bufnr = bufnr()
 	return new_bufnr
 endfunction
 command -range=% ShowVisualSelection call ShowVisualSelection()
@@ -259,20 +259,14 @@ endfunction
 
 function ExecuteVisualSelection() abort
 	let command_bufnr = ShowVisualSelection()
-	let term_opts = {
-				\"norestore": 1,
-				\"hidden": 1,
-				\"term_finish": "open",
-				\"term_opencmd": "sbuffer %d | setlocal bufhidden=delete | call TermUpdateSize()",
-				\"in_io": "buffer",
-				\"in_buf": command_bufnr,
-				\}
-				" \"exit_cb": function('MyJobCB'),
-	let output_bufnr = term_start([&shell], term_opts)
-	" %terminal ++noclose
-	" setlocal bufhidden=delete
-	" let output_bufnr = bufnr()
-	" call TermUpdateSize(output_bufnr)
+	echom "command_bufnr:" command_bufnr
+	" let term_opts = {"norestore": 1, "hidden": 1, "term_finish": "open", "term_opencmd": "sbuffer %d | setlocal bufhidden=delete | call TermUpdateSize()", "in_io": "buffer", "in_buf": command_bufnr}
+	" \ "exit_cb": function('MyJobCB'),
+	" let output_bufnr = term_start([&shell, "-"], term_opts)
+	%terminal ++noclose
+	setlocal bufhidden=delete
+	let output_bufnr = bufnr()
+	call TermUpdateSize(output_bufnr)
 	execute 'au BufWinLeave <buffer='.command_bufnr.'> bdelete' output_bufnr
 	execute 'au BufWinLeave <buffer='.output_bufnr.'> bdelete' command_bufnr
 	return output_bufnr
@@ -309,6 +303,8 @@ function EnterNormalMode()
 	endif
 endfunction
 {% endif %}
+
+let g:AnsibleVault_path = '{{ ansible_user_dir }}/code/personal/ansible-data/.venv/bin/ansible-vault'
 function AnsibleVault(action) abort
 	let AnsibleVault_path = get(g:, 'AnsibleVault_path', 'ansible-vault')
 	let lines = GetVisualSelection()
@@ -379,7 +375,7 @@ command UnsetTabOpts
 			\ echom 'new: tabstop='.&l:tabstop 'shiftwidth='.&l:shiftwidth 'softtabstop='.&l:softtabstop
 command MarkLocation :let @f=expand('%:p') . '(' . line('.') . ')'
 command MakeFinding :let @f=expand('%:p') . '(' . line('.') . '):' . "\n" . getline('.')
-command -range=% JSONFormat :<line1>,<line2>!python3 -m json.tool
+command -nargs=* -range=% JSONFormat :<line1>,<line2>!python3 -m json.tool <args>
 command -range=% XMLFormat :<line1>,<line2>!cat | XMLLINT_INDENT=$'\t' xmllint --format -
 " command -range=% CertText :<line1>,<line2>w !cat|sed -E s/^[[:space:]]*//|openssl x509 -text -noout|less
 command -range=% CertText WR sed -E s/^[[:space:]]*// | openssl x509 -text -noout
@@ -399,7 +395,7 @@ augroup END
 " autocmd! GUIEnter * set vb t_vb=
 
 " Custom keymappings
-noremap <leader>m <Cmd>echom mode(1)<CR>
+" noremap <leader>m <Cmd>echom mode(1)<CR>
 xnoremap <leader>v <Cmd>ShowVisualSelection<CR>
 {% if vim_installed_version is version('8.0.0', '>=') %}
 xnoremap <leader>e <Cmd>ExecuteVisualSelection<CR>
@@ -419,14 +415,20 @@ nnoremap <leader>i :YcmCompleter GoToDefinition<CR>
 nnoremap <leader>k :YcmCompleter GetDoc<CR>
 
 nnoremap <C-N> :NERDTreeToggle<CR>
+nnoremap <leader>f :NERDTreeFind<CR>
+nnoremap <leader>F :NERDTreeFind
+nnoremap <leader>r :NERDTreeVCS<CR>
+nnoremap <leader>R :NERDTreeVCS
+nnoremap <leader>rf :NERDTreeVCS<CR><C-W><C-P>:NERDTreeFind<CR>
 
 nnoremap <leader>b Oimport pdb; pdb.set_trace()<ESC>
 nnoremap <leader>B Oimport ipdb; ipdb.set_trace()<ESC>
 nnoremap <leader>C /^[<>\|=]\{7\}<CR>
 nnoremap <leader>l :MarkLocation<CR>
-nnoremap <leader>f :MakeFinding<CR>
-nnoremap <leader>F "fp
+nnoremap <leader>L :MakeFinding<CR>
+" nnoremap <leader>F "fp
 nnoremap <leader>n :noh<CR>
+nnoremap <leader>N :setlocal relativenumber!<CR>
 nnoremap <leader>s /\s\+$<CR>
 nnoremap <leader>D :q<CR>:diffoff<CR>
 "xnoremap // y:call setreg('9', escape(@", '\\/.*$^~[]'))<cr>/<c-r>9<cr>
