@@ -15,17 +15,16 @@ export SSH_AUTH_SOCK="$HOME/.yubiagent/sock"
 # habitat config
 eval "$(hab cli completers --shell bash)"
 {% endif %}
-
-{% if 'python' in homebrew_apps %}
-# Python runtime config
-if command -v pip3 1>/dev/null 2>&1; then
-	eval "$(pip3 completion --bash)"
-fi
-{% endif %}
 {% if 'pyenv' in homebrew_apps %}
 # Python pyenv config
 if command -v pyenv 1>/dev/null 2>&1; then
 	eval "$(pyenv init -)"
+fi
+{% endif %}
+{% if 'python' in homebrew_apps %}
+# Python runtime config
+if command -v pip3 1>/dev/null 2>&1; then
+	eval "$(pip3 completion --bash)"
 fi
 {% endif %}
 {% if 'pipenv' in homebrew_apps %}
@@ -34,11 +33,11 @@ fi
 #	eval "$(pipenv --completion)"
 # fi
 {% endif %}
-
 {% if 'nvm' in homebrew_apps %}
 # Node/JS runtime config
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+alias nvm-update='( cd "$NVM_DIR"; git fetch --tags "$(git ls-remote --get-url)"; git checkout "$(git rev-list --tags="v[0-9]*" --max-count=1)"; ) && \. "$NVM_DIR/nvm.sh"'
 alias npm='npq-hero'
 alias yarn='NPQ_PKG_MGR=yarn npq-hero'
 {% endif %}

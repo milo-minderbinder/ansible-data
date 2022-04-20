@@ -9,7 +9,7 @@ homebrew_taps:
   - habitat-sh/habitat
 
 cask_apps:
-  #- docker-edge
+  #- docker
   #- firefox
   - font-source-code-pro
   - font-source-code-pro-for-powerline
@@ -71,6 +71,7 @@ homebrew_apps:
   - openjdk
   - openssl@1.1
   - p7zip
+  - php
   - pinentry
   - pipenv
   - plantuml
