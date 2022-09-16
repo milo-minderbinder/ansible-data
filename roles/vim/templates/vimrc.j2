@@ -123,7 +123,7 @@ set splitright
 "  9 using the mouse
 " 10 GUI
 set guifont=Source\ Code\ Pro\ for\ Powerline:h15
-set guioptions+=k
+set guioptions+=kc
 set macmeta
 " 11 printing
 " 12 messages and info
@@ -140,6 +140,7 @@ set vb t_vb=
 " set noexpandtab
 set autoindent
 " 16 folding
+set foldopen-=search
 " 17 diff mode
 set diffopt=filler,vertical
 " 18 mapping
@@ -338,8 +339,9 @@ function Pygmentize(lexer = &filetype) range
 	let commit = systemlist("git rev-parse --short HEAD 2>/dev/null || true")[0]
 	" echom "commit: ".commit
 	" make sure to generate in the correct format
-	exec a:firstline.','.a:lastline.'!pygmentize -f html -o ~/tmp.html -O filename="'.expand("%").'@'.commit.'",full,linenos=table,lineseparator="<br/>",linenostart='.a:firstline.' -l '.a:lexer
-	normal! u
+	exec a:firstline.','.a:lastline.'w !pygmentize -f html -o ~/tmp.html -O filename="'.expand("%").'@'.commit.'",full,linenos=table,wrapcode,prestyles="line-height: 125%",lineseparator="<br/>",linenostart='.a:firstline.' -l '.a:lexer
+	" normal! u
+	!open ~/tmp.html
 endfunction
 command -nargs=? -range=% Pygmentize :<line1>,<line2>call Pygmentize(<f-args>)
 {% endif %}
@@ -367,10 +369,9 @@ command -nargs=1 SetTabOpts
 			\ echom 'new: tabstop='.&l:tabstop 'shiftwidth='.&l:shiftwidth 'softtabstop='.&l:softtabstop
 command UnsetTabOpts
 			\ echom 'old: tabstop='.&l:tabstop 'shiftwidth='.&l:shiftwidth 'softtabstop='.&l:softtabstop |
+			\ set tabstop& shiftwidth& softtabstop& |
 			\ if strlen(&l:filetype) |
 			\ exec 'setfiletype' &l:filetype |
-			\ else |
-			\ setlocal tabstop& shiftwidth& softtabstop& |
 			\ endif |
 			\ echom 'new: tabstop='.&l:tabstop 'shiftwidth='.&l:shiftwidth 'softtabstop='.&l:softtabstop
 command MarkLocation :let @f=expand('%:p') . '(' . line('.') . ')'
@@ -378,7 +379,7 @@ command MakeFinding :let @f=expand('%:p') . '(' . line('.') . '):' . "\n" . getl
 command -nargs=* -range=% JSONFormat :<line1>,<line2>!python3 -m json.tool <args>
 command -range=% XMLFormat :<line1>,<line2>!cat | XMLLINT_INDENT=$'\t' xmllint --format -
 " command -range=% CertText :<line1>,<line2>w !cat|sed -E s/^[[:space:]]*//|openssl x509 -text -noout|less
-command -range=% CertText WR sed -E s/^[[:space:]]*// | openssl x509 -text -noout
+command -range=% CertText :WR sed -E s/^[[:space:]]*// | openssl x509 -text -noout
 
 " Custom autocommands
 augroup vimrc
@@ -408,6 +409,9 @@ xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>
 
 {% if vim_installed_version is version('8.0.0', '>=') %}
 tnoremap <C-ScrollWheelUp> <C-W>:call EnterNormalMode()<CR>
+" workaround for <S-Space> in terminal mode sending escape code
+" see: https://github.com/vim/vim/issues/6040#issuecomment-968396792
+tnoremap <S-Space> <Space>
 {% endif %}
 
 nnoremap <leader>d :YcmCompleter GoToDeclaration<CR>
@@ -427,12 +431,20 @@ nnoremap <leader>C /^[<>\|=]\{7\}<CR>
 nnoremap <leader>l :MarkLocation<CR>
 nnoremap <leader>L :MakeFinding<CR>
 " nnoremap <leader>F "fp
+nnoremap <leader>m <C-W>1<C-_>
+tnoremap <C-W><leader>m <C-W>1<C-_>
+nnoremap <leader>M <C-W><C-_>
+tnoremap <C-W><leader>M <C-W><C-_>
 nnoremap <leader>n :noh<CR>
 nnoremap <leader>N :setlocal relativenumber!<CR>
+nnoremap <leader>w :set wrap!<CR>
 nnoremap <leader>s /\s\+$<CR>
-nnoremap <leader>D :q<CR>:diffoff<CR>
+nnoremap <leader>Dq :q<CR>:diffoff<CR>
+nnoremap <leader>Dt :windo diffthis<CR>
+nnoremap <leader>Do :windo diffoff<CR>
+nnoremap <leader>Du :windo diffoff | windo diffthis<CR>
 "xnoremap // y:call setreg('9', escape(@", '\\/.*$^~[]'))<cr>/<c-r>9<cr>
-xnoremap // y:call setreg('9', substitute(substitute(escape(@", '\\/.*$^~[]'), '\n', '\\n', 'g'), '\r', '\\r', 'g'))<cr>/<c-r>9<cr>
+xnoremap // y:call setreg('/', substitute(substitute(escape(@", '\\/.*$^~[]'), '\n', '\\n', 'g'), '\r', '\\r', 'g'))<CR>:set hls<CR>
 
 {% if ansible_os_family == 'Darwin' %}
 " Map <leader>o to <C-w>F -> Opens file under cursor to line:

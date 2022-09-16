@@ -1,5 +1,24 @@
 source ~/.vimrc
 
-xnoremap // y/<c-r>"<cr>
+set ideajoin
+set idearefactormode=keep
+set clipboard+=unnamed
+set clipboard+=ideaput
+
+" nnoremap \e :e ~/.ideavimrc<CR>
+" nnoremap \r :action IdeaVim.ReloadVimRc.reload<CR>
+" vnoremap // y/<C-R>"<CR>
+xnoremap // y/<C-R>"<CR>
 nnoremap <leader>t :action GotoTest<CR>
 nnoremap <C-N> :NERDTreeFocus<CR>
+
+nnoremap <leader>d :action GotoDeclaration<CR>
+nnoremap <leader>i :action GotoImplementation<CR>
+nnoremap <leader>k :action QuickJavaDoc<CR>
+nnoremap <leader>b :action ToggleLineBreakPoint<CR>
+nnoremap <C-W>n :action EditSourceInNewWindow<CR>
+nnoremap <leader>S :action FileStructurePopup<CR>
+nnoremap ]m :action MethodDown<CR>
+xnoremap ]m :action MethodDown<CR>
+nnoremap [m :action MethodUp<CR>
+xnoremap [m :action MethodUp<CR>
