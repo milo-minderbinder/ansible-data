@@ -28,6 +28,7 @@ cask_apps:
   - zulu7
 
 homebrew_apps:
+  - awscli
   - bash-completion
   - bfg
   - brew-cask-completion
@@ -43,6 +44,7 @@ homebrew_apps:
   - geckodriver
   - git
   - gnu-getopt
+  - gnu-sed
   - gnupg
   - go
   - gradle
