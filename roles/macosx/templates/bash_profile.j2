@@ -116,5 +116,6 @@ export ANSIBLE_VAULT_PASSWORD_FILE="$HOME/.vault_pass.bash"
 export HOMEBREW_GITHUB_API_TOKEN='{{ homebrew_github_api_token }}'
 
 # Runtime environment config
+printf '%sINFO:%s sourcing: %s\n' "$(tput setaf 2)" "$(tput sgr0)" "${HOME}/.bashrc" 1>&2
 source "${HOME}/.bashrc"
 

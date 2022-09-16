@@ -33,6 +33,10 @@ fi
 #	eval "$(pipenv --completion)"
 # fi
 {% endif %}
+{% if 'restic' in homebrew_apps %}
+# restic config
+alias restic2='restic --repo "$RESTIC_REPOSITORY2"'
+{% endif %}
 {% if 'nvm' in homebrew_apps %}
 # Node/JS runtime config
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm

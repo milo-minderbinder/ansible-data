@@ -5,28 +5,35 @@
 	graph-log = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset) %C(bold cyan)(committed: %cD)%C(reset) %C(bold yellow)%d%C(reset)%n%C(white)%w(120,10,10)%B%w(0,10,10)%C(reset)%n%C(dim white)- %an <%ae> %C(reset) %C(dim white)(committer: %cn <%ce>)%C(reset)'
 	graph-log-brief = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)'
 	remote-url = ls-remote --get-url
-	remote-name = !"git remote -v | grep \"$(git ls-remote --get-url).*fetch\" | cut -f 1 | sed -n '1p'"
-	remote-host = !"git remote-url | sed -E -e 's#(git@|https?://|ssh://)([^:/]+).*#\\2#'"
-	org-and-repo = !"git remote-url | sed -E -e 's|.*[:/](.*/.*)|\\1|' -e 's|\\.git$||'"
-	browse = !"echo "opening: https://$(git remote-host)/$(git org-and-repo)" && open \"https://$(git remote-host)/$(git org-and-repo)\""
+	remote-name = !git remote -v | grep \"$(git ls-remote --get-url).*fetch\" | cut -f 1 | sed -n '1p'
+	; remote-host = !"git remote-url | sed -E -e 's#(git@|https?://|ssh://)([^:/]+).*#\\2#'"
+	remote-host = "!git remote-url | sed -E -e 's#^(https?|ssh|git)://##' -e 's|^[^/]+@||' -e 's|[:/].*$||'"
+	org-and-repo = !git remote-url | sed -E -e 's|.*[:/](.*/.*)|\\1|' -e 's|\\.git$||'
+	browse = !echo opening: \"https://$(git remote-host)/$(git org-and-repo)\" && open \"https://$(git remote-host)/$(git org-and-repo)\"
 	branch-name = rev-parse --abbrev-ref HEAD
 	short-hash = rev-parse --short HEAD
 	closest-tagname = describe --abbrev=0 --tags
-	latest-tagname = !"git fetch --tags \"$(git ls-remote --get-url)\" && git closest-tagname FETCH_HEAD"
+	latest-tagname = !git fetch --tags \"$(git ls-remote --get-url)\" && git closest-tagname FETCH_HEAD
 	changelist = log --no-merges --pretty=format:\"* %s\"
-	changelist-tag = !"git changelist \"$(git latest-tagname)\".."
-	fetch-status = !"git fetch --all --prune && git stash list && git status"
-	squash-merge = !"git merge --squash $1 && git commit --edit -m \"$(git log --format=%B ..$1)\" && echo squashed and merged "
+	changelist-tag = !git changelist \"$(git latest-tagname)\"..
+	fetch-status = !git fetch --all --prune && git stash list && git status
+	squash-merge = "!git merge --squash $1 && git commit --edit -m \"$(git log --format=%B ..$1)\" && echo squashed and merged "
 	list-all-commits = rev-list --all --reflog
 	cleanex = clean -fdx -e '*.iml' -e '*.iws' -e '*.ipr' -e '.idea'
 	bva = branch -vva
 	diff-stat-sort = !git diff --stat --stat-width \"$(tput cols)\" --color=always | sort -t \"|\" -n -k2
-	lightweight-tags = !git tag --list --sort=-creatordate | git cat-file --batch-check=$'%(objectname):%(objecttype)' | grep ':commit$' | sed 's/:.*//' | git name-rev --tags --stdin --name-only --no-undefined
-	annotated-tags = !git tag --list --sort=-creatordate | git cat-file --batch-check=$'%(objectname):%(objecttype)' | grep ':tag$' | sed 's/:.*//' | git name-rev --tags --stdin --name-only --no-undefined
-	sd4-pr-events = !"git sd4 events ls --type pr -f {% raw %}'table {{.pipelineId}}|{{.id}}|{{sha .sha}}|{{.causeMessage}}|{{rel .createTime}}'{% endraw %}"
-	sd4-pr-event = !"REV=\"${1:-HEAD}\"; shift; git sd4-pr-events | grep \"$(git rev-parse --short \"${REV}\")\" | cut -d '|' -f 2"
-	pr-commits = !"PR_NUM=\"${1:-*}\"; shift; REMOTE=\"${1:-$(git remote-name)}\"; shift; git ls-remote \"${REMOTE}\" \"refs/pull/${PR_NUM}/head\" | cut -f 1"
-	pr-commit-short = !"PR_NUM=\"${1:-*}\"; shift; REMOTE=\"${1:-$(git remote-name)}\"; shift; git rev-parse --short \"$(git pr-commits \"${PR_NUM}\" \"${REMOTE}\")\""
+	; lightweight-tags = !git tag --list --sort=-version:refname | git cat-file --batch-check=$'%(objectname):%(objecttype)' | grep ':commit$' | sed 's/:.*//' | git name-rev --tags --annotate-stdin --name-only --no-undefined
+	lightweight-tags = "!git tag --list --sort=-version:refname \"$@\" | git cat-file --batch-check=$'%(objectname):%(objecttype)' | grep ':commit$' | sed 's/:.*//' | git name-rev --tags --annotate-stdin --name-only --no-undefined; shift \"$#\";"
+	; annotated-tags = !git tag --list --sort=-version:refname | git cat-file --batch-check=$'%(objectname):%(objecttype)' | grep ':tag$' | sed 's/:.*//' | git name-rev --tags --annotate-stdin --name-only --no-undefined
+	annotated-tags = "!git tag --list --sort=-version:refname \"$@\" | git cat-file --batch-check=$'%(objectname):%(objecttype)' | grep ':tag$' | sed 's/:.*//' | git name-rev --tags --annotate-stdin --name-only --no-undefined; shift \"$#\";"
+	; sd4-pr-events = !git sd4 events ls --type pr -f 'table {{.pipelineId}}|{{.id}}|{{sha .sha}}|{{.causeMessage}}|{{rel .createTime}}'
+	; sd4-pr-event = "!REV=\"${1:-HEAD}\"; shift; git sd4-pr-events | grep \"$(git rev-parse --short \"${REV}\")\" | cut -d '|' -f 2"
+	; sd4-pr-build = "!REV=\"${1:-HEAD}\"; shift; git sd4 event builds --event \"$(git sd4-pr-event \"${REV}\")\" --format 'table {{.id}}' | tail -n 1"
+	sd4-pr-events = !git sd4 events ls --type pr
+	sd4-pr-event = "!REV=\"${1:-HEAD}\"; shift; git sd4-pr-events --format $'{{.id}}\\t{{sha .sha}}' | grep \"$(git rev-parse --short \"${REV}\")\" | cut -f 1"
+	sd4-pr-build = "!REV=\"${1:-HEAD}\"; shift; git sd4 event builds --event \"$(git sd4-pr-event \"${REV}\")\" --format '{{.id}}'"
+	pr-commits = "!PR_NUM=\"${1:-*}\"; shift; REMOTE=\"${1:-$(git remote-name)}\"; shift; git ls-remote \"${REMOTE}\" \"refs/pull/${PR_NUM}/head\" | cut -f 1"
+	pr-commit-short = "!PR_NUM=\"${1:-*}\"; shift; REMOTE=\"${1:-$(git remote-name)}\"; shift; git rev-parse --short \"$(git pr-commits \"${PR_NUM}\" \"${REMOTE}\")\""
 [core]
 	excludesfile = {{ ansible_user_dir }}/.gitexcludes
 	autocrlf = input
