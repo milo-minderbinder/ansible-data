@@ -6,6 +6,7 @@
 	graph-log-brief = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)'
 	remote-url = ls-remote --get-url
 	remote-name = !git remote -v | grep \"$(git ls-remote --get-url).*fetch\" | cut -f 1 | sed -n '1p'
+	remote-branch-name = !git ls-remote "$(git ls-remote --get-url)" HEAD | cut -f 1 | git name-rev --annotate-stdin --name-only
 	; remote-host = !"git remote-url | sed -E -e 's#(git@|https?://|ssh://)([^:/]+).*#\\2#'"
 	remote-host = "!git remote-url | sed -E -e 's#^(https?|ssh|git)://##' -e 's|^[^/]+@||' -e 's|[:/].*$||'"
 	org-and-repo = !git remote-url | sed -E -e 's|.*[:/](.*/.*)|\\1|' -e 's|\\.git$||'
@@ -41,6 +42,8 @@
 	defaultBranch = main
 [log]
 	date = iso-strict-local
+[status]
+	submoduleSummary = true
 [diff]
 	submodule = log
 [pull]
