@@ -7,7 +7,7 @@
   include_role:
     name: nodejs
   vars:
-    node_version: 10
+    node_version: 16
 
 - name: install typescript
   npm: name=typescript state=latest global=yes
@@ -54,6 +54,7 @@
   loop:
     - groovy.vim
     - java.vim
+    - json.vim
     - python.vim
 
 - name: clone Vundle
@@ -88,7 +89,7 @@
   register: ycm
 
 - name: compile YouCompleteMe
-  command: /usr/local/bin/python3 install.py --clang-completer --ts-completer
+  command: /usr/local/bin/python3 install.py --clangd-completer --ts-completer
   args:
     chdir: '{{ ansible_user_dir }}/.vim/bundle/YouCompleteMe'
   when: ycm.stat.isdir is defined and ycm.stat.isdir

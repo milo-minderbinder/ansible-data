@@ -405,7 +405,7 @@ xnoremap <leader>p :WR<Space>
 nmap <leader>cc gcc
 xmap <leader>cc gc
 
-xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>
+xnoremap @ :<C-U>call ExecuteMacroOverVisualRange()<CR>
 
 {% if vim_installed_version is version('8.0.0', '>=') %}
 tnoremap <C-ScrollWheelUp> <C-W>:call EnterNormalMode()<CR>
@@ -446,14 +446,5 @@ nnoremap <leader>Du :windo diffoff | windo diffthis<CR>
 "xnoremap // y:call setreg('9', escape(@", '\\/.*$^~[]'))<cr>/<c-r>9<cr>
 xnoremap // y:call setreg('/', substitute(substitute(escape(@", '\\/.*$^~[]'), '\n', '\\n', 'g'), '\r', '\\r', 'g'))<CR>:set hls<CR>
 
-{% if ansible_os_family == 'Darwin' %}
-" Map <leader>o to <C-w>F -> Opens file under cursor to line:
-nnoremap <leader>o F
-" Map <leader>O to <C-w>gF -> Opens file under cursor to line in a new tab:
-nnoremap <leader>O gF
-{% else %}
-" Map <Alt-o> to <C-w>F -> Opens file under cursor to line:
-nnoremap ï F
-" Map <Alt-O> to <C-w>gF -> Opens file under cursor to line in a new tab:
-nnoremap Ï gF
-{% endif %}
+nnoremap <leader>o <C-W>F
+nnoremap <leader>O <C-W>gF
