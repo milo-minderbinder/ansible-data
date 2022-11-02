@@ -17,21 +17,21 @@
   file:
     path: '{{ ansible_user_dir }}/.vim'
     state: directory
-    mode: '0755'
+    mode: '0750'
     owner: '{{ ansible_user_id }}'
 
 - name: create vim after scripts dir
   file:
     path: '{{ ansible_user_dir }}/.vim/after'
     state: directory
-    mode: '0755'
+    mode: '0750'
     owner: '{{ ansible_user_id }}'
 
 - name: copy filetype.vim
   copy:
     src: filetype.vim
     dest: '{{ ansible_user_dir }}/.vim/after/filetype.vim'
-    mode: '0755'
+    mode: '0750'
     owner: '{{ ansible_user_id }}'
     force: no
     backup: yes
@@ -40,14 +40,14 @@
   file:
     path: '{{ ansible_user_dir }}/.vim/after/ftplugin'
     state: directory
-    mode: '0755'
+    mode: '0750'
     owner: '{{ ansible_user_id }}'
 
 - name: copy ftplugin scripts
   copy:
     src: '{{ item }}'
     dest: '{{ ansible_user_dir }}/.vim/after/ftplugin/'
-    mode: '0755'
+    mode: '0750'
     owner: '{{ ansible_user_id }}'
     force: no
     backup: yes
@@ -57,10 +57,26 @@
     - json.vim
     - python.vim
 
-- name: clone Vundle
-  git:
-    repo: https://github.com/VundleVim/Vundle.vim.git
-    dest: '{{ ansible_user_dir }}/.vim/bundle/Vundle.vim'
+- name: create vim autoload dir
+  file:
+    path: '{{ ansible_user_dir }}/.vim/autoload'
+    state: directory
+    mode: '0750'
+    owner: '{{ ansible_user_id }}'
+
+- name: get vim-plug autoload script
+  get_url:
+    url: https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    dest: '{{ ansible_user_dir }}/.vim/autoload/plug.vim'
+    owner: '{{ ansible_user_id }}'
+    mode: '0640'
+
+- name: create vim bundle dir
+  file:
+    path: '{{ ansible_user_dir }}/.vim/bundle'
+    state: directory
+    mode: '0750'
+    owner: '{{ ansible_user_id }}'
 
 - name: debug vim_installed_version
   debug:
@@ -70,19 +86,19 @@
   template:
     src: vimrc.j2
     dest: '{{ ansible_user_dir }}/.vimrc'
-    mode: '0644'
+    mode: '0640'
     owner: '{{ ansible_user_id }}'
     force: no
     backup: yes
 
 - name: install vim plugins
-  command: vim +PluginInstall +qall
+  command: vim -es -u vimrc -i NONE -c 'PlugInstall' -c 'qa'
 
-#- name: clean vim plugins
-  #command: vim +PluginClean +qall
+# - name: clean vim plugins
+#   command: vim -es -u vimrc -i NONE -c 'PlugClean' -c 'qa'
 
-#- name: update vim plugins
-  #command: vim +PluginUpdate +qall
+# - name: update vim plugins
+#   command: vim -es -u vimrc -i NONE -c 'PlugUpdate' -c 'qa'
 
 - name: check if YouCompleteMe installed
   stat: path='{{ ansible_user_dir }}/.vim/bundle/YouCompleteMe'
@@ -102,7 +118,7 @@
   copy:
     src: yank_mapping.vim
     dest: '{{ ansible_user_dir }}/.vim/bundle/nerdtree/nerdtree_plugin/yank_mapping.vim'
-    mode: '0755'
+    mode: '0750'
     owner: '{{ ansible_user_id }}'
     force: no
     backup: yes
@@ -112,7 +128,7 @@
   copy:
     src: ideavimrc
     dest: '{{ ansible_user_dir }}/.ideavimrc'
-    mode: '0755'
+    mode: '0750'
     owner: '{{ ansible_user_id }}'
     force: no
     backup: yes

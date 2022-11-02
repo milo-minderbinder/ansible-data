@@ -1,96 +1,78 @@
 {#
 # vi: filetype=vim
 #}
-set nocompatible
-filetype off
+call plug#begin(has('nvim') ? stdpath('data') . '/bundle' : '~/.vim/bundle')
 
-" set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-" alternatively, pass a path where Vundle should install plugins
-" call vundle#begin('~/some/path/here')
-
-" let Vundle manage Vundle, required
-Plugin 'VundleVim/Vundle.vim'
+Plug 'junegunn/vim-plug'
 
 {% if vim_installed_version is version('8.0.0', '>=') %}
 " autocompletion
-Plugin 'ycm-core/YouCompleteMe'
+Plug 'ycm-core/YouCompleteMe'
 let g:ycm_autoclose_preview_window_after_completion=1
 {% endif %}
 
 " Go language support
-Plugin 'fatih/vim-go'
+Plug 'fatih/vim-go'
 
 " Python virtualenv support within Vim (and Vim plugins - works with
 " YouCompleteMe)
-"Plugin 'jmcantrell/vim-virtualenv'
+"Plug 'jmcantrell/vim-virtualenv'
 
 " Git wrapper
-Plugin 'tpope/vim-fugitive'
+Plug 'tpope/vim-fugitive'
 
 " Gutter indicators for lines added, modified, and removed to git index
-Plugin 'airblade/vim-gitgutter'
+Plug 'airblade/vim-gitgutter'
 
 " Filesystem tree explorer
-Plugin 'preservim/nerdtree'
+Plug 'preservim/nerdtree'
 let NERDTreeIgnore=['__pycache__$[[dir]]', '\.pyc$[[file]]'{{ ", '\~$', '\.DS_Store$[[file]]'" if ansible_os_family == 'Darwin' else "" }}]
 let NERDTreeCascadeSingleChildDir=1
 let NERDTreeMinimalUI=1
 
 " NERDTree plugin to show git status indicators
-Plugin 'Xuyuanp/nerdtree-git-plugin'
+Plug 'Xuyuanp/nerdtree-git-plugin'
 
 " Recursively diff two directories
-Plugin 'will133/vim-dirdiff'
+Plug 'will133/vim-dirdiff'
 
 " Full path fuzzy file, buffer, mru, tag, ... finder
-Plugin 'ctrlpvim/ctrlp.vim'
+Plug 'ctrlpvim/ctrlp.vim'
 let g:ctrlp_root_markers=['pom.xml', 'build.gradle', 'package.json', 'Pipfile']
 let g:ctrlp_regexp=1
 
 " Code commenting utilities/bindings
-"Plugin 'preservim/nerdcommenter'
-Plugin 'tpope/vim-commentary'
+"Plug 'preservim/nerdcommenter'
+Plug 'tpope/vim-commentary'
 
 " B-e-a-utiful colorscheme for Vim
-Plugin 'altercation/vim-colors-solarized'
+Plug 'altercation/vim-colors-solarized'
 
 " Status bar/tabline for Vim (integrates with many plugins including
 " virtualenv, fugitive, ctrlp, and nerdtree)
-Plugin 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline'
 
 " Themes/colorschemes for vim-airline
-Plugin 'vim-airline/vim-airline-themes'
+Plug 'vim-airline/vim-airline-themes'
 
 " Syntax, matchit, movements, & other feature support for working with
 " mustache and handlebars templates
-Plugin 'mustache/vim-mustache-handlebars'
+Plug 'mustache/vim-mustache-handlebars'
 
 " Syntax for Ansible 2.0, supporting YAML playbooks, Jinja2 templates,
 " and Ansible's hosts files
-Plugin 'pearofducks/ansible-vim'
+Plug 'pearofducks/ansible-vim'
 
 " Syntax for PowerShell
-Plugin 'PProvost/vim-ps1'
+Plug 'PProvost/vim-ps1'
 
 " Syntax for Lark
-Plugin 'lark-parser/vim-lark-syntax'
+Plug 'lark-parser/vim-lark-syntax'
 
 " All of your Plugins must be added before the following line
-call vundle#end()			 " required
-filetype plugin indent on	 " required
-" To ignore plugin indent changes, instead use:
-"filetype plugin on
-"
-" Brief help
-" :PluginList			- list configured plugins
-" :PluginInstall(!)		- install (update) plugins
-" :PluginSearch(!) foo	- search (or refresh cache first) for foo
-" :PluginClean(!)		- confirm (or auto-approve) removal of unused plugins
-"
-" see :h vundle for more details or wiki for FAQ
-" Put your non-Plugin stuff after this line
+call plug#end()
+" see https://github.com/junegunn/vim-plug/wiki/tutorial#updating-plugins for
+" vim-plug plugin management help
 
 " Standard configuration options follow
 let mapleader=','
@@ -432,9 +414,13 @@ nnoremap <leader>l :MarkLocation<CR>
 nnoremap <leader>L :MakeFinding<CR>
 " nnoremap <leader>F "fp
 nnoremap <leader>m <C-W>1<C-_>
+{% if vim_installed_version is version('8.0.0', '>=') %}
 tnoremap <C-W><leader>m <C-W>1<C-_>
+{% endif %}
 nnoremap <leader>M <C-W><C-_>
+{% if vim_installed_version is version('8.0.0', '>=') %}
 tnoremap <C-W><leader>M <C-W><C-_>
+{% endif %}
 nnoremap <leader>n :noh<CR>
 nnoremap <leader>N :setlocal relativenumber!<CR>
 nnoremap <leader>w :set wrap!<CR>
@@ -448,3 +434,4 @@ xnoremap // y:call setreg('/', substitute(substitute(escape(@", '\\/.*$^~[]'), '
 
 nnoremap <leader>o <C-W>F
 nnoremap <leader>O <C-W>gF
+
